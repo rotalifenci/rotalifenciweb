@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { verifyToken } = require('./tubitak-auth.js');
+const {
+    buildAsciiFallbackFilename,
+    generateMonumentDocxBuffer,
+    generateAllMonumentsZipBuffer
+} = require('./_tubitak-docx.js');
 
 /**
  * 📊 ROTALI FENCİ - TÜBİTAK ARAŞTIRMA VERİLERİ & OTO-KAYIT API'Sİ
@@ -138,6 +143,79 @@ module.exports = async function handler(req, res) {
     if (req.method === "GET") {
         try {
             const reqProj = req.query.projectId || userProjectId;
+
+            // Dışa Aktarma (Word .docx / Toplu ZIP) - Yalnızca Öğretmen Yetkili (Proje 1)
+            const exportDocxMode = req.query.exportDocx;
+            if (exportDocxMode === "single" || exportDocxMode === "all") {
+                if (userRole !== "teacher") {
+                    return res.status(403).json({ ok: false, error: "Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir." });
+                }
+
+                const parsedSeed = fs.existsSync(seedDataPath) ? JSON.parse(fs.readFileSync(seedDataPath, 'utf8')) : null;
+                const p1 = parsedSeed?.projects?.['proje-tarih'];
+                if (!p1 || !Array.isArray(p1.items) || !Array.isArray(p1.criteriaList)) {
+                    return res.status(500).json({ ok: false, error: "Proje 1 veri şablonu okunamadı." });
+                }
+
+                const store = readLocalStore();
+                const mergedRecords = {};
+                for (const [k, v] of Object.entries(store.records || {})) {
+                    if (v && v.projectId === 'proje-tarih') {
+                        mergedRecords[k] = v;
+                    }
+                }
+
+                // Supabase bulut veritabanındaki daha güncel kayıtları da birleştir
+                const supaRows = await supabaseFetch('tubitak_records', {
+                    query: '?project_id=eq.proje-tarih&select=id,project_id,item_id,criterion_key,content,version,updated_at'
+                });
+                if (Array.isArray(supaRows)) {
+                    for (const row of supaRows) {
+                        const key = `${row.item_id}__${row.criterion_key}`;
+                        const existing = mergedRecords[key];
+                        const rowTime = row.updated_at ? Date.parse(row.updated_at) : 0;
+                        const existingTime = existing?.updatedAt ? Date.parse(existing.updatedAt) : 0;
+                        if (!existing || rowTime > existingTime || (row.version || 0) > (existing.version || 0)) {
+                            mergedRecords[key] = {
+                                id: key,
+                                projectId: 'proje-tarih',
+                                itemId: row.item_id,
+                                criterionKey: row.criterion_key,
+                                content: row.content || '',
+                                version: row.version || 1,
+                                updatedAt: row.updated_at || new Date().toISOString()
+                            };
+                        }
+                    }
+                }
+
+                if (exportDocxMode === "single") {
+                    const targetItemId = String(req.query.itemId || '').trim();
+                    const item = p1.items.find((it) => it.id === targetItemId);
+                    if (!item) {
+                        return res.status(404).json({ ok: false, error: "İstenen tarihî eser bulunamadı." });
+                    }
+                    const docxResult = await generateMonumentDocxBuffer(item, p1.criteriaList, mergedRecords);
+                    if (!docxResult) {
+                        return res.status(404).json({ ok: false, error: "Bu eser için veritabanında kaydedilmiş araştırma metni bulunamadı." });
+                    }
+                    const asciiName = buildAsciiFallbackFilename(docxResult.filename);
+                    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    res.setHeader("Content-Disposition", `attachment; filename="${asciiName}"; filename*=UTF-8''${encodeURIComponent(docxResult.filename)}`);
+                    res.setHeader("X-Export-Paragraph-Count", String(docxResult.paragraphCount));
+                    return res.status(200).send(docxResult.buffer);
+                }
+
+                const zipResult = await generateAllMonumentsZipBuffer(p1.items, p1.criteriaList, mergedRecords);
+                if (!zipResult.buffer) {
+                    return res.status(404).json({ ok: false, error: "Hiçbir eser için veritabanında kaydedilmiş araştırma metni bulunamadı." });
+                }
+                res.setHeader("Content-Type", "application/zip");
+                res.setHeader("Content-Disposition", `attachment; filename="${zipResult.filename}"`);
+                res.setHeader("X-Export-Included-Count", String(zipResult.included.length));
+                res.setHeader("X-Export-Skipped-Count", String(zipResult.skipped.length));
+                return res.status(200).send(zipResult.buffer);
+            }
 
             // Öğrenci sadece kendi projesini görebilir
             if (userRole !== "teacher" && userProjectId !== "all" && reqProj !== userProjectId) {

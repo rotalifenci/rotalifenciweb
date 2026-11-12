@@ -230,5 +230,8 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.equal(p1Items[39].orderIndex, 40);
   assert.equal(p1Items[39].assignedStudentId, "stu-zeynep");
   assert.ok(tubitakJs.includes("ARAŞTIRMA EKİBİ – ÖĞRENCİ SEÇİMİ") && tubitakJs.includes("reassignStudentWork"));
-  assert.ok(tubitakRecJs.includes("reassign_item"));
+  assert.ok(tubitakJs.includes("Word Olarak İndir") && tubitakJs.includes("Tüm Eserleri Word Olarak İndir"));
+  assert.ok(tubitakJs.includes("downloadMonumentWord") && tubitakJs.includes("downloadAllProje1Word"));
+  assert.ok(tubitakRecJs.includes("reassign_item") && tubitakRecJs.includes("exportDocx"));
+  assert.ok(fs.existsSync(path.join(webDir, "api", "_tubitak-docx.js")), "_tubitak-docx.js yardımcı modülü mevcut olmalı");
 });

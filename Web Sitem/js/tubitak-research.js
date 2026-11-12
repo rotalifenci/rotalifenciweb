@@ -733,7 +733,13 @@
                         <span>İncelemeye Gönder</span>
                     </button>
                     ` : `
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        ${activeProjectId === 'proje-tarih' ? `
+                        <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Yalnızca kaydedilmiş araştırma metinlerini .docx olarak indir">
+                            <i class="fa-solid fa-file-word"></i>
+                            <span>Word Olarak İndir</span>
+                        </button>
+                        ` : ''}
                         <button type="button" onclick="window.RotaliTubitak.teacherReview('${item.id}', 'approved')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
                             <i class="fa-solid fa-check"></i> Onayla
                         </button>
@@ -1304,9 +1310,15 @@
                     <i class="fa-solid fa-users-gear text-indigo-600"></i>
                     <span>Proje 1 – Öğrenci Araştırma Takibi & Görev Atamaları</span>
                 </h4>
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
-                    Toplam ${items.length} Eser • ${students.length} Öğrenci
-                </span>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="window.RotaliTubitak.downloadAllProje1Word(this)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="Kayıtlı eserlerin her biri için ayrı .docx oluşturup ZIP olarak indir">
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <span>Tüm Eserleri Word Olarak İndir</span>
+                    </button>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        Toplam ${items.length} Eser • ${students.length} Öğrenci
+                    </span>
+                </div>
             </div>
 
             ${!distValid ? `
@@ -1361,6 +1373,10 @@
                                         </select>
                                         <button type="button" onclick="window.RotaliTubitak.reassignStudentWork('${it.id}', document.getElementById('reassign-${it.id}').value)" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] cursor-pointer" title="Öğrenci Atamasını Güncelle">
                                             Ata
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${it.id}', this)" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] cursor-pointer flex items-center gap-1" title="Eserin kayıtlı metinlerini Word (.docx) olarak indir">
+                                            <i class="fa-solid fa-file-word"></i>
+                                            <span>Word Olarak İndir</span>
                                         </button>
                                         <button type="button" onclick="window.RotaliTubitak.openItemInEditor('${it.id}'); document.getElementById('tubitak-teacher-modal').classList.add('hidden');" class="px-2 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-[10px] cursor-pointer">
                                             İncele
@@ -2055,6 +2071,100 @@
                 activeItemId = filtered[0].id;
             }
             renderMainContainer(document.getElementById("tubitak-research-container"));
+        },
+
+        async downloadMonumentWord(itemId, btnEl) {
+            if (!currentSession || currentSession.role !== "teacher") {
+                showNotice("Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir.", "error");
+                return;
+            }
+            const projItems = seedData?.projects?.["proje-tarih"]?.items || [];
+            const item = projItems.find(it => it.id === itemId);
+            const fallbackName = `${(item?.title || itemId || "Tarihi_Eser").replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim()}.docx`;
+            const origHtml = btnEl ? btnEl.innerHTML : "";
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hazırlanıyor...</span>`;
+            }
+            try {
+                const res = await fetch(`/api/tubitak-records?projectId=proje-tarih&exportDocx=single&itemId=${encodeURIComponent(itemId)}`, {
+                    headers: { "Authorization": `Bearer ${currentSession.token}` }
+                });
+                if (!res.ok) {
+                    let errMsg = "Word belgesi oluşturulamadı.";
+                    try {
+                        const errJson = await res.json();
+                        if (errJson?.error) errMsg = errJson.error;
+                    } catch (e) {}
+                    showNotice(errMsg, "warning");
+                    return;
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fallbackName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showNotice(`"${fallbackName}" Word belgesi indirildi.`, "success");
+            } catch (err) {
+                showNotice("Word indirme hatası: " + err.message, "error");
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = origHtml;
+                }
+            }
+        },
+
+        async downloadAllProje1Word(btnEl) {
+            if (!currentSession || currentSession.role !== "teacher") {
+                showNotice("Toplu Word indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir.", "error");
+                return;
+            }
+            const origHtml = btnEl ? btnEl.innerHTML : "";
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>ZIP Hazırlanıyor...</span>`;
+            }
+            try {
+                const res = await fetch("/api/tubitak-records?projectId=proje-tarih&exportDocx=all", {
+                    headers: { "Authorization": `Bearer ${currentSession.token}` }
+                });
+                if (!res.ok) {
+                    let errMsg = "Toplu Word paketi oluşturulamadı.";
+                    try {
+                        const errJson = await res.json();
+                        if (errJson?.error) errMsg = errJson.error;
+                    } catch (e) {}
+                    showNotice(errMsg, "warning");
+                    return;
+                }
+                const includedCount = res.headers.get("X-Export-Included-Count") || "";
+                const skippedCount = res.headers.get("X-Export-Skipped-Count") || "0";
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                const infoText = includedCount
+                    ? `${includedCount} eser için ayrı Word belgeleri ZIP olarak indirildi${Number(skippedCount) > 0 ? ` (${skippedCount} boş eser atlandı)` : ""}.`
+                    : "Tüm eserlerin Word belgeleri ZIP olarak indirildi.";
+                showNotice(infoText, "success");
+            } catch (err) {
+                showNotice("Toplu Word indirme hatası: " + err.message, "error");
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = origHtml;
+                }
+            }
         },
 
         async reassignStudentWork(itemId, assignedStudentId) {

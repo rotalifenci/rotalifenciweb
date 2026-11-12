@@ -7,5 +7,9 @@
     "guard": "node scripts/pre_deploy_guard.js",
     "test:protection": "node --test \"Web Sitem/tests/content_protection.test.js\"",
     "test": "node --test \"Web Sitem/tests/content_protection.test.js\" \"Web Sitem/tests/soru_hazirlama_module.test.js\" \"Web Sitem/tests/kapak_ve_kart_otomasyon.test.js\" \"Web Sitem/tests/soru_gorsel_uyum.test.js\" \"Web Sitem/tests/coklu_uretim_ve_yayinlama.test.js\" && node \"Web Sitem/tests/test_tubitak_system.js\" && node scripts/pre_deploy_guard.js"
+  },
+  "dependencies": {
+    "docx": "^9.15.3",
+    "jszip": "^3.10.2"
   }
 }

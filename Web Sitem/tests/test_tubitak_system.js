@@ -27,12 +27,16 @@ function mockReqRes(method, body = {}, query = {}, headers = {}) {
             responseData = data;
             return this;
         },
+        send(data) {
+            responseData = data;
+            return this;
+        },
         end() {
             return this;
         }
     };
 
-    return { req, res, getStatus: () => statusCode, getData: () => responseData };
+    return { req, res, getStatus: () => statusCode, getData: () => responseData, getHeaders: () => headersSent };
 }
 
 async function runTests() {
@@ -126,7 +130,9 @@ async function runTests() {
     // -------------------------------------------------------------
     console.log("6 & 7. Değişiklik Geçmişi ve Revizyon Denetimi:");
     assert.ok(fetchResData.revisions.length > 0, "Revizyon kaydı mevcut olmalı.");
-    const lastRev = fetchResData.revisions[fetchResData.revisions.length - 1];
+    const cifteRevs = fetchResData.revisions.filter(r => r.itemId === "cifte-minareli-medrese" && r.criterionKey === "c1_location");
+    assert.ok(cifteRevs.length > 0, "Çifte Minareli Medrese için revizyon kaydı mevcut olmalı.");
+    const lastRev = cifteRevs[cifteRevs.length - 1];
     assert.strictEqual(lastRev.itemId, "cifte-minareli-medrese");
     assert.strictEqual(lastRev.criterionKey, "c1_location");
     console.log(`   ✅ Başarılı! Revizyon geçmişi kayıt altında: Öğrenci: ${lastRev.studentName}, Sürüm: v${lastRev.version}.\n`);
@@ -237,7 +243,98 @@ async function runTests() {
     assert.strictEqual(restoreAssignReq.getStatus(), 200);
     console.log("   ✅ Başarılı! Öğrenci yetki izolasyonu ve öğretmen görev atama akışı doğrulandı.\n");
 
-    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (12/12 TEST PASSED)!");
+    // -------------------------------------------------------------
+    // TEST 13: Öğretmen Paneli Gerçek Word (.docx) & Toplu ZIP İndirme Testi
+    // -------------------------------------------------------------
+    console.log("13. Gerçek Word (.docx) & Toplu 40 Eser ZIP İndirme Testi:");
+    const JSZip = require('jszip');
+    const fs = require('fs');
+    const path = require('path');
+    const { generateAllMonumentsZipBuffer } = require('../api/_tubitak-docx.js');
+
+    // Öğrenci Word indirmeye çalışırsa 403 almalı
+    const stuDocxAttempt = mockReqRes("GET", {}, {
+        projectId: "proje-tarih",
+        exportDocx: "single",
+        itemId: "cifte-minareli-medrese"
+    }, { authorization: `Bearer ${studentToken}` });
+    await tubitakRecordsHandler(stuDocxAttempt.req, stuDocxAttempt.res);
+    assert.strictEqual(stuDocxAttempt.getStatus(), 403, "Öğrenci Word indirme isteği 403 ile engellenmeli");
+
+    // Kayıtlı metin yoksa boş .docx üretmemeli (404 açıklayıcı uyarı)
+    const emptyDocxReq = mockReqRes("GET", {}, {
+        projectId: "proje-tarih",
+        exportDocx: "single",
+        itemId: "altinyayla-merkez-camii"
+    }, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(emptyDocxReq.req, emptyDocxReq.res);
+    assert.strictEqual(emptyDocxReq.getStatus(), 404);
+    assert.ok(emptyDocxReq.getData().error.includes("bulunamadı"));
+
+    // Çifte Minareli Medrese için gerçek Proje 1 kriterlerini (c1_yapi_adi & c2_yapim_yili) kaydet
+    const saveC1 = mockReqRes("POST", {
+        projectId: "proje-tarih",
+        itemId: "cifte-minareli-medrese",
+        criterionKey: "c1_yapi_adi",
+        content: "Çifte Minareli Medrese, Sivas merkezde yer alan Anadolu Selçuklu dönemi eseridir."
+    }, {}, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(saveC1.req, saveC1.res);
+    assert.strictEqual(saveC1.getStatus(), 200);
+
+    const saveC2 = mockReqRes("POST", {
+        projectId: "proje-tarih",
+        itemId: "cifte-minareli-medrese",
+        criterionKey: "c2_yapim_yili",
+        content: "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır."
+    }, {}, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(saveC2.req, saveC2.res);
+    assert.strictEqual(saveC2.getStatus(), 200);
+
+    // Öğretmen Çifte Minareli Medrese için .docx indirdiğinde gerçek A4 Times New Roman 12pt .docx üretilmeli
+    const teacherDocxReq = mockReqRes("GET", {}, {
+        projectId: "proje-tarih",
+        exportDocx: "single",
+        itemId: "cifte-minareli-medrese"
+    }, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(teacherDocxReq.req, teacherDocxReq.res);
+    assert.strictEqual(teacherDocxReq.getStatus(), 200);
+    const docxHeaders = teacherDocxReq.getHeaders();
+    assert.strictEqual(docxHeaders["Content-Type"], "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    assert.ok(docxHeaders["Content-Disposition"].includes("Cifte_Minareli_Medrese.docx"));
+    assert.ok(docxHeaders["Content-Disposition"].includes(encodeURIComponent("Çifte Minareli Medrese.docx")));
+
+    const docxBuffer = teacherDocxReq.getData();
+    assert.ok(Buffer.isBuffer(docxBuffer), "Çıktı gerçek binary Buffer olmalı");
+    const docxZip = await JSZip.loadAsync(docxBuffer);
+    assert.ok(docxZip.file("word/document.xml"), "Geçerli OpenXML word/document.xml içermeli");
+    const docXml = await docxZip.file("word/document.xml").async("string");
+    assert.ok(docXml.includes("Times New Roman"), "Times New Roman yazı tipi tanımlı olmalı");
+    assert.ok(docXml.includes('w:val="24"'), "12 punto (24 half-pt) tanımlı olmalı");
+    assert.ok(docXml.includes('w:val="both"'), "İki yana yaslı hizalama olmalı");
+    assert.ok(docXml.includes('w:line="360"'), "1.5 satır aralığı tanımlı olmalı");
+    assert.ok(docXml.includes('w:after="120"'), "6 pt paragraf sonrası boşluk tanımlı olmalı");
+    assert.ok(/w:w="1190[56]"/.test(docXml) && /w:h="1683[78]"/.test(docXml), "A4 sayfa boyutu tanımlı olmalı");
+    assert.ok(docXml.includes('w:top="1417"') && docXml.includes('w:left="1417"'), "2.5 cm sayfa kenar boşlukları tanımlı olmalı");
+    assert.ok(docXml.includes("1271 yılında İlhanlı Veziri"), "Öğrencinin yazdığı metin birebir korunmalı");
+    assert.strictEqual(/Tarihi Yapının Adı|Yapım Yılı|Taslak|Kaydedildi|Ali Veli/.test(docXml), false, "Kriter başlıkları, durum etiketleri ve öğrenci adları Word belgesinde olmamalı");
+
+    // 40 eserin tamamı için toplu ayrı .docx -> ZIP testi
+    const seedParsed = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/tubitak-seed-data.json'), 'utf8'));
+    const p1All = seedParsed.projects["proje-tarih"];
+    const syntheticRecords = {};
+    p1All.items.forEach((it, idx) => {
+        syntheticRecords[`${it.id}__c1_yapi_adi`] = { content: `Özgün araştırma metni ${idx + 1}: ${it.title} (çğıöşüÇĞİÖŞÜ).` };
+    });
+    const fullZipRes = await generateAllMonumentsZipBuffer(p1All.items, p1All.criteriaList, syntheticRecords);
+    assert.strictEqual(fullZipRes.included.length, 40, "40 eserin tamamı ayrı .docx dosyası olarak üretilmeli");
+    const loadedZip = await JSZip.loadAsync(fullZipRes.buffer);
+    const zipEntries = Object.keys(loadedZip.files).filter(n => n.endsWith(".docx"));
+    assert.strictEqual(zipEntries.length, 40, "ZIP içerisinde tam 40 adet ayrı .docx dosyası olmalı");
+    assert.ok(zipEntries.includes("Divriği Ulu Camii ve Darüşşifası.docx"));
+    assert.ok(zipEntries.includes("Halil Rıfat Paşa Köprüsü.docx"));
+    console.log("   ✅ Başarılı! Gerçek .docx formatı, başlık/numara temizliği ve 40 eserin ayrı ZIP çıktısı doğrulandı.\n");
+
+    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (13/13 TEST PASSED)!");
 }
 
 runTests().catch(err => {
