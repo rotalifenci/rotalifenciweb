@@ -1713,290 +1713,575 @@ window.TUBITAK_SEED_DATA = {
     },
     "proje-siyer": {
       "id": "proje-siyer",
-      "title": "Siyer Kronolojik Araştırma Sistemi (571–632)",
+      "title": "Dijital Siyer ve Değerler Araştırma Portalı (571–632)",
       "code": "TUBITAK-2204-SIYER",
-      "badge": "TÜBİTAK 2204-B Dijital Siyer Atlası",
-      "description": "571 yılından 632 yılına kadar Peygamber Efendimiz'in (s.a.v.) hayatındaki tüm hadiselerin kronolojik zaman çizelgesi ve analitik araştırması.",
+      "badge": "TÜBİTAK 2204-B Siyer & Değerler Eğitimi",
+      "description": "Hz. Muhammed'in (s.a.v.) hayatıyla ilişkili 571–632 yılları arasındaki 62 yılın olayları, kök değerleri ve kaynakçalarının kronolojik araştırma portalı.",
       "icon": "fa-solid fa-timeline",
       "color": "from-emerald-600 via-teal-600 to-emerald-800",
       "criteriaList": [
         {
-          "key": "c1_event_name_year",
-          "title": "1. Olayın Adı ve Yılı",
-          "placeholder": "Tarihsel olayın kesin adı, miladi ve hicri yılı...",
+          "key": "c1_olay",
+          "title": "1. OLAY",
+          "placeholder": "Seçilen yılda meydana gelen siyer olayını, tarihsel gelişimini ve önemli ayrıntılarını yazınız (belirsizse kaynaklardaki farklılıkları açıklayınız)...",
           "required": true
         },
         {
-          "key": "c2_location",
-          "title": "2. Olayın Geçtiği Yer",
-          "placeholder": "Hadisenin cereyan ettiği şehir, mevki veya coğrafi koordinat...",
-          "required": true
-        },
-        {
-          "key": "c3_historical_explanation",
-          "title": "3. Olayın Tarihsel Açıklaması",
-          "placeholder": "Olayın başlangıcı, arka planı ve tarihsel bağlamı...",
-          "required": true
-        },
-        {
-          "key": "c4_development_results",
-          "title": "4. Olayın Gelişimi ve Sonuçları",
-          "placeholder": "Olay esnasında yaşananlar, taraflar ve İslam tarihindeki neticeleri...",
-          "required": true
-        },
-        {
-          "key": "c5_values",
-          "title": "5. Olayla İlişkili Değer veya Değerler",
-          "placeholder": "Adalet, merhamet, sabır, vefa, istişare, kardeşlik gibi çıkarılan kök değerler...",
+          "key": "c2_kok_deger",
+          "title": "2. KÖK DEĞER",
+          "placeholder": "Olayla bağlantılı kök değer(ler)i ve olayla ilişkisini yazınız (belirlenemiyorsa durumu açıklayınız)...",
           "required": false
         },
         {
-          "key": "c6_sources",
-          "title": "6. Kaynakça ve Belgeler",
-          "placeholder": "Kur'an ayetleri, sahih hadis kaynakları (Kütüb-i Sitte) ve klasik siyer kaynakları...",
+          "key": "c3_kaynakca",
+          "title": "3. KAYNAKÇA",
+          "placeholder": "Yazar, eser/makale adı, yayın yılı, sayfa numarası, yayınevi ve internet bağlantısını yazınız...",
           "required": true
         }
       ],
       "items": [
         {
           "id": "siyer-571",
+          "orderIndex": 1,
           "year": 571,
-          "title": "Fil Hadisesi ve Hz. Muhammed'in (s.a.v.) Dünyaya Teşrifi",
-          "location": "Mekke-i Mükerreme",
-          "summary": "Ebrehe'nin Kâbe'yi yıkma girişiminin hüsranla sonuçlanması ve 12 Rebiülevvel (20 Nisan 571) Pazartesi günü Peygamber Efendimiz'in doğumu.",
-          "criteria": {
-            "c1_event_name_year": "Peygamber Efendimiz Hz. Muhammed'in (s.a.v.) Dünyaya Teşrifi ve Fil Hadisesi (Miladi 571).",
-            "c2_location": "Mekke-i Mükerreme, Hâşimoğulları Mahallesi, Şi'b-i Ebî Tâlib civarı.",
-            "c3_historical_explanation": "Hz. Peygamber doğmadan birkaç ay önce babası Abdullah vefat etmiştir. Dedesi Abdülmuttalib tarafından 'Muhammed' ismi verilmiştir.",
-            "c4_development_results": "İnsanlığın cehalet karanlığına gömüldüğü bir dönemde son elçi dünyaya teşrif etmiş, Fil Ordusu mucizevi şekilde helak edilmiştir.",
-            "c5_values": "Merhamet, Adalet, Vefa ve Şükür.",
-            "c6_sources": "İbn Hişâm, es-Sîretü'n-Nebeviyye, I, 156-168. İbn Sa'd, et-Tabakātü'l-Kübrâ, I, 100-112. Diyanet İslam Ansiklopedisi, 'Fil Vak'ası'."
-          }
+          "title": "571 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-572",
+          "orderIndex": 2,
+          "year": 572,
+          "title": "572 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-573",
+          "orderIndex": 3,
+          "year": 573,
+          "title": "573 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-574",
+          "orderIndex": 4,
+          "year": 574,
+          "title": "574 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
         },
         {
           "id": "siyer-575",
+          "orderIndex": 5,
           "year": 575,
-          "title": "Sütanne Halime'nin Yanında Geçen Çocukluk ve Mekke'ye Dönüş",
-          "location": "Sa'doğulları Yurdu & Mekke",
-          "summary": "Mekke ikliminin ağırlığı nedeniyle havası temiz çöl bölgesinde Sa'doğulları yurdunda sütannesi Halime bint Ebî Züeyb'in himayesinde geçen 4 yıl.",
-          "criteria": {
-            "c1_event_name_year": "Sa'doğulları Yurdunda İkamet ve Şakku's-Sadr Hadisesi (Miladi 571–575).",
-            "c2_location": "Tâif yakınlarında Benî Sa'd çöl obaları.",
-            "c3_historical_explanation": "Kureyş eşrafının çocuklarını fasih Arapça öğrenmeleri ve sağlıklı büyümeleri için sahra kabilelerine emanet etme geleneğine uygun olarak Hz. Halime'ye verildi.",
-            "c4_development_results": "Beni Sa'd yurdu berekete kavuştu. Peygamber Efendimiz en saf ve duru Arapça lehçesiyle büyüdü.",
-            "c5_values": "Emanet, Anne Sevgisi, Sabır ve Şefkat.",
-            "c6_sources": "İbn İshâk, Sîretü İbn İshâk. Köksal, M. A. (2008). İslâm Tarihi (Mekke Devri)."
-          }
+          "title": "575 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-576",
+          "orderIndex": 6,
+          "year": 576,
+          "title": "576 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
         },
         {
           "id": "siyer-577",
+          "orderIndex": 7,
           "year": 577,
-          "title": "Medine Ziyareti ve Annesi Hz. Âmine'nin Ebvâ'da Vefatı",
-          "location": "Ebvâ Köyü (Mekke - Medine Yolu)",
-          "summary": "Hz. Âmine'nin eşinin kabrini ve akrabalarını ziyaret için gittiği Yesrib (Medine) dönüşünde Ebvâ'da vefatı.",
-          "criteria": {
-            "c1_event_name_year": "Hz. Âmine'nin Vefatı ve Ebvâ'da Defni (Miladi 577, Efendimiz 6 yaşında).",
-            "c2_location": "Ebvâ köyü (Mekke ile Medine arasındaki konak yeri).",
-            "c3_historical_explanation": "Hz. Âmine, sadık hizmetkâr Ümmü Eymen ile birlikte yetim oğlunu babasının kabrine götürdü. Dönüş yolunda hastalanarak Ebvâ'da vefat etti.",
-            "c4_development_results": "Sevgili Peygamberimiz hem öksüz hem yetim kaldı. Ümmü Eymen onu Mekke'ye getirip dedesi Abdülmuttalib'e teslim etti.",
-            "c5_values": "Sabır, Metanet, Vefa ve Anne Hakkı.",
-            "c6_sources": "İbn Sa'd, et-Tabakāt, I, 116. İbnü'l-Esîr, el-Kâmil fi't-Târîh."
-          }
+          "title": "577 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-578",
+          "orderIndex": 8,
+          "year": 578,
+          "title": "578 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
         },
         {
           "id": "siyer-579",
+          "orderIndex": 9,
           "year": 579,
-          "title": "Dedesi Abdülmuttalib'in Vefatı ve Amcası Ebû Tâlib'in Himayesi",
-          "location": "Mekke-i Mükerreme",
-          "summary": "Kureyş'in reisi olan dedesi Abdülmuttalib'in 8 yaşında vefat etmesi üzerine sevgili torununu koruma görevini amcası Ebû Tâlib'e vasiyet etmesi.",
-          "criteria": {
-            "c1_event_name_year": "Abdülmuttalib'in Vefatı ve Ebû Tâlib'in Yanına Geçiş (Miladi 579).",
-            "c2_location": "Mekke-i Mükerreme.",
-            "c3_historical_explanation": "Abdülmuttalib vefat döşeğindeyken oğulları arasından en şefkatli ve cömert olan Ebû Tâlib'i çağırarak yeğenini emanet etti.",
-            "c4_development_results": "Ebû Tâlib ve eşi Fâtıma bint Esed, Efendimiz'i öz çocuklarından üstün tutarak büyüttü.",
-            "c5_values": "Akrabalık Bağı (Sıla-i Rahim), Ahde Vefa ve Fedakârlık.",
-            "c6_sources": "Belâzürî, Ensâbü'l-Eşrâf. Sarıçam, İ. (2004). Hz. Muhammed ve Evrensel Mesajı."
-          }
+          "title": "579 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-580",
+          "orderIndex": 10,
+          "year": 580,
+          "title": "580 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-581",
+          "orderIndex": 11,
+          "year": 581,
+          "title": "581 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
         },
         {
           "id": "siyer-582",
+          "orderIndex": 12,
           "year": 582,
-          "title": "Şam Ticaret Seferi ve Râhip Bahîrâ Olayı",
-          "location": "Busra (Güney Suriye)",
-          "summary": "12 yaşındayken amcası Ebû Tâlib ile katıldığı Şam kervanında Hristiyan din bilgini Râhip Bahîrâ'nın peygamberlik alametlerini teşhis etmesi.",
-          "criteria": {
-            "c1_event_name_year": "Busra Ticaret Seyahati ve Râhip Bahîrâ Hadisesi (Miladi 582).",
-            "c2_location": "Busra kasabası (Şam ticaret güzergâhında menzil).",
-            "c3_historical_explanation": "Kervanı gölgeleyen bir bulutu ve ağaçların secde edercesine eğildiğini gören Bahîrâ, kervana ziyafet verdi ve çocuğun iki küreği arasındaki nübüvvet mührünü gördü.",
-            "c4_development_results": "Bahîrâ'nın 'Onu Şam'daki Yahudilerden koru' tavsiyesi üzerine Ebû Tâlib mallarını Busra'da satarak derhal Mekke'ye döndü.",
-            "c5_values": "Firasat, İlahi Koruma ve Tedbir.",
-            "c6_sources": "Tirmizî, Menâkıb, 3. İbn Hişâm, es-Sîre, I, 180-183."
-          }
+          "title": "582 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-583",
+          "orderIndex": 13,
+          "year": 583,
+          "title": "583 Yılı",
+          "assignedStudentId": "stu3-humeyra",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-584",
+          "orderIndex": 14,
+          "year": 584,
+          "title": "584 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-585",
+          "orderIndex": 15,
+          "year": 585,
+          "title": "585 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-586",
+          "orderIndex": 16,
+          "year": 586,
+          "title": "586 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-587",
+          "orderIndex": 17,
+          "year": 587,
+          "title": "587 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-588",
+          "orderIndex": 18,
+          "year": 588,
+          "title": "588 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-589",
+          "orderIndex": 19,
+          "year": 589,
+          "title": "589 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-590",
+          "orderIndex": 20,
+          "year": 590,
+          "title": "590 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
         },
         {
           "id": "siyer-591",
+          "orderIndex": 21,
           "year": 591,
-          "title": "Ficâr Savaşı ve Hilfü'l-Fudûl (Erdemliler İttifakı)",
-          "location": "Mekke, Abdullah bin Cüd'ân'ın Evi",
-          "summary": "Zulme ve haksızlığa uğrayan yabancı tüccarları korumak amacıyla kurulan ilk insan hakları ve sivil savunma cemiyetine Hz. Muhammed'in katılımı.",
-          "criteria": {
-            "c1_event_name_year": "Hilfü'l-Fudûl (Erdemliler Antlaşması) Kuruluşu (Miladi 591, 20 yaşında).",
-            "c2_location": "Mekke, Abdullah b. Cüd'ân'ın evi.",
-            "c3_historical_explanation": "Yemenli bir tüccarın malını gasp eden Âs bin Vâil'e karşı Mekke'nin ileri gelen kabileleri toplanarak 'Mekke'de yerli ya da yabancı kime zulmedilirse hakkı alınıncaya kadar mazlumun yanında olacağız' diye yemin ettiler.",
-            "c4_development_results": "Peygamberimiz peygamberliğinden sonra 'Bugün de böyle bir cemiyete çağrılsam yine katılırım' buyurarak adaletin evrenselliğini tescillemiştir.",
-            "c5_values": "Adalet, Hak Arama, Mazlumun Yanında Olma, Sivil Dayanışma.",
-            "c6_sources": "Ahmed b. Hanbel, el-Müsned, I, 190. TDV İslâm Ansiklopedisi, 'Hilfü'l-Fudûl' maddesi."
-          }
+          "title": "591 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-592",
+          "orderIndex": 22,
+          "year": 592,
+          "title": "592 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-593",
+          "orderIndex": 23,
+          "year": 593,
+          "title": "593 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-594",
+          "orderIndex": 24,
+          "year": 594,
+          "title": "594 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
         },
         {
           "id": "siyer-595",
+          "orderIndex": 25,
           "year": 595,
-          "title": "Hz. Hatice ile Evliliği ve Muhammedü'l-Emîn Vasfı",
-          "location": "Mekke-i Mükerreme",
-          "summary": "Güvenilirliği, doğruluğu ve ahlakı sebebiyle Kureyş'in 'El-Emîn' unvanını verdiği Efendimiz'in Hz. Hatice Validemiz ile evlenmesi.",
-          "criteria": {
-            "c1_event_name_year": "Hz. Hatice ile Evlilik (Miladi 595, Efendimiz 25, Hz. Hatice 40 veya 28 yaşında).",
-            "c2_location": "Mekke-i Mükerreme, Hz. Hatice'nin evi.",
-            "c3_historical_explanation": "Hz. Hatice'nin kervanını Şam'a götüren Efendimiz'in dürüstlüğüne ve kölesi Meysere'nin tanıklık ettiği güzel ahlakına hayran olan Hz. Hatice evlilik teklifinde bulundu.",
-            "c4_development_results": "25 yıl süren huzurlu bir yuva kuruldu; Kāsım, Abdullah, Zeyneb, Rukıyye, Ümmü Külsûm ve Fâtıma dünyaya geldi.",
-            "c5_values": "Sadakat, Dürüstlük, Aile Sevgisi, Güven (Emanet).",
-            "c6_sources": "Buhârî, Bed'ü'l-Vahy, 3. İbn Hişâm, I, 199-203."
-          }
+          "title": "595 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-596",
+          "orderIndex": 26,
+          "year": 596,
+          "title": "596 Yılı",
+          "assignedStudentId": "stu3-ecrin",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-597",
+          "orderIndex": 27,
+          "year": 597,
+          "title": "597 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-598",
+          "orderIndex": 28,
+          "year": 598,
+          "title": "598 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-599",
+          "orderIndex": 29,
+          "year": 599,
+          "title": "599 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-600",
+          "orderIndex": 30,
+          "year": 600,
+          "title": "600 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-601",
+          "orderIndex": 31,
+          "year": 601,
+          "title": "601 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-602",
+          "orderIndex": 32,
+          "year": 602,
+          "title": "602 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-603",
+          "orderIndex": 33,
+          "year": 603,
+          "title": "603 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-604",
+          "orderIndex": 34,
+          "year": 604,
+          "title": "604 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
         },
         {
           "id": "siyer-605",
+          "orderIndex": 35,
           "year": 605,
-          "title": "Kâbe Hakemliği ve Hacerü'l-Esved'in Yerine Konulması",
-          "location": "Kâbe-i Muazzama",
-          "summary": "Kâbe'nin tamirinde kabileler arasında kanlı bir savaşa yol açacak Hacerü'l-Esved taşını koyma krizini dâhiyane adaletiyle çözmesi.",
-          "criteria": {
-            "c1_event_name_year": "Kâbe Tamiri ve Kâbe Hakemliği Hadisesi (Miladi 605, 35 yaşında).",
-            "c2_location": "Kâbe-i Muazzama avlusu.",
-            "c3_historical_explanation": "Sel ve yangınla hasar gören Kâbe yeniden inşa edildi. Hacerü'l-Esved'i yerine yerleştirme şerefi için kabileler kılıç çekti. Kâbe kapısından ilk girenin hakem tayin edilmesine karar verildi; giren 'El-Emîn' Muhammed oldu.",
-            "c4_development_results": "Hırkasını yere sererek taşı üzerine koydurdu, her kabile reisine hırkanın bir ucundan tutturup taşı birlikte yükselttiler. Kan dökülmesi önlendi.",
-            "c5_values": "Barış, İstişare, Adalet, Kriz Çözme Kabiliyeti ve Tarafsızlık.",
-            "c6_sources": "İbn Hişâm, I, 204-210. Taberî, Târîhu'l-Ümem ve'l-Mülûk."
-          }
+          "title": "605 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-606",
+          "orderIndex": 36,
+          "year": 606,
+          "title": "606 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-607",
+          "orderIndex": 37,
+          "year": 607,
+          "title": "607 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-608",
+          "orderIndex": 38,
+          "year": 608,
+          "title": "608 Yılı",
+          "assignedStudentId": "stu3-zeynep",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-609",
+          "orderIndex": 39,
+          "year": 609,
+          "title": "609 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
         },
         {
           "id": "siyer-610",
+          "orderIndex": 40,
           "year": 610,
-          "title": "Hira Mağarası ve İlk Vahiy: 'İkra!' (Oku!)",
-          "location": "Nur Dağı, Hira Mağarası",
-          "summary": "Kadir Gecesi'nde Cebrail Aleyhisselam'ın Alak Suresi'nin ilk beş ayetini indirmesi ve son peygamberlik görevinin resmen başlaması.",
-          "criteria": {
-            "c1_event_name_year": "İlk Vahyin İnişi ve Nübüvvetin Başlangıcı (Miladi 610, Ramazan ayı, 40 yaşında).",
-            "c2_location": "Mekke'nin kuzeydoğusundaki Cebel-i Nûr (Nur Dağı), Hira Mağarası.",
-            "c3_historical_explanation": "Mekke'deki ahlaki çöküntüden uzaklaşarak tefekküre çekildiği Hira'da Cebrail geldi ve 'Oku! Yaratan Rabbinin adıyla oku!' emrini tebliğ etti.",
-            "c4_development_results": "İslam çağının kapısı aralandı. Hz. Hatice ve amcasının oğlu Varaka bin Nevfel hadiseyi doğruladı ve ilk Müslüman Hz. Hatice oldu.",
-            "c5_values": "İlim, Tefekkür, Hakikati Arama, Vahye İtaat.",
-            "c6_sources": "Buhârî, Bed'ü'l-Vahy, 1. Müslim, Îmân, 252."
-          }
+          "title": "610 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-611",
+          "orderIndex": 41,
+          "year": 611,
+          "title": "611 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-612",
+          "orderIndex": 42,
+          "year": 612,
+          "title": "612 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-613",
+          "orderIndex": 43,
+          "year": 613,
+          "title": "613 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-614",
+          "orderIndex": 44,
+          "year": 614,
+          "title": "614 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
         },
         {
           "id": "siyer-615",
+          "orderIndex": 45,
           "year": 615,
-          "title": "Habeşistan'a Birinci Hicret ve Necaşî'nin Huzurunda Cafer'in Tebliği",
-          "location": "Aksum Krallığı (Habeşistan)",
-          "summary": "Müşriklerin dayanılmaz işkencelerine maruz kalan ilk Müslümanların adalet timsali Hristiyan Kral Necaşî Ashame'ye sığınması.",
-          "criteria": {
-            "c1_event_name_year": "Habeşistan'a Hicretler (Miladi 615).",
-            "c2_location": "Kızıldeniz üzerinden Habeşistan (bugünkü Etiyopya).",
-            "c3_historical_explanation": "Hz. Osman ve eşi Hz. Rukıyye'nin de aralarında bulunduğu kafile Habeşistan'a gitti. Cafer bin Ebî Tâlib Necaşî'nin sarayında Meryem Suresi'ni okudu.",
-            "c4_development_results": "Necaşî Müslümanları müşriklere teslim etmedi; inanç özgürlüğünü korudu. İslamiyet ilk kez Arap Yarımadası dışına ulaştı.",
-            "c5_values": "İnanç Hürriyeti, Hicret Fedakârlığı, Adaletli Yöneticiye Sığınma.",
-            "c6_sources": "İbn Hişâm, I, 321-341. Ahmed b. Hanbel, Müsned, V, 290."
-          }
+          "title": "615 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-616",
+          "orderIndex": 46,
+          "year": 616,
+          "title": "616 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-617",
+          "orderIndex": 47,
+          "year": 617,
+          "title": "617 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-618",
+          "orderIndex": 48,
+          "year": 618,
+          "title": "618 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-619",
+          "orderIndex": 49,
+          "year": 619,
+          "title": "619 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
         },
         {
           "id": "siyer-620",
+          "orderIndex": 50,
           "year": 620,
-          "title": "Hüzün Yılı (Âmü'l-Hüzn), Tâif Seferi ve İsrâ-Miraç Mucizesi",
-          "location": "Mekke, Tâif & Mescid-i Aksâ - Semavat",
-          "summary": "Hz. Hatice ve Ebû Tâlib'in peş peşe vefatı, Tâif'teki taşlanmaya karşı 'Rabbim onlar bilmiyorlar' duası ve Kudüs ile göklere yükseliş.",
-          "criteria": {
-            "c1_event_name_year": "Hüzün Yılı, Tâif Yolculuğu ve İsrâ-Mi'râc Mucizesi (Miladi 620).",
-            "c2_location": "Mekke, Tâif vadisi, Mescid-i Aksâ (Kudüs) ve Sidretü'l-Müntehâ.",
-            "c3_historical_explanation": "İki büyük hamisinin vefatı sonrası Tâif'e giden Efendimiz taşlandı. Ardından Mescid-i Haram'dan Aksa'ya gece yürüyüşü ve Miraç gerçekleşti.",
-            "c4_development_results": "5 vakit namaz farz kılındı, Bakara Suresi'nin son ayetleri indirildi ve ümmetine şefaat müjdesi verildi.",
-            "c5_values": "Affedicilik, Dua, Sabır, Yüce Makamlara Teslimiyet ve Namaz Şuuru.",
-            "c6_sources": "İsra Suresi 17/1. Necm Suresi 53/1-18. Buhârî, Salât, 1."
-          }
+          "title": "620 Yılı",
+          "assignedStudentId": "stu3-yusuf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-621",
+          "orderIndex": 51,
+          "year": 621,
+          "title": "621 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
         },
         {
           "id": "siyer-622",
+          "orderIndex": 52,
           "year": 622,
-          "title": "Yesrib'e Büyük Hicret, Sevr Mağarası ve Mescid-i Nebevî",
-          "location": "Mekke - Medine (Yesrib)",
-          "summary": "Akabe biatlarının ardından Hz. Ebû Bekir ile Sevr Mağarası üzerinden Medine'ye hicret ve İslam Devleti'nin kuruluşu.",
-          "criteria": {
-            "c1_event_name_year": "Medine'ye Hicret ve Hicri Takvimin Başlangıcı (Miladi 622).",
-            "c2_location": "Mekke, Sevr Mağarası, Kubâ Köyü ve Medine-i Münevvere.",
-            "c3_historical_explanation": "Müşriklerin suikast planı üzerine Hz. Ali yatağına yattı, Efendimiz ve Hz. Ebû Bekir Sevr'e sığındı. Kuba'da ilk mescid yapıldı; Medine sevinçle karşıladı.",
-            "c4_development_results": "Ensar ile Muhacir kardeş ilan edildi (Muâhât), Medine Sözleşmesi ile ilk anayasa yapıldı, Mescid-i Nebevî inşa edildi.",
-            "c5_values": "Kardeşlik, Paylaşma, Birlik, Tevekkül ve Planlama.",
-            "c6_sources": "Tevbe Suresi 9/40. Buhârî, Menâkıbü'l-Ensâr, 45."
-          }
+          "title": "622 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-623",
+          "orderIndex": 53,
+          "year": 623,
+          "title": "623 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
         },
         {
           "id": "siyer-624",
+          "orderIndex": 54,
           "year": 624,
-          "title": "Bedir Zaferi ve Ramazan Orucu Farzı",
-          "location": "Bedir Kuyuları Civarı",
-          "summary": "İslam ordusunun üç katı büyüklükteki Kureyş müşrik ordusuna karşı kazandığı ilk büyük zafer ve hakkın batıla galebesi.",
-          "criteria": {
-            "c1_event_name_year": "Bedir Gazvesi (Hicri 2 / Miladi Mart 624).",
-            "c2_location": "Medine'nin 130 km güneybatısındaki Bedir mevkii.",
-            "c3_historical_explanation": "313 kişilik mücahit ordusu, Ebû Cehil komutasındaki 1000 kişilik tam donanımlı Kureyş ordusunu Allah'ın meleklerle yardımı sayesinde mağlup etti.",
-            "c4_development_results": "İslamiyet Arap Yarımadası'nda ciddiye alınan bir güç haline geldi. Esirler 10 Müslümana okuma-yazma öğretmeleri karşılığı serbest bırakıldı.",
-            "c5_values": "İman, Dua, İstişare, Eğitime Verilen Kıymet, Esire Merhamet.",
-            "c6_sources": "Âl-i İmrân Suresi 3/123-126. Enfâl Suresi 8/9-19. Müslim, Cihâd, 58."
-          }
+          "title": "624 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-625",
+          "orderIndex": 55,
+          "year": 625,
+          "title": "625 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-626",
+          "orderIndex": 56,
+          "year": 626,
+          "title": "626 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-627",
+          "orderIndex": 57,
+          "year": 627,
+          "title": "627 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
         },
         {
           "id": "siyer-628",
+          "orderIndex": 58,
           "year": 628,
-          "title": "Hudeybiye Barış Antlaşması ve Hükümdarlara İslâm'a Davet Mektupları",
-          "location": "Hudeybiye & Medine",
-          "summary": "Görünüşte aleyhte gibi duran ancak Kur'an'ın 'Feth-i Mübîn' (Açık bir fetih) dediği 10 yıllık barış antlaşması ve cihan hükümdarlarına mektuplar.",
-          "criteria": {
-            "c1_event_name_year": "Hudeybiye Barışı ve Bey'atü'r-Rıdvân (Hicri 6 / Miladi 628).",
-            "c2_location": "Mekke yakınlarındaki Hudeybiye kuyusu.",
-            "c3_historical_explanation": "Umre için yola çıkan Müslümanların yolu kesilince kan dökülmeden 10 yıllık barış yapıldı. Barış ortamında Bizans, Sasani, Mısır ve Habeş hükümdarlarına davet elçileri gönderildi.",
-            "c4_development_results": "İslam barış ortamında hızla yayıldı; Halid bin Velid ve Amr bin Âs gibi askerî dehalar Müslüman oldu.",
-            "c5_values": "Diplomasi, Barış, Ahde Sadakat, İleri Görüşlülük.",
-            "c6_sources": "Fetih Suresi 48/1-18. Buhârî, Şurût, 15."
-          }
+          "title": "628 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-629",
+          "orderIndex": 59,
+          "year": 629,
+          "title": "629 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
         },
         {
           "id": "siyer-630",
+          "orderIndex": 60,
           "year": 630,
-          "title": "Mekke'nin Fethi ve Kâbe'nin Putlardan Temizlenmesi",
-          "location": "Mekke-i Mükerreme",
-          "summary": "Kureyş'in anlaşmayı bozması üzerine 10.000 kişilik orduyla kan dökülmeden gerçekleşen fetih ve 'Bugün size kınama yoktur, hepiniz serbestsiniz' genel affı.",
-          "criteria": {
-            "c1_event_name_year": "Mekke'nin Fethi (Hicri 8 / Miladi Ocak 630).",
-            "c2_location": "Mekke-i Mükerreme ve Kâbe-i Muazzama.",
-            "c3_historical_explanation": "Peygamber Efendimiz devesinin üzerinde şükürden başı eğik vaziyette Mekke'ye girdi. 360 put devrildi, genel af ilan edildi.",
-            "c4_development_results": "Kâbe tevhide kavuştu, Mekke halkı kitleler halinde İslam'a girdi. İntikam yerine engin bir bağışlama örneği sergilendi.",
-            "c5_values": "Af, Alçakgönüllülük (Tevazu), Hakkaniyet, Şefkat.",
-            "c6_sources": "İsrâ Suresi 17/81. Nasr Suresi 110/1-3. Buhârî, Meğāzî, 48."
-          }
+          "title": "630 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        },
+        {
+          "id": "siyer-631",
+          "orderIndex": 61,
+          "year": 631,
+          "title": "631 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
         },
         {
           "id": "siyer-632",
+          "orderIndex": 62,
           "year": 632,
-          "title": "Veda Haccı, Veda Hutbesi ve Refîk-i A'lâ'ya Vuslat",
-          "location": "Arafat Vadisi & Medine-i Münevvere",
-          "summary": "120.000 sahabiye irad edilen evrensel insan hakları beyannamesi mahiyetindeki Veda Hutbesi ve 13 Rebiülevvel (8 Haziran 632) tarihinde vefatı.",
-          "criteria": {
-            "c1_event_name_year": "Veda Haccı, Veda Hutbesi ve İrtihâl (Hicri 10-11 / Miladi 632).",
-            "c2_location": "Arafat, Müzdelife, Mina ve Medine-i Münevvere (Hücre-i Saâdet).",
-            "c3_historical_explanation": "Efendimiz Arafat'ta 'Ey insanlar! Kanlarınız, mallarınız, canlarınız mukaddestir. Arap'ın Arap olmayana üstünlüğü yoktur; üstünlük ancak takva iledir' buyurdu. Medine'de Hz. Âişe'nin odasında vefat etti.",
-            "c4_development_results": "Din kemale erdi (Maide Suresi 3. ayet). Hz. Ebû Bekir 'Kim Muhammed'e tapıyorsa bilsin ki o vefat etmiştir; kim Allah'a ibadet ediyorsa bilsin ki O diridir' diyerek ümmeti teskin etti.",
-            "c5_values": "Evrensel İnsan Hakları, Eşitlik, Kadın Hakları, Emanet Bilinci, Vefa.",
-            "c6_sources": "Müslim, Hac, 147. Ebû Dâvûd, Menâsik, 56. Tirmizî, Tefsîr, 9."
-          }
+          "title": "632 Yılı",
+          "assignedStudentId": "stu3-asaf",
+          "criteria": {}
+        }
+      ],
+      "studentTeam": [
+        {
+          "id": "stu3-humeyra",
+          "name": "Hümeyra BULUT",
+          "groupLabel": "1. GRUP",
+          "range": [
+            571,
+            583
+          ]
+        },
+        {
+          "id": "stu3-ecrin",
+          "name": "Ecrin TEMEL",
+          "groupLabel": "2. GRUP",
+          "range": [
+            584,
+            596
+          ]
+        },
+        {
+          "id": "stu3-zeynep",
+          "name": "Zeynep GÜL",
+          "groupLabel": "3. GRUP",
+          "range": [
+            597,
+            608
+          ]
+        },
+        {
+          "id": "stu3-yusuf",
+          "name": "Yusuf Aras KUZU",
+          "groupLabel": "4. GRUP",
+          "range": [
+            609,
+            620
+          ]
+        },
+        {
+          "id": "stu3-asaf",
+          "name": "Asaf HAZIRBULAN",
+          "groupLabel": "5. GRUP",
+          "range": [
+            621,
+            632
+          ]
         }
       ]
     }

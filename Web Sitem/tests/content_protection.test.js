@@ -268,4 +268,30 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.equal(p2.items[97].orderIndex, 98);
   assert.equal(p2.items[97].title, "ALİ KUŞÇU");
   assert.ok(tubitakJs.includes("BİLİM İNSANININ ADI") && tubitakJs.includes("Tüm Bilim İnsanlarını Word Olarak İndir"));
+
+  // Proje 3 (Siyer ve Değerler Eğitimi 571–632) koruması
+  const p3 = seedJson.projects["proje-siyer"];
+  assert.ok(p3, "proje-siyer bulunmalı");
+  assert.equal(p3.items.length, 62, "Proje 3 listesinde 571–632 arası tam 62 yıl bulunmalı");
+  assert.equal(p3.criteriaList.length, 3, "Proje 3 formunda tam 3 kriter bulunmalı (1. OLAY, 2. KÖK DEĞER, 3. KAYNAKÇA)");
+  assert.deepEqual(p3.criteriaList.map(c => c.title), ["1. OLAY", "2. KÖK DEĞER", "3. KAYNAKÇA"]);
+  assert.equal(p3.studentTeam.length, 5, "Proje 3 ekibi 5 öğrenciden oluşmalı");
+  assert.deepEqual(p3.studentTeam.map(s => s.name), [
+    "Hümeyra BULUT",
+    "Ecrin TEMEL",
+    "Zeynep GÜL",
+    "Yusuf Aras KUZU",
+    "Asaf HAZIRBULAN"
+  ]);
+  assert.equal(p3.items.filter(it => it.assignedStudentId === "stu3-humeyra").length, 13);
+  assert.equal(p3.items.filter(it => it.assignedStudentId === "stu3-ecrin").length, 13);
+  assert.equal(p3.items.filter(it => it.assignedStudentId === "stu3-zeynep").length, 12);
+  assert.equal(p3.items.filter(it => it.assignedStudentId === "stu3-yusuf").length, 12);
+  assert.equal(p3.items.filter(it => it.assignedStudentId === "stu3-asaf").length, 12);
+  assert.equal(p3.items.filter(it => !it.assignedStudentId).length, 0);
+  assert.equal(new Set(p3.items.map(it => it.id)).size, 62);
+  assert.equal(p3.items[0].year, 571);
+  assert.equal(p3.items[61].year, 632);
+  assert.ok(p3.items.every(it => Object.keys(it.criteria || {}).length === 0), "Hazır uydurma olay içeriği olmamalı");
+  assert.ok(tubitakJs.includes("SİYER ARAŞTIRMA EKİBİ") && tubitakJs.includes("Tüm Yılları Word Olarak İndir"));
 });

@@ -4,7 +4,9 @@ const { verifyToken } = require('./tubitak-auth.js');
 const {
     buildAsciiFallbackFilename,
     generateMonumentDocxBuffer,
-    generateAllMonumentsZipBuffer
+    generateAllMonumentsZipBuffer,
+    generateSiyerYearDocxBuffer,
+    generateAllSiyerYearsZipBuffer
 } = require('./_tubitak-docx.js');
 
 /**
@@ -73,11 +75,12 @@ function getEffectiveAssignedStudentId(store, projectId, itemId) {
         itemId = projectId;
         projectId = 'proje-tarih';
     }
+    const baseId = projectId === 'proje-siyer' ? String(itemId || '').split('__ev_')[0] : itemId;
     const metaKey = `${projectId}_assignments`;
-    const custom = store?.itemsMeta?.[metaKey]?.[itemId]?.assignedStudentId;
+    const custom = store?.itemsMeta?.[metaKey]?.[baseId]?.assignedStudentId;
     if (custom) return custom;
     const { itemMap } = getProjectSeed(projectId);
-    return itemMap[itemId] || null;
+    return itemMap[baseId] || null;
 }
 
 function readLocalStore() {
@@ -157,7 +160,7 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ ok: false, error: "Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir." });
                 }
 
-                const exportProjId = (reqProj === "proje-bilim" || reqProj === "proje-tarih") ? reqProj : "proje-tarih";
+                const exportProjId = (reqProj === "proje-bilim" || reqProj === "proje-tarih" || reqProj === "proje-siyer") ? reqProj : "proje-tarih";
                 const parsedSeed = fs.existsSync(seedDataPath) ? JSON.parse(fs.readFileSync(seedDataPath, 'utf8')) : null;
                 const projObj = parsedSeed?.projects?.[exportProjId];
                 if (!projObj || !Array.isArray(projObj.items) || !Array.isArray(projObj.criteriaList)) {
@@ -198,11 +201,18 @@ module.exports = async function handler(req, res) {
 
                 if (exportDocxMode === "single") {
                     const targetItemId = String(req.query.itemId || '').trim();
-                    const item = projObj.items.find((it) => it.id === targetItemId);
+                    const item = projObj.items.find((it) => it.id === targetItemId || (exportProjId === "proje-siyer" && String(it.year) === targetItemId));
                     if (!item) {
                         return res.status(404).json({ ok: false, error: "İstenen araştırma kaydı bulunamadı." });
                     }
-                    const docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords);
+                    let docxResult;
+                    if (exportProjId === "proje-siyer") {
+                        const extraIds = (store.itemsMeta && store.itemsMeta['proje-siyer_events'] && store.itemsMeta['proje-siyer_events'][item.id]) || [];
+                        const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)];
+                        docxResult = await generateSiyerYearDocxBuffer(item, eventIds, projObj.criteriaList, mergedRecords);
+                    } else {
+                        docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords);
+                    }
                     if (!docxResult) {
                         return res.status(404).json({ ok: false, error: "Bu kayıt için veritabanında kaydedilmiş araştırma metni bulunamadı." });
                     }
@@ -215,8 +225,18 @@ module.exports = async function handler(req, res) {
 
                 const zipName = exportProjId === "proje-bilim"
                     ? "Matematik_Tarihinde_Bilim_Insanlari_Arastirma_Metinleri.zip"
-                    : "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip";
-                const zipResult = await generateAllMonumentsZipBuffer(projObj.items, projObj.criteriaList, mergedRecords, zipName);
+                    : (exportProjId === "proje-siyer"
+                        ? "Siyer_571_632_Arastirma_Metinleri.zip"
+                        : "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip");
+                const zipResult = exportProjId === "proje-siyer"
+                    ? await generateAllSiyerYearsZipBuffer(
+                        projObj.items,
+                        (store.itemsMeta && store.itemsMeta['proje-siyer_events']) || {},
+                        projObj.criteriaList,
+                        mergedRecords,
+                        zipName
+                    )
+                    : await generateAllMonumentsZipBuffer(projObj.items, projObj.criteriaList, mergedRecords, zipName);
                 if (!zipResult.buffer) {
                     return res.status(404).json({ ok: false, error: "Hiçbir kayıt için veritabanında kaydedilmiş araştırma metni bulunamadı." });
                 }
@@ -224,6 +244,9 @@ module.exports = async function handler(req, res) {
                 res.setHeader("Content-Disposition", `attachment; filename="${zipResult.filename}"`);
                 res.setHeader("X-Export-Included-Count", String(zipResult.included.length));
                 res.setHeader("X-Export-Skipped-Count", String(zipResult.skipped.length));
+                if (zipResult.skipped.length > 0) {
+                    res.setHeader("X-Export-Skipped-Years", zipResult.skipped.slice(0, 65).join(', '));
+                }
                 return res.status(200).send(zipResult.buffer);
             }
 
@@ -252,10 +275,12 @@ module.exports = async function handler(req, res) {
             const projAssignments = reqProj === "all"
                 ? {
                     ...((store.itemsMeta && store.itemsMeta['proje-tarih_assignments']) || {}),
-                    ...((store.itemsMeta && store.itemsMeta['proje-bilim_assignments']) || {})
+                    ...((store.itemsMeta && store.itemsMeta['proje-bilim_assignments']) || {}),
+                    ...((store.itemsMeta && store.itemsMeta['proje-siyer_assignments']) || {})
                 }
                 : ((store.itemsMeta && store.itemsMeta[`${reqProj}_assignments`]) || {});
 
+            const includeSiyerMeta = reqProj === "all" || reqProj === "proje-siyer";
             return res.status(200).json({
                 ok: true,
                 projectId: reqProj,
@@ -263,7 +288,9 @@ module.exports = async function handler(req, res) {
                 revisions: projRevisions.slice(-100), // Son 100 revizyon
                 sources: projSources,
                 feedbacks: projFeedbacks,
-                assignments: projAssignments
+                assignments: projAssignments,
+                siyerEvents: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_events']) || {}) : {},
+                siyerYearFlags: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_year_flags']) || {}) : {}
             });
         } catch (err) {
             return res.status(500).json({ ok: false, error: "Kayıtlar yüklenemedi: " + err.message });
@@ -294,8 +321,8 @@ module.exports = async function handler(req, res) {
             const recordKey = `${itemId}__${criterionKey}`;
             const store = readLocalStore();
 
-            // Güvenlik: Proje 1 ve Proje 2'de tanımlı öğrenci yalnızca kendi atanmış kayıtlarını düzenleyebilir
-            if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
+            // Güvenlik: Proje 1, Proje 2 ve Proje 3'te tanımlı öğrenci yalnızca kendi atanmış kayıtlarını düzenleyebilir
+            if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
                 const sessionStuId = resolveSessionStudentId(session, projectId);
                 const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                 if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
@@ -465,7 +492,7 @@ module.exports = async function handler(req, res) {
 
             // B) İncelemeye Gönder (Öğrenci)
             if (action === "submit_review") {
-                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
@@ -473,7 +500,8 @@ module.exports = async function handler(req, res) {
                     }
                 }
                 for (const [k, rec] of Object.entries(store.records)) {
-                    if (rec.itemId === itemId && rec.projectId === projectId) {
+                    const isMatchingItem = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
+                    if (isMatchingItem && rec.projectId === projectId) {
                         rec.status = "in_review";
                         rec.updatedAt = now;
                     }
@@ -487,7 +515,7 @@ module.exports = async function handler(req, res) {
                 if (userRole !== "teacher") {
                     return res.status(403).json({ ok: false, error: "Görev atama değişikliğini yalnızca yetkili öğretmen yapabilir." });
                 }
-                const targetProjId = (projectId === "proje-bilim" || projectId === "proje-tarih") ? projectId : "proje-tarih";
+                const targetProjId = (projectId === "proje-bilim" || projectId === "proje-tarih" || projectId === "proje-siyer") ? projectId : "proje-tarih";
                 const { assignedStudentId } = req.body || {};
                 const { students, itemMap } = getProjectSeed(targetProjId);
                 if (!itemId || !Object.prototype.hasOwnProperty.call(itemMap, itemId)) {
@@ -523,7 +551,8 @@ module.exports = async function handler(req, res) {
                 const targetStatus = validStatuses.includes(status) ? status : "approved";
 
                 for (const [k, rec] of Object.entries(store.records)) {
-                    if (rec.itemId === itemId && (projectId === "all" || rec.projectId === projectId)) {
+                    const isMatchingItem = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
+                    if (isMatchingItem && (projectId === "all" || rec.projectId === projectId)) {
                         rec.status = targetStatus;
                         rec.updatedAt = now;
                     }
@@ -547,6 +576,164 @@ module.exports = async function handler(req, res) {
                     ok: true,
                     message: targetStatus === "approved" ? "Araştırma başarıyla onaylandı!" : "Düzeltme talebi ve geri bildirim öğrenciye iletildi.",
                     status: targetStatus
+                });
+            }
+
+            // D) Proje 3 (Siyer) Yıla Yeni Olay Ekleme
+            if (action === "add_siyer_event") {
+                const yearId = String(req.body?.yearId || itemId || '').trim();
+                const { itemMap } = getProjectSeed('proje-siyer');
+                if (!yearId || !Object.prototype.hasOwnProperty.call(itemMap, yearId)) {
+                    return res.status(404).json({ ok: false, error: "Olay eklenecek yıl bulunamadı." });
+                }
+                if (userRole !== "teacher") {
+                    const sessionStuId = resolveSessionStudentId(session, 'proje-siyer');
+                    const assignedStuId = getEffectiveAssignedStudentId(store, 'proje-siyer', yearId);
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                        return res.status(403).json({ ok: false, error: "Bu yıl başka bir öğrenciye atanmıştır." });
+                    }
+                }
+                if (!store.itemsMeta) store.itemsMeta = {};
+                if (!store.itemsMeta['proje-siyer_events']) store.itemsMeta['proje-siyer_events'] = {};
+                const list = Array.isArray(store.itemsMeta['proje-siyer_events'][yearId])
+                    ? [...store.itemsMeta['proje-siyer_events'][yearId]]
+                    : [];
+                let nextIdx = 2;
+                while (list.includes(`${yearId}__ev_${nextIdx}`)) {
+                    nextIdx++;
+                }
+                const newEventId = `${yearId}__ev_${nextIdx}`;
+                list.push(newEventId);
+                store.itemsMeta['proje-siyer_events'][yearId] = list;
+                writeLocalStore(store);
+                return res.status(200).json({
+                    ok: true,
+                    eventId: newEventId,
+                    yearId,
+                    siyerEvents: store.itemsMeta['proje-siyer_events']
+                });
+            }
+
+            // E) Proje 3 (Siyer) Olayı Başka Yıla Taşıma
+            if (action === "move_siyer_event") {
+                const eventId = String(req.body?.eventId || itemId || '').trim();
+                const fromYearId = String(req.body?.fromYearId || eventId.split('__ev_')[0] || '').trim();
+                const toYearId = String(req.body?.toYearId || '').trim();
+                const { itemMap } = getProjectSeed('proje-siyer');
+
+                if (!eventId || !fromYearId || !toYearId || fromYearId === toYearId) {
+                    return res.status(400).json({ ok: false, error: "Geçersiz kaynak veya hedef yıl seçimi." });
+                }
+                if (!Object.prototype.hasOwnProperty.call(itemMap, fromYearId) || !Object.prototype.hasOwnProperty.call(itemMap, toYearId)) {
+                    return res.status(404).json({ ok: false, error: "Kaynak veya hedef yıl sistemde bulunamadı." });
+                }
+                if (userRole !== "teacher") {
+                    const sessionStuId = resolveSessionStudentId(session, 'proje-siyer');
+                    const fromStuId = getEffectiveAssignedStudentId(store, 'proje-siyer', fromYearId);
+                    const toStuId = getEffectiveAssignedStudentId(store, 'proje-siyer', toYearId);
+                    if (sessionStuId && ((fromStuId && sessionStuId !== fromStuId) || (toStuId && sessionStuId !== toStuId))) {
+                        return res.status(403).json({ ok: false, error: "Yalnızca kendi atanmış yıllarınız arasında olay taşıyabilirsiniz." });
+                    }
+                }
+
+                if (!store.itemsMeta) store.itemsMeta = {};
+                if (!store.itemsMeta['proje-siyer_events']) store.itemsMeta['proje-siyer_events'] = {};
+                const eventsMeta = store.itemsMeta['proje-siyer_events'];
+
+                // Hedef yılda varsayılan slot dolu mu kontrol et
+                const hasDefaultContent = Object.values(store.records || {}).some(
+                    (rec) => rec && rec.projectId === 'proje-siyer' && rec.itemId === toYearId && String(rec.content || '').trim().length > 0
+                );
+                let newEventId = toYearId;
+                if (hasDefaultContent) {
+                    const toList = Array.isArray(eventsMeta[toYearId]) ? [...eventsMeta[toYearId]] : [];
+                    let nextIdx = 2;
+                    while (toList.includes(`${toYearId}__ev_${nextIdx}`)) {
+                        nextIdx++;
+                    }
+                    newEventId = `${toYearId}__ev_${nextIdx}`;
+                    toList.push(newEventId);
+                    eventsMeta[toYearId] = toList;
+                }
+
+                // Kayıtları taşı
+                const movedRecords = {};
+                for (const [k, rec] of Object.entries(store.records || {})) {
+                    if (rec && rec.projectId === 'proje-siyer' && rec.itemId === eventId) {
+                        const newKey = `${newEventId}__${rec.criterionKey}`;
+                        movedRecords[newKey] = {
+                            ...rec,
+                            id: newKey,
+                            itemId: newEventId,
+                            updatedAt: now
+                        };
+                        delete store.records[k];
+                    }
+                }
+                Object.assign(store.records, movedRecords);
+
+                // Kaynakçaları taşı
+                for (const src of Object.values(store.sources || {})) {
+                    if (src && src.projectId === 'proje-siyer' && src.itemId === eventId) {
+                        src.itemId = newEventId;
+                    }
+                }
+
+                // Kaynak yıl ek olay listesinden çıkar
+                if (eventId !== fromYearId && Array.isArray(eventsMeta[fromYearId])) {
+                    eventsMeta[fromYearId] = eventsMeta[fromYearId].filter((id) => id !== eventId);
+                }
+
+                writeLocalStore(store);
+
+                const projRecords = {};
+                for (const [k, v] of Object.entries(store.records || {})) {
+                    if (v && v.projectId === 'proje-siyer') projRecords[k] = v;
+                }
+                const projSources = {};
+                for (const [k, v] of Object.entries(store.sources || {})) {
+                    if (v && v.projectId === 'proje-siyer') projSources[k] = v;
+                }
+
+                return res.status(200).json({
+                    ok: true,
+                    oldEventId: eventId,
+                    newEventId,
+                    fromYearId,
+                    toYearId,
+                    siyerEvents: eventsMeta,
+                    records: projRecords,
+                    sources: projSources
+                });
+            }
+
+            // F) Proje 3 (Siyer) Öğretmen Yıl Durum İşareti ("Araştırıldı – Olay tespit edilemedi")
+            if (action === "mark_siyer_year_flag") {
+                if (userRole !== "teacher") {
+                    return res.status(403).json({ ok: false, error: "Bu işlemi yalnızca yetkili öğretmen gerçekleştirebilir." });
+                }
+                const yearId = String(itemId || req.body?.yearId || '').trim();
+                const flag = String(req.body?.flag || '').trim();
+                const { itemMap } = getProjectSeed('proje-siyer');
+                if (!yearId || !Object.prototype.hasOwnProperty.call(itemMap, yearId)) {
+                    return res.status(404).json({ ok: false, error: "İşaretlenecek yıl bulunamadı." });
+                }
+                if (!store.itemsMeta) store.itemsMeta = {};
+                if (!store.itemsMeta['proje-siyer_year_flags']) store.itemsMeta['proje-siyer_year_flags'] = {};
+                if (flag === 'no_event_found') {
+                    store.itemsMeta['proje-siyer_year_flags'][yearId] = {
+                        status: 'no_event_found',
+                        label: 'Araştırıldı – Olay tespit edilemedi',
+                        updatedAt: now,
+                        updatedBy: session.studentName || 'Öğretmen'
+                    };
+                } else {
+                    delete store.itemsMeta['proje-siyer_year_flags'][yearId];
+                }
+                writeLocalStore(store);
+                return res.status(200).json({
+                    ok: true,
+                    siyerYearFlags: store.itemsMeta['proje-siyer_year_flags']
                 });
             }
 

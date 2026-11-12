@@ -37,6 +37,8 @@
     let runtimeSources = {};        // { "sourceId": { itemId, author, title, year, page, publisher, url, description } }
     let runtimeFeedbacks = [];      // [ { id, itemId, teacherName, message, status, createdAt } ]
     let runtimeAssignments = {};    // { "itemId": { itemId, assignedStudentId, updatedAt, assignedBy } }
+    let runtimeSiyerEvents = {};    // { "siyer-571": ["siyer-571__ev_2", ...] }
+    let runtimeSiyerYearFlags = {}; // { "siyer-571": { status: "no_event_found", label: "..." } }
 
     // Geri Al / İleri Al yığınları (Her kriter alanı için bağımsız)
     const undoStacks = {};
@@ -120,6 +122,8 @@
                     runtimeSources = { ...runtimeSources, ...(data.sources || {}) };
                     runtimeFeedbacks = data.feedbacks || runtimeFeedbacks;
                     runtimeAssignments = { ...(data.assignments || {}) };
+                    if (data.siyerEvents) runtimeSiyerEvents = { ...data.siyerEvents };
+                    if (data.siyerYearFlags) runtimeSiyerYearFlags = { ...data.siyerYearFlags };
                     updateUIAutosaveBadge("saved");
                 }
             }
@@ -140,10 +144,10 @@
     }
 
     // 5. Otomatik Kayıt Motoru (Debounce ~1000ms & Çevrimdışı Kuyruk)
-    function queueAutoSave(criterionKey, newContent) {
-        if (!currentSession || !activeItemId) return;
+    function queueAutoSave(criterionKey, newContent, targetItemId = activeItemId) {
+        if (!currentSession || !targetItemId) return;
 
-        const recordKey = `${activeItemId}__${criterionKey}`;
+        const recordKey = `${targetItemId}__${criterionKey}`;
         const existing = runtimeRecords[recordKey] || { version: 0, content: "" };
         const prevContent = existing.content || "";
 
@@ -155,6 +159,7 @@
 
         // Yerel kaydı hemen güncelle (arayüz anında güncel kalsın)
         existing.content = newContent;
+        existing.itemId = targetItemId;
         existing.studentName = currentSession.studentName;
         existing.studentId = currentSession.studentId;
         existing.updatedAt = new Date().toISOString();
@@ -166,20 +171,20 @@
         if (autoSaveTimers[recordKey]) clearTimeout(autoSaveTimers[recordKey]);
 
         autoSaveTimers[recordKey] = setTimeout(async () => {
-            await executeSave(criterionKey, newContent);
+            await executeSave(criterionKey, newContent, targetItemId);
         }, 1000);
     }
 
-    async function executeSave(criterionKey, content) {
-        if (!currentSession || !activeItemId) return;
-        const recordKey = `${activeItemId}__${criterionKey}`;
+    async function executeSave(criterionKey, content, targetItemId = activeItemId) {
+        if (!currentSession || !targetItemId) return;
+        const recordKey = `${targetItemId}__${criterionKey}`;
         const existing = runtimeRecords[recordKey] || { version: 0 };
 
         updateUIAutosaveBadge("saving");
 
         const payload = {
             projectId: activeProjectId,
-            itemId: activeItemId,
+            itemId: targetItemId,
             criterionKey,
             content,
             clientVersion: existing.version || 0,
@@ -238,16 +243,19 @@
         for (const [key, timer] of Object.entries(autoSaveTimers)) {
             clearTimeout(timer);
             const [itemId, critKey] = key.split("__");
-            if (itemId === activeItemId && runtimeRecords[key]) {
-                executeSave(critKey, runtimeRecords[key].content);
+            const isSameActive = itemId === activeItemId || (activeProjectId === "proje-siyer" && activeItemId && key.startsWith(`${activeItemId}__ev_`));
+            if (isSameActive && runtimeRecords[key]) {
+                const actualItemId = runtimeRecords[key].itemId || key.slice(0, key.lastIndexOf("__"));
+                const actualCritKey = key.slice(key.lastIndexOf("__") + 2);
+                executeSave(actualCritKey, runtimeRecords[key].content, actualItemId);
             }
         }
     }
 
     // 6. Geri Al ↶ & İleri Al ↷ Fonksiyonları
-    function performUndo(criterionKey) {
-        if (!activeItemId) return;
-        const recordKey = `${activeItemId}__${criterionKey}`;
+    function performUndo(criterionKey, targetItemId = activeItemId) {
+        if (!targetItemId) return;
+        const recordKey = `${targetItemId}__${criterionKey}`;
         const stack = undoStacks[recordKey] || [];
         if (stack.length === 0) {
             showNotice("Geri alınacak başka değişiklik yok.", "info");
@@ -259,21 +267,21 @@
         redoStacks[recordKey].push(currentVal);
 
         const previousVal = stack.pop();
-        const textarea = document.getElementById(`input-${criterionKey}`);
+        const textarea = document.getElementById(`input-${targetItemId}__${criterionKey}`) || document.getElementById(`input-${criterionKey}`);
         if (textarea) {
             textarea.value = previousVal;
             autoGrowTextarea(textarea);
         }
-        const countEl = document.getElementById(`char-count-${criterionKey}`);
+        const countEl = document.getElementById(`char-count-${targetItemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
         if (countEl) countEl.textContent = formatFieldStats(previousVal);
 
-        queueAutoSave(criterionKey, previousVal);
+        queueAutoSave(criterionKey, previousVal, targetItemId);
         showNotice("Değişiklik geri alındı ↶", "success");
     }
 
-    function performRedo(criterionKey) {
-        if (!activeItemId) return;
-        const recordKey = `${activeItemId}__${criterionKey}`;
+    function performRedo(criterionKey, targetItemId = activeItemId) {
+        if (!targetItemId) return;
+        const recordKey = `${targetItemId}__${criterionKey}`;
         const stack = redoStacks[recordKey] || [];
         if (stack.length === 0) {
             showNotice("İleri alınacak işlem bulunmuyor.", "info");
@@ -285,15 +293,15 @@
         undoStacks[recordKey].push(currentVal);
 
         const nextVal = stack.pop();
-        const textarea = document.getElementById(`input-${criterionKey}`);
+        const textarea = document.getElementById(`input-${targetItemId}__${criterionKey}`) || document.getElementById(`input-${criterionKey}`);
         if (textarea) {
             textarea.value = nextVal;
             autoGrowTextarea(textarea);
         }
-        const countEl = document.getElementById(`char-count-${criterionKey}`);
+        const countEl = document.getElementById(`char-count-${targetItemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
         if (countEl) countEl.textContent = formatFieldStats(nextVal);
 
-        queueAutoSave(criterionKey, nextVal);
+        queueAutoSave(criterionKey, nextVal, targetItemId);
         showNotice("Değişiklik yinelendi ↷", "success");
     }
 
@@ -495,11 +503,11 @@
                 <!-- 📋 SOL PANEL: LİSTE VE FİLTRELER (4 Sütun) -->
                 <div class="lg:col-span-4 bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
                     
-                    ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? renderStudentSelectionPanel(projData) : ''}
+                    ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? renderStudentSelectionPanel(projData) : ''}
                     ${activeProjectId !== 'proje-tarih' ? `
                     <!-- Arama Kutusu -->
                     <div class="relative">
-                        <input type="text" id="tubitak-search-input" value="${escapeHtml(searchQuery)}" oninput="window.RotaliTubitak.handleSearch(this.value)" placeholder="${activeProjectId === 'proje-bilim' ? 'Bilim insanı adına göre ara...' : 'Arama yapınız (eser, bilim insanı, yıl)...'}" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-all shadow-2xs">
+                        <input type="text" id="tubitak-search-input" value="${escapeHtml(searchQuery)}" oninput="window.RotaliTubitak.handleSearch(this.value)" placeholder="${activeProjectId === 'proje-bilim' ? 'Bilim insanı adına göre ara...' : (activeProjectId === 'proje-siyer' ? 'Yıl ara (571–632)...' : 'Arama yapınız...')}" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-all shadow-2xs">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     </div>
                     ` : ''}
@@ -510,7 +518,7 @@
                     <!-- İlerleme Özeti -->
                     <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-600">Listelenen Kayıt:</span>
-                        <span class="font-black text-slate-900">${items.length} ${activeProjectId === 'proje-tarih' ? 'Eser' : (activeProjectId === 'proje-bilim' ? 'Bilim İnsanı' : 'Konu')}</span>
+                        <span class="font-black text-slate-900">${items.length} ${activeProjectId === 'proje-tarih' ? 'Eser' : (activeProjectId === 'proje-bilim' ? 'Bilim İnsanı' : 'Yıl')}</span>
                     </div>
 
                     ${activeProjectId === 'proje-tarih' ? `
@@ -529,7 +537,15 @@
                         </h3>
                         <span class="text-[11px] font-bold text-amber-700">${items.length} Bilim İnsanı</span>
                     </div>
-                    ` : '')}
+                    ` : (activeProjectId === 'proje-siyer' ? `
+                    <div class="flex items-center justify-between px-1 pt-1">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-mosque text-emerald-600"></i>
+                            <span>571–632 Yılları</span>
+                        </h3>
+                        <span class="text-[11px] font-bold text-emerald-700">${items.length} Yıl</span>
+                    </div>
+                    ` : ''))}
 
                     <!-- Kayıt Listesi (Kaydırılabilir) -->
                     <div class="space-y-2 max-h-[620px] overflow-y-auto pr-1 custom-scrollbar">
@@ -540,24 +556,26 @@
                         ` : items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
-                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 13 : 18);
+                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 14 : (activeProjectId === 'proje-siyer' ? 3 : 18));
                             const pct = totalCriteria > 0 ? Math.round((filledCount / totalCriteria) * 100) : 0;
                             const status = getItemStatus(it.id);
                             const permanentOrder = getItemPermanentOrder(it);
-                            const ownerStu = (activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? getStudentById(getItemAssignedStudentId(it)) : null;
+                            const ownerStu = (activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? getStudentById(getItemAssignedStudentId(it)) : null;
+                            const siyerEventCount = activeProjectId === 'proje-siyer' ? getSiyerYearEventIds(it.id).length : 1;
 
                             return `
                             <div onclick="window.RotaliTubitak.selectItem('${it.id}')" class="p-3.5 rounded-2xl transition-all cursor-pointer border flex flex-col gap-1.5 ${isSelected ? 'bg-amber-50/80 border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'bg-slate-50/60 hover:bg-slate-100 border-slate-200'}">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-black">#${permanentOrder}</span>` : ''}
+                                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-black">#${permanentOrder}</span>` : ''}
                                         <span>${it.district || it.field || (it.year ? `${it.year}. Yıl` : 'Kayıt')}</span>
+                                        ${activeProjectId === 'proje-siyer' ? `<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">${siyerEventCount} Olay</span>` : ''}
                                     </span>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${getStatusBadgeClass(status)}">
                                         ${getStatusLabel(status)}
                                     </span>
                                 </div>
-                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
+                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
                                 ${ownerStu ? `
                                 <div class="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg px-2 py-0.5 self-start">
                                     <i class="fa-solid fa-user-graduate mr-1"></i>${escapeHtml(ownerStu.name)}
@@ -637,22 +655,7 @@
         }
 
         if (activeProjectId === "proje-siyer") {
-            const milestoneYears = [571, 575, 577, 579, 582, 591, 595, 605, 610, 615, 620, 622, 624, 628, 630, 632];
-            return `
-            <div>
-                <label class="block text-[10px] font-black text-slate-500 uppercase mb-1.5 flex items-center justify-between">
-                    <span>⏱️ 571–632 Zaman Çizelgesi</span>
-                    <span class="text-emerald-600 font-bold">Yıl Seçiniz</span>
-                </label>
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar">
-                    ${milestoneYears.map(yr => `
-                    <button type="button" onclick="window.RotaliTubitak.selectSiyerYear(${yr})" class="px-2.5 py-1 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer ${activeYear === yr ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
-                        ${yr}
-                    </button>
-                    `).join("")}
-                </div>
-            </div>
-            `;
+            return '';
         }
 
         return '';
@@ -739,7 +742,21 @@
                     </button>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                    ${activeProjectId === 'proje-siyer' ? `
+                    <div class="flex items-center gap-1 mr-1">
+                        <button type="button" ${item.year <= 571 ? 'disabled' : ''} onclick="window.RotaliTubitak.navigateSiyerYear(${item.year - 1})" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer" title="Önceki Yıl">
+                            ← Önceki Yıl
+                        </button>
+                        <button type="button" ${item.year >= 632 ? 'disabled' : ''} onclick="window.RotaliTubitak.navigateSiyerYear(${item.year + 1})" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer" title="Sonraki Yıl">
+                            Sonraki Yıl →
+                        </button>
+                        <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.addSiyerEvent('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Yeni Olay Ekle</span>
+                        </button>
+                    </div>
+                    ` : ''}
                     ${!isTeacher ? `
                     <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.submitForReview('${item.id}')" class="px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
                         <i class="fa-solid fa-paper-plane"></i>
@@ -747,10 +764,16 @@
                     </button>
                     ` : `
                     <div class="flex items-center gap-1.5 flex-wrap">
-                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? `
+                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? `
                         <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Yalnızca kaydedilmiş araştırma metinlerini .docx olarak indir">
                             <i class="fa-solid fa-file-word"></i>
                             <span>Word Olarak İndir</span>
+                        </button>
+                        ` : ''}
+                        ${activeProjectId === 'proje-siyer' ? `
+                        <button type="button" onclick="window.RotaliTubitak.markSiyerYearFlag('${item.id}', '${runtimeSiyerYearFlags?.[item.id]?.status === 'no_event_found' ? '' : 'no_event_found'}')" class="px-3 py-1.5 rounded-xl ${runtimeSiyerYearFlags?.[item.id]?.status === 'no_event_found' ? 'bg-slate-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-800'} text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>${runtimeSiyerYearFlags?.[item.id]?.status === 'no_event_found' ? 'Olay Yok İşaretini Kaldır' : 'Olay Yok İşaretle'}</span>
                         </button>
                         ` : ''}
                         <button type="button" onclick="window.RotaliTubitak.teacherReview('${item.id}', 'approved')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
@@ -766,6 +789,106 @@
         </div>
 
         <!-- 📜 ARAŞTIRMA KRİTERLERİ LİSTESİ -->
+        ${activeProjectId === 'proje-siyer' ? `
+        <div class="space-y-6">
+            ${getSiyerYearEventIds(item.id).map((evId, evIdx) => {
+                const evFilled = criteriaList.filter(c => (runtimeRecords[`${evId}__${c.key}`]?.content || '').trim().length > 0).length;
+                const olayVal = (runtimeRecords[`${evId}__c1_olay`]?.content || '').trim();
+                const kaynakVal = (runtimeRecords[`${evId}__c3_kaynakca`]?.content || '').trim();
+                const evSources = getItemSources(evId);
+                const missingSource = olayVal.length > 0 && kaynakVal.length === 0 && evSources.length === 0;
+                const allYearItems = seedData?.projects?.['proje-siyer']?.items || [];
+
+                return `
+                <div class="p-4 sm:p-5 rounded-3xl bg-white border-2 ${evIdx === 0 ? 'border-emerald-200' : 'border-indigo-200'} shadow-sm space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2.5 py-1 rounded-xl ${evIdx === 0 ? 'bg-emerald-600 text-white' : 'bg-indigo-600 text-white'} text-xs font-black">
+                                ${item.year} Yılı • Olay ${evIdx + 1}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-bold">
+                                ${evFilled}/${criteriaList.length} Kriter
+                            </span>
+                            ${missingSource ? `
+                            <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black">
+                                ⚠️ Kaynakça Eksik
+                            </span>
+                            ` : ''}
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            ${canEditItem ? `
+                            <div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-1">
+                                <span class="text-[10px] font-bold text-slate-500">Yıl Taşı:</span>
+                                <select id="move-year-${evId}" class="text-[11px] font-bold text-slate-800 bg-transparent focus:outline-none">
+                                    ${allYearItems.filter(yIt => yIt.id !== item.id && (isTeacher || getItemAssignedStudentId(yIt, 'proje-siyer') === resolveCurrentUserStudentId('proje-siyer'))).map(yIt => `
+                                    <option value="${yIt.id}">${yIt.year}</option>
+                                    `).join('')}
+                                </select>
+                                <button type="button" onclick="window.RotaliTubitak.moveSiyerEvent('${evId}', '${item.id}', document.getElementById('move-year-${evId}')?.value)" class="px-2 py-0.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black cursor-pointer">
+                                    Taşı
+                                </button>
+                            </div>
+                            ` : ''}
+                            <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.openAddSourceModal('${evId}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 text-[11px] font-bold cursor-pointer">
+                                <i class="fa-solid fa-book-medical mr-1"></i>Kaynak Ekle
+                            </button>
+                            <button type="button" onclick="window.RotaliTubitak.openHistoryModal('${evId}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer">
+                                <i class="fa-solid fa-clock-rotate-left mr-1"></i>Geçmiş
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        ${criteriaList.map(crit => {
+                            const recordKey = `${evId}__${crit.key}`;
+                            const saved = runtimeRecords[recordKey];
+                            const contentVal = saved ? saved.content : (evIdx === 0 ? (item.criteria?.[crit.key] || "") : "");
+                            const version = saved ? saved.version : 1;
+                            const lastEditor = saved ? saved.studentName : "Sistem";
+
+                            return `
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs space-y-2 transition-all focus-within:border-amber-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-amber-400/20">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label for="input-${evId}__${crit.key}" class="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
+                                        <span>${escapeHtml(crit.title)}</span>
+                                        ${crit.required ? '<span class="text-red-500 font-bold" title="Zorunlu Kriter">*</span>' : '<span class="text-[10px] font-semibold text-slate-400">(İsteğe bağlı)</span>'}
+                                    </label>
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${crit.key}', '${evId}')" class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı Geri Al ↶">
+                                            ↶
+                                        </button>
+                                        <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${crit.key}', '${evId}')" class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı İleri Al ↷">
+                                            ↷
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea
+                                    id="input-${evId}__${crit.key}"
+                                    rows="3"
+                                    ${!canEditItem ? 'readonly disabled' : ''}
+                                    style="resize: vertical; min-height: 96px;"
+                                    placeholder="${escapeHtml(crit.placeholder || 'Araştırma bulgularınızı buraya yazınız...')}"
+                                    oninput="window.RotaliTubitak.onFieldChange('${crit.key}', this.value, this, '${evId}')"
+                                    onblur="window.RotaliTubitak.onFieldBlur('${crit.key}', this.value, '${evId}')"
+                                    class="tubitak-criterion-textarea resize-y w-full px-3.5 py-2.5 ${canEditItem ? 'bg-white text-slate-800' : 'bg-slate-100 text-slate-500 cursor-not-allowed'} border border-slate-200 rounded-xl text-xs sm:text-sm font-medium placeholder-slate-400 focus:outline-none transition-colors leading-relaxed custom-scrollbar"
+                                >${escapeHtml(contentVal)}</textarea>
+                                <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-1">
+                                    <span class="flex items-center gap-1">
+                                        <i class="fa-solid fa-code-commit text-amber-500"></i>
+                                        <span>Sürüm v${version}</span>
+                                        <span>• ${escapeHtml(lastEditor)}</span>
+                                    </span>
+                                    <span id="char-count-${evId}__${crit.key}">${formatFieldStats(contentVal)}</span>
+                                </div>
+                            </div>
+                            `;
+                        }).join("")}
+                    </div>
+                </div>
+                `;
+            }).join("")}
+        </div>
+        ` : `
         <div class="space-y-5">
             ${criteriaList.map((crit, idx) => {
                 const recordKey = `${item.id}__${crit.key}`;
@@ -828,19 +951,20 @@
                 `;
             }).join("")}
         </div>
+        `}
 
         <!-- 📚 İLİŞKİLİ KAYNAKLAR BÖLÜMÜ -->
         <div class="pt-5 border-t border-slate-200">
             <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider mb-3 flex items-center justify-between">
                 <span>📚 Eklenen Akademik Kaynaklar</span>
-                <span class="text-[10px] text-blue-600 font-bold">${getItemSources(item.id).length} Kaynak</span>
+                <span class="text-[10px] text-blue-600 font-bold">${(activeProjectId === 'proje-siyer' ? getSiyerYearEventIds(item.id).flatMap(id => getItemSources(id)) : getItemSources(item.id)).length} Kaynak</span>
             </h4>
             <div class="space-y-2">
-                ${getItemSources(item.id).length === 0 ? `
+                ${(activeProjectId === 'proje-siyer' ? getSiyerYearEventIds(item.id).flatMap(id => getItemSources(id)) : getItemSources(item.id)).length === 0 ? `
                 <div class="p-3 rounded-xl bg-slate-50 border border-dashed border-slate-300 text-center text-slate-400 text-xs">
                     Henüz kaynak eklenmedi. Üstteki "Kaynak Ekle" butonunu kullanarak literatür referansı ekleyebilirsiniz.
                 </div>
-                ` : getItemSources(item.id).map(src => `
+                ` : (activeProjectId === 'proje-siyer' ? getSiyerYearEventIds(item.id).flatMap(id => getItemSources(id)) : getItemSources(item.id)).map(src => `
                 <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-start justify-between gap-3">
                     <div>
                         <div class="font-black text-slate-900">${escapeHtml(src.title)} (${escapeHtml(src.year || '')})</div>
@@ -862,7 +986,14 @@
         const items = seedData?.projects?.[projectId]?.items || [];
         if (projectId === "proje-tarih") return items.length === 40;
         if (projectId === "proje-bilim") return items.length === 98;
+        if (projectId === "proje-siyer") return items.length === 62;
         return true;
+    }
+
+    function getSiyerYearEventIds(yearId) {
+        if (!yearId) return [];
+        const extra = Array.isArray(runtimeSiyerEvents?.[yearId]) ? runtimeSiyerEvents[yearId] : [];
+        return [yearId, ...extra.filter(id => id && id !== yearId)];
     }
 
     function isProje1DistributionValid() {
@@ -932,7 +1063,7 @@
     function isItemEditableByCurrentUser(item) {
         if (!currentSession || !item) return false;
         if (currentSession.role === "teacher") return true;
-        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim") return true;
+        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim" && activeProjectId !== "proje-siyer") return true;
         const myStuId = resolveCurrentUserStudentId(activeProjectId);
         const assignedStuId = getItemAssignedStudentId(item, activeProjectId);
         if (myStuId && assignedStuId) {
@@ -966,22 +1097,26 @@
     function computeStudentStats(stuId, projectId = activeProjectId) {
         const projData = seedData?.projects?.[projectId] || {};
         const items = projData.items || [];
-        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 13 : 18);
+        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 14 : (projectId === "proje-siyer" ? 3 : 18));
         const assignedItems = items.filter(it => getItemAssignedStudentId(it, projectId) === stuId);
         let startedCount = 0;
         let completedCount = 0;
         let approvedCount = 0;
         let filledCriteria = 0;
+        let noEventFlagCount = 0;
         let lastUpdatedAt = null;
 
         assignedItems.forEach(it => {
+            const isNoEvent = projectId === "proje-siyer" && runtimeSiyerYearFlags?.[it.id]?.status === "no_event_found";
             const filled = countItemFilledCriteria(it.id, projectId);
             filledCriteria += filled;
-            if (filled > 0) startedCount++;
-            if (filled === totalCriteria) completedCount++;
+            if (filled > 0 || isNoEvent) startedCount++;
+            if (filled === totalCriteria || isNoEvent) completedCount++;
+            if (isNoEvent) noEventFlagCount++;
             if (getItemStatus(it.id) === "approved") approvedCount++;
             Object.values(runtimeRecords).forEach(rec => {
-                if (rec && rec.itemId === it.id && rec.updatedAt) {
+                const matchRec = rec && (rec.itemId === it.id || (projectId === "proje-siyer" && String(rec.itemId || "").startsWith(`${it.id}__ev_`)));
+                if (matchRec && rec.updatedAt) {
                     if (!lastUpdatedAt || rec.updatedAt > lastUpdatedAt) {
                         lastUpdatedAt = rec.updatedAt;
                     }
@@ -989,9 +1124,10 @@
             });
         });
 
-        const totalPossible = assignedItems.length * totalCriteria;
+        const effectiveItemCount = Math.max(0, assignedItems.length - noEventFlagCount);
+        const totalPossible = effectiveItemCount * totalCriteria;
         const missingCriteria = Math.max(0, totalPossible - filledCriteria);
-        const pct = totalPossible > 0 ? Math.round((filledCriteria / totalPossible) * 100) : 0;
+        const pct = totalPossible > 0 ? Math.round((filledCriteria / totalPossible) * 100) : (noEventFlagCount > 0 ? 100 : 0);
         return {
             assignedTotal: assignedItems.length,
             startedCount,
@@ -1012,15 +1148,16 @@
         const isTeacher = currentSession?.role === "teacher";
         const distValid = isProjectDistributionValid(projectId);
         const myStuId = resolveCurrentUserStudentId(projectId);
-        const expectedTotal = projectId === "proje-bilim" ? 98 : 40;
-        const unitLabel = projectId === "proje-bilim" ? "Bilim İnsanı" : "Eser";
+        const expectedTotal = projectId === "proje-bilim" ? 98 : (projectId === "proje-siyer" ? 62 : 40);
+        const unitLabel = projectId === "proje-bilim" ? "Bilim İnsanı" : (projectId === "proje-siyer" ? "Yıl" : "Eser");
+        const panelHeading = projectId === "proje-siyer" ? "SİYER ARAŞTIRMA EKİBİ" : "ARAŞTIRMA EKİBİ – ÖĞRENCİ SEÇİMİ";
 
         return `
         <div class="space-y-2.5">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="text-[11px] font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
                     <i class="fa-solid fa-users text-amber-600"></i>
-                    <span>ARAŞTIRMA EKİBİ – ÖĞRENCİ SEÇİMİ</span>
+                    <span>${panelHeading}</span>
                 </h3>
                 ${activeStudentFilterId !== 'all' ? `
                 <button type="button" onclick="window.RotaliTubitak.selectStudentFilter('all')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-black transition-colors cursor-pointer">
@@ -1081,8 +1218,8 @@
         const projData = seedData?.projects?.[activeProjectId] || {};
         let list = [...(projData.items || [])];
 
-        // Öğrenci Filtresi (Proje 1 & Proje 2)
-        if ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim") && activeStudentFilterId !== "all") {
+        // Öğrenci Filtresi (Proje 1, Proje 2 & Proje 3)
+        if ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim" || activeProjectId === "proje-siyer") && activeStudentFilterId !== "all") {
             list = list.filter(it => getItemAssignedStudentId(it, activeProjectId) === activeStudentFilterId);
         }
 
@@ -1108,18 +1245,15 @@
             list = list.filter(it => it.periodGroup === activePeriodFilter);
         }
 
-        // Siyer Yıl Filtresi
-        if (activeProjectId === "proje-siyer" && activeYear) {
-            list = list.filter(it => it.year === activeYear);
-        }
-
-        // Sıralama (Proje 1 tanımlı sıra korunur; Bilim İnsanları projesinde orijinal veya alfabetik sıralanır)
+        // Sıralama (Proje 1 tanımlı sıra, Proje 3 kronolojik sıra 571–632, Proje 2 orijinal veya alfabetik)
         if (activeProjectId === "proje-bilim") {
             if (activeSort === "alpha") {
                 list.sort((a, b) => a.title.localeCompare(b.title, "tr"));
             } else {
                 list.sort((a, b) => getItemPermanentOrder(a, "proje-bilim") - getItemPermanentOrder(b, "proje-bilim"));
             }
+        } else if (activeProjectId === "proje-siyer") {
+            list.sort((a, b) => (a.year || 0) - (b.year || 0));
         }
 
         return list;
@@ -1128,11 +1262,14 @@
     function countItemFilledCriteria(itemId, projectId = activeProjectId) {
         const projData = seedData?.projects?.[projectId] || {};
         const criteriaList = projData.criteriaList || [];
+        const eventIds = projectId === "proje-siyer" ? getSiyerYearEventIds(itemId) : [itemId];
         let count = 0;
         for (const crit of criteriaList) {
-            const recordKey = `${itemId}__${crit.key}`;
-            const rec = runtimeRecords[recordKey];
-            if (rec && rec.content && rec.content.trim().length > 0) {
+            const hasContent = eventIds.some(evId => {
+                const rec = runtimeRecords[`${evId}__${crit.key}`];
+                return rec && rec.content && rec.content.trim().length > 0;
+            });
+            if (hasContent) {
                 count++;
             }
         }
@@ -1140,6 +1277,9 @@
     }
 
     function getItemStatus(itemId) {
+        if (runtimeSiyerYearFlags?.[itemId]?.status === "no_event_found") {
+            return "no_event_found";
+        }
         let hasInReview = false;
         let hasApproved = false;
         let hasCorrection = false;
@@ -1163,6 +1303,7 @@
             case "approved": return "bg-emerald-100 text-emerald-800 border border-emerald-300";
             case "in_review": return "bg-blue-100 text-blue-800 border border-blue-300";
             case "correction_requested": return "bg-amber-100 text-amber-900 border border-amber-300";
+            case "no_event_found": return "bg-slate-200 text-slate-700 border border-slate-300";
             default: return "bg-slate-100 text-slate-700 border border-slate-200";
         }
     }
@@ -1172,6 +1313,7 @@
             case "approved": return "✅ Onaylandı";
             case "in_review": return "📤 İncelemede";
             case "correction_requested": return "⚠️ Düzeltme İstendi";
+            case "no_event_found": return "🔍 Araştırıldı – Olay tespit edilemedi";
             default: return "📝 Taslak";
         }
     }
@@ -1548,6 +1690,123 @@
         `;
     }
 
+    function renderProje3TeacherStudentTracking() {
+        const proj3 = seedData?.projects?.["proje-siyer"] || {};
+        const items = proj3.items || [];
+        const students = getProjectStudents("proje-siyer");
+        const totalCriteria = (proj3.criteriaList || []).length || 3;
+        const distValid = isProjectDistributionValid("proje-siyer");
+
+        return `
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h4 class="font-black text-slate-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-mosque text-emerald-600"></i>
+                        <span>Proje 3 (Siyer 571–632) – Öğrenci Araştırma Takibi ve Görev Yönetimi</span>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 mt-0.5">62 yıl (571–632), 5 öğrenci arasında kronolojik sırayla dağıtılmıştır (13 / 13 / 12 / 12 / 12).</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="window.RotaliTubitak.downloadAllProje1Word(this, 'proje-siyer')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="62 yılın her biri için ayrı .docx oluşturup ZIP olarak indir">
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <span>Tüm Yılları Word Olarak İndir</span>
+                    </button>
+                    <span class="px-2.5 py-1 rounded-xl text-[11px] font-black ${distValid ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'}">
+                        ${distValid ? '✅ 62 Yıl Doğrulandı' : `⚠️ Uyarı: ${items.length}/62 Yıl`}
+                    </span>
+                </div>
+            </div>
+
+            ${!distValid ? `
+            <div class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 font-bold text-xs">
+                Uyarı: Proje 3 kayıt sayısı 62 olarak doğrulanamadığı için otomatik görev dağılımı durduruldu.
+            </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                ${students.map(stu => {
+                    const stats = computeStudentStats(stu.id, "proje-siyer");
+                    return `
+                    <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-black text-slate-900 text-xs">${escapeHtml(stu.name)}</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 font-black text-[10px]">${stats.assignedTotal} Yıl</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5 text-[10px] text-slate-600 font-semibold">
+                            <div>Başlanan: <strong class="text-slate-900">${stats.startedCount}</strong></div>
+                            <div>Tamamlanan: <strong class="text-emerald-700">${stats.completedCount}</strong></div>
+                            <div>Onaylı: <strong class="text-blue-700">${stats.approvedCount}</strong></div>
+                            <div>Eksik Kriter: <strong class="text-amber-700">${stats.missingCriteria}</strong></div>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-600 rounded-full" style="width:${stats.pct}%"></div>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400">
+                            <span>İlerleme: <strong class="text-slate-800">%${stats.pct}</strong></span>
+                            <span>${stats.lastUpdatedAt ? formatDateTr(stats.lastUpdatedAt) : 'Henüz yok'}</span>
+                        </div>
+                    </div>
+                    `;
+                }).join("")}
+            </div>
+
+            <div class="space-y-2">
+                ${students.map(stu => {
+                    const stats = computeStudentStats(stu.id, "proje-siyer");
+                    return `
+                    <details class="rounded-2xl bg-white border border-slate-200 overflow-hidden">
+                        <summary class="px-4 py-2.5 cursor-pointer font-black text-slate-800 text-xs flex items-center justify-between hover:bg-slate-50">
+                            <span><i class="fa-solid fa-user-graduate text-emerald-600 mr-1.5"></i>${escapeHtml(stu.name)} (${stats.assignedTotal} Yıl • %${stats.pct})</span>
+                            <span class="text-[11px] font-bold text-slate-500">Yılları Yönet & Atama Değiştir</span>
+                        </summary>
+                        <div class="divide-y divide-slate-100 border-t border-slate-100">
+                            ${stats.assignedItems.map(it => {
+                                const filled = countItemFilledCriteria(it.id, "proje-siyer");
+                                const st = getItemStatus(it.id);
+                                const evCount = getSiyerYearEventIds(it.id).length;
+                                const isNoEvent = runtimeSiyerYearFlags?.[it.id]?.status === "no_event_found";
+                                return `
+                                <div class="px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-black">#${getItemPermanentOrder(it, "proje-siyer")}</span>
+                                        <span class="font-bold text-slate-800 truncate">${escapeHtml(it.title)}</span>
+                                        <span class="text-[10px] text-slate-500">(${evCount} Olay • ${filled}/${totalCriteria})</span>
+                                        <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${getStatusBadgeClass(st)}">${getStatusLabel(st)}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <select id="reassign-p3-${it.id}" class="px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700">
+                                            ${students.map(s => `<option value="${s.id}" ${s.id === stu.id ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join("")}
+                                        </select>
+                                        <button type="button" onclick="window.RotaliTubitak.reassignStudentWork('${it.id}', document.getElementById('reassign-p3-${it.id}').value, 'proje-siyer')" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] cursor-pointer" title="Öğrenci Atamasını Güncelle">
+                                            Ata
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${it.id}', this, 'proje-siyer')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] cursor-pointer flex items-center gap-1" title="Yılın kayıtlı metinlerini Word (.docx) olarak indir">
+                                            <i class="fa-solid fa-file-word"></i>
+                                            <span>Word Olarak İndir</span>
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.markSiyerYearFlag('${it.id}', '${isNoEvent ? '' : 'no_event_found'}')" class="px-2 py-1 rounded-lg ${isNoEvent ? 'bg-slate-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-800'} font-bold text-[10px] cursor-pointer">
+                                            ${isNoEvent ? 'İşareti Kaldır' : 'Olay Yok İşaretle'}
+                                        </button>
+                                        <button type="button" onclick="document.getElementById('tubitak-teacher-modal').classList.add('hidden'); window.RotaliTubitak.openProject('proje-siyer'); window.RotaliTubitak.selectItem('${it.id}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] cursor-pointer">
+                                            İncele
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.teacherReview('${it.id}', 'approved')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer">
+                                            Onayla
+                                        </button>
+                                    </div>
+                                </div>
+                                `;
+                            }).join("")}
+                        </div>
+                    </details>
+                    `;
+                }).join("")}
+            </div>
+        </div>
+        `;
+    }
+
     function openTeacherDashboardModal() {
         let modal = document.getElementById("tubitak-teacher-modal");
         if (!modal) {
@@ -1621,6 +1880,9 @@
 
                 <!-- Proje 2: Matematik Tarihi Bilim İnsanları Takibi -->
                 ${renderProje2TeacherStudentTracking()}
+
+                <!-- Proje 3: Siyer ve Değerler Eğitimi (571–632) Takibi -->
+                ${renderProje3TeacherStudentTracking()}
 
                 <!-- Son Düzenleme Akışı (Canlı İzleme) -->
                 <div>
@@ -2234,10 +2496,11 @@
                 showNotice("Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir.", "error");
                 return;
             }
-            const targetProjId = projectId || (activeProjectId === "proje-bilim" ? "proje-bilim" : "proje-tarih");
+            const targetProjId = projectId || (activeProjectId === "proje-bilim" ? "proje-bilim" : (activeProjectId === "proje-siyer" ? "proje-siyer" : "proje-tarih"));
             const projItems = seedData?.projects?.[targetProjId]?.items || [];
             const item = projItems.find(it => it.id === itemId);
-            const fallbackName = `${(item?.title || itemId || "Arastirma_Metni").replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim()}.docx`;
+            const rawDocName = targetProjId === "proje-siyer" && item?.year ? String(item.year) : (item?.title || itemId || "Arastirma_Metni");
+            const fallbackName = `${rawDocName.replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim()}.docx`;
             const origHtml = btnEl ? btnEl.innerHTML : "";
             if (btnEl) {
                 btnEl.disabled = true;
@@ -2284,7 +2547,9 @@
             const targetProjId = projectId || "proje-tarih";
             const zipFilename = targetProjId === "proje-bilim"
                 ? "Matematik_Tarihinde_Bilim_Insanlari_Arastirma_Metinleri.zip"
-                : "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip";
+                : (targetProjId === "proje-siyer"
+                    ? "Siyer_571_632_Arastirma_Metinleri.zip"
+                    : "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip");
             const origHtml = btnEl ? btnEl.innerHTML : "";
             if (btnEl) {
                 btnEl.disabled = true;
@@ -2314,7 +2579,7 @@
                 a.click();
                 a.remove();
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
-                const unitWord = targetProjId === "proje-bilim" ? "bilim insanı" : "eser";
+                const unitWord = targetProjId === "proje-bilim" ? "bilim insanı" : (targetProjId === "proje-siyer" ? "yıl" : "eser");
                 const infoText = includedCount
                     ? `${includedCount} ${unitWord} için ayrı Word belgeleri ZIP olarak indirildi${Number(skippedCount) > 0 ? ` (${skippedCount} boş kayıt atlandı)` : ""}.`
                     : "Tüm kayıtların Word belgeleri ZIP olarak indirildi.";
@@ -2418,28 +2683,160 @@
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
-        onFieldChange(criterionKey, val, el) {
+        onFieldChange(criterionKey, val, el, targetItemId) {
+            const effItemId = targetItemId || activeItemId;
             if (el) autoGrowTextarea(el);
-            const countEl = document.getElementById(`char-count-${criterionKey}`);
+            const countEl = document.getElementById(`char-count-${effItemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
             if (countEl) countEl.textContent = formatFieldStats(val);
             const latexPreviewEl = document.getElementById(`latex-preview-${criterionKey}`);
             if (latexPreviewEl) latexPreviewEl.innerHTML = renderLatexHtmlString(val);
-            queueAutoSave(criterionKey, val);
+            queueAutoSave(criterionKey, val, effItemId);
         },
 
-        onFieldBlur(criterionKey, val) {
-            if (autoSaveTimers[`${activeItemId}__${criterionKey}`]) {
-                clearTimeout(autoSaveTimers[`${activeItemId}__${criterionKey}`]);
-                executeSave(criterionKey, val);
+        onFieldBlur(criterionKey, val, targetItemId) {
+            const effItemId = targetItemId || activeItemId;
+            if (autoSaveTimers[`${effItemId}__${criterionKey}`]) {
+                clearTimeout(autoSaveTimers[`${effItemId}__${criterionKey}`]);
+                executeSave(criterionKey, val, effItemId);
             }
         },
 
-        handleUndo(criterionKey) {
-            performUndo(criterionKey);
+        handleUndo(criterionKey, targetItemId) {
+            performUndo(criterionKey, targetItemId || activeItemId);
         },
 
-        handleRedo(criterionKey) {
-            performRedo(criterionKey);
+        handleRedo(criterionKey, targetItemId) {
+            performRedo(criterionKey, targetItemId || activeItemId);
+        },
+
+        navigateSiyerYear(targetYear) {
+            const items = seedData?.projects?.["proje-siyer"]?.items || [];
+            const match = items.find(it => it.year === Number(targetYear));
+            if (match) {
+                flushPendingSaves();
+                activeItemId = match.id;
+                activeYear = match.year;
+                renderMainContainer(document.getElementById("tubitak-research-container"));
+            }
+        },
+
+        async addSiyerEvent(yearId, btnEl) {
+            if (!currentSession) return;
+            const origHtml = btnEl ? btnEl.innerHTML : "";
+            if (btnEl) btnEl.disabled = true;
+            try {
+                const res = await fetch("/api/tubitak-records", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${currentSession.token}`
+                    },
+                    body: JSON.stringify({
+                        action: "add_siyer_event",
+                        projectId: "proje-siyer",
+                        yearId
+                    })
+                });
+                const data = await res.json();
+                if (res.ok && data.ok) {
+                    runtimeSiyerEvents = { ...(data.siyerEvents || {}) };
+                    renderMainContainer(document.getElementById("tubitak-research-container"));
+                    showNotice("Yeni olay kartı eklendi.", "success");
+                } else {
+                    showNotice(data.error || "Olay eklenemedi.", "error");
+                }
+            } catch (err) {
+                showNotice("Bağlantı hatası: " + err.message, "error");
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = origHtml;
+                }
+            }
+        },
+
+        async moveSiyerEvent(eventId, fromYearId, toYearId) {
+            if (!currentSession || !toYearId || fromYearId === toYearId) return;
+            try {
+                flushPendingSaves();
+                const res = await fetch("/api/tubitak-records", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${currentSession.token}`
+                    },
+                    body: JSON.stringify({
+                        action: "move_siyer_event",
+                        projectId: "proje-siyer",
+                        eventId,
+                        fromYearId,
+                        toYearId
+                    })
+                });
+                const data = await res.json();
+                if (res.ok && data.ok) {
+                    runtimeSiyerEvents = { ...(data.siyerEvents || {}) };
+                    if (data.records) {
+                        for (const k of Object.keys(runtimeRecords)) {
+                            if (runtimeRecords[k]?.projectId === "proje-siyer") delete runtimeRecords[k];
+                        }
+                        Object.assign(runtimeRecords, data.records);
+                    }
+                    if (data.sources) {
+                        for (const k of Object.keys(runtimeSources)) {
+                            if (runtimeSources[k]?.projectId === "proje-siyer") delete runtimeSources[k];
+                        }
+                        if (Array.isArray(data.sources)) {
+                            data.sources.forEach(s => { if (s?.id) runtimeSources[s.id] = s; });
+                        } else {
+                            Object.assign(runtimeSources, data.sources);
+                        }
+                    }
+                    activeItemId = toYearId;
+                    renderMainContainer(document.getElementById("tubitak-research-container"));
+                    showNotice("Olay seçilen yıla taşındı.", "success");
+                } else {
+                    showNotice(data.error || "Olay taşınamadı.", "error");
+                }
+            } catch (err) {
+                showNotice("Bağlantı hatası: " + err.message, "error");
+            }
+        },
+
+        async markSiyerYearFlag(yearId, flag) {
+            if (!currentSession || currentSession.role !== "teacher") {
+                showNotice("Bu işlemi yalnızca öğretmen yapabilir.", "error");
+                return;
+            }
+            try {
+                const res = await fetch("/api/tubitak-records", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${currentSession.token}`
+                    },
+                    body: JSON.stringify({
+                        action: "mark_siyer_year_flag",
+                        projectId: "proje-siyer",
+                        itemId: yearId,
+                        flag
+                    })
+                });
+                const data = await res.json();
+                if (res.ok && data.ok) {
+                    runtimeSiyerYearFlags = { ...(data.siyerYearFlags || {}) };
+                    const modal = document.getElementById("tubitak-teacher-modal");
+                    if (modal && !modal.classList.contains("hidden")) {
+                        openTeacherDashboardModal();
+                    }
+                    renderMainContainer(document.getElementById("tubitak-research-container"));
+                    showNotice(flag === "no_event_found" ? "Yıl 'Araştırıldı – Olay tespit edilemedi' olarak işaretlendi." : "Yıl işareti kaldırıldı.", "success");
+                } else {
+                    showNotice(data.error || "İşaret güncellenemedi.", "error");
+                }
+            } catch (err) {
+                showNotice("Bağlantı hatası: " + err.message, "error");
+            }
         },
 
         openHistoryModal,

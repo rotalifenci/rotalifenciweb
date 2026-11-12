@@ -400,7 +400,116 @@ async function runTests() {
     assert.strictEqual(Object.keys(p2LoadedZip.files).filter(n => n.endsWith(".docx")).length, 98);
     console.log("   ✅ Başarılı! Proje 2 (98 bilim insanı, 5 öğrenci, yetki, .docx ve 98'li ZIP) doğrulandı.\n");
 
-    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (14/14 TEST PASSED)!");
+    // 15. TEST: Proje 3 (Siyer 571–632) Öğrenci Dağılımı, Çoklu Olay, Yetki & Word/ZIP Dışa Aktarma
+    console.log("📌 Test 15: Proje 3 (62 yıl 571–632, 5 öğrenci, çoklu olay, taşıma, yetki & Word/ZIP) doğrulanıyor...");
+    const { generateAllSiyerYearsZipBuffer } = require('../api/_tubitak-docx.js');
+    const p3All = seedParsed.projects["proje-siyer"];
+    assert.strictEqual(p3All.items.length, 62);
+    assert.strictEqual(p3All.criteriaList.length, 3);
+    assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-humeyra").length, 13);
+    assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-ecrin").length, 13);
+    assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-zeynep").length, 12);
+    assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-yusuf").length, 12);
+    assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-asaf").length, 12);
+
+    // Hümeyra BULUT giriş yapar -> 571'e yazabilir, 584'e yazamaz (403)
+    const p3Login = mockReqRes('POST', { password: process.env.TUBITAK_SIYER_PASS || "siyer2026", studentName: "Hümeyra BULUT" });
+    await tubitakAuthHandler(p3Login.req, p3Login.res);
+    assert.strictEqual(p3Login.getStatus(), 200);
+    const p3Token = p3Login.getData().token;
+
+    const p3WriteOwn = mockReqRes('POST', {
+        projectId: "proje-siyer",
+        itemId: "siyer-571",
+        criterionKey: "c1_olay",
+        content: "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+        clientVersion: 0
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3WriteOwn.req, p3WriteOwn.res);
+    assert.strictEqual(p3WriteOwn.getStatus(), 200);
+
+    const p3WriteOther = mockReqRes('POST', {
+        projectId: "proje-siyer",
+        itemId: "siyer-584",
+        criterionKey: "c1_olay",
+        content: "Yetkisiz yıl düzenleme denemesi",
+        clientVersion: 0
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3WriteOther.req, p3WriteOther.res);
+    assert.strictEqual(p3WriteOther.getStatus(), 403, "Öğrenci başka öğrenciye atanan yılı düzenleyememeli");
+
+    // Aynı yıla 2. olay ekleme & kaynak + içerik kaydetme
+    const p3AddEv = mockReqRes('PUT', {
+        action: "add_siyer_event",
+        projectId: "proje-siyer",
+        yearId: "siyer-571"
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3AddEv.req, p3AddEv.res);
+    assert.strictEqual(p3AddEv.getStatus(), 200);
+    const ev2Id = p3AddEv.getData().eventId;
+    assert.ok(ev2Id.startsWith("siyer-571__ev_"));
+
+    const p3WriteEv2 = mockReqRes('POST', {
+        projectId: "proje-siyer",
+        itemId: ev2Id,
+        criterionKey: "c1_olay",
+        content: "571 yılı ikinci olay kaydı test metni.",
+        clientVersion: 0
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3WriteEv2.req, p3WriteEv2.res);
+    assert.strictEqual(p3WriteEv2.getStatus(), 200);
+
+    // 2. olayı 572 yılına taşıma
+    const p3MoveEv = mockReqRes('PUT', {
+        action: "move_siyer_event",
+        projectId: "proje-siyer",
+        eventId: ev2Id,
+        fromYearId: "siyer-571",
+        toYearId: "siyer-572"
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3MoveEv.req, p3MoveEv.res);
+    assert.strictEqual(p3MoveEv.getStatus(), 200);
+    assert.strictEqual(p3MoveEv.getData().toYearId, "siyer-572");
+
+    // Öğretmen 571.docx tekil dışa aktarma (başlıksız, yalnızca içerik)
+    const p3DocxReq = mockReqRes('GET', {}, { projectId: "proje-siyer", exportDocx: "single", itemId: "siyer-571" }, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(p3DocxReq.req, p3DocxReq.res);
+    assert.strictEqual(p3DocxReq.getStatus(), 200);
+    assert.ok((p3DocxReq.getHeaders()["Content-Disposition"] || "").includes("571.docx"));
+    const p3DocxZip = await JSZip.loadAsync(p3DocxReq.getData());
+    const p3Xml = await p3DocxZip.file("word/document.xml").async("string");
+    assert.ok(p3Xml.includes("Fil Vakası"), "Proje 3 öğrenci metni 571.docx belgesinde yer almalı");
+    assert.strictEqual(/1\. OLAY|2\. KÖK DEĞER|3\. KAYNAKÇA|Hümeyra BULUT/.test(p3Xml), false);
+
+    // Öğretmen "Araştırıldı – Olay tespit edilemedi" yıl işareti
+    const p3FlagReq = mockReqRes('PUT', {
+        action: "mark_siyer_year_flag",
+        projectId: "proje-siyer",
+        itemId: "siyer-573",
+        flag: "no_event_found"
+    }, {}, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(p3FlagReq.req, p3FlagReq.res);
+    assert.strictEqual(p3FlagReq.getStatus(), 200);
+    assert.strictEqual(p3FlagReq.getData().siyerYearFlags["siyer-573"].status, "no_event_found");
+
+    // 62 yılın tamamı için ayrı .docx -> ZIP üretimi
+    const p3Synth = {};
+    p3All.items.forEach(it => {
+        p3Synth[`${it.id}__c1_olay`] = { content: `${it.year} yılı siyer araştırma metni.` };
+    });
+    const p3ZipRes = await generateAllSiyerYearsZipBuffer(
+        p3All.items,
+        {},
+        p3All.criteriaList,
+        p3Synth,
+        "Siyer_571_632_Arastirma_Metinleri.zip"
+    );
+    assert.strictEqual(p3ZipRes.included.length, 62, "62 yılın tamamı ayrı .docx dosyası olarak üretilmeli");
+    const p3LoadedZip = await JSZip.loadAsync(p3ZipRes.buffer);
+    assert.strictEqual(Object.keys(p3LoadedZip.files).filter(n => n.endsWith(".docx")).length, 62);
+    console.log("   ✅ Başarılı! Proje 3 (62 yıl, 5 öğrenci, çoklu olay, taşıma, yetki & Word/ZIP) doğrulandı.\n");
+
+    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (15/15 TEST PASSED)!");
 }
 
 runTests().catch(err => {

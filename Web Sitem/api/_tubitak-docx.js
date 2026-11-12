@@ -57,12 +57,7 @@ function extractMonumentTextParagraphs(item, criteriaList, recordsMap) {
     return paragraphs;
 }
 
-async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
-    const textParagraphs = extractMonumentTextParagraphs(item, criteriaList, recordsMap);
-    if (textParagraphs.length === 0) {
-        return null;
-    }
-
+async function buildPlainTextDocxBuffer(textParagraphs) {
     const marginTwips = convertMillimetersToTwip(25); // 2.5 cm
 
     const doc = new Document({
@@ -117,11 +112,52 @@ async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
         ]
     });
 
-    const buffer = await Packer.toBuffer(doc);
+    return Packer.toBuffer(doc);
+}
+
+async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
+    const textParagraphs = extractMonumentTextParagraphs(item, criteriaList, recordsMap);
+    if (textParagraphs.length === 0) {
+        return null;
+    }
+
+    const buffer = await buildPlainTextDocxBuffer(textParagraphs);
     return {
         buffer,
         filename: sanitizeDocxFilename(item.title),
         paragraphCount: textParagraphs.length
+    };
+}
+
+async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, recordsMap) {
+    const orderedEvents = Array.isArray(eventIds) && eventIds.length > 0
+        ? eventIds
+        : [yearItem.id];
+
+    const allParagraphs = [];
+    let nonEmptyEvents = 0;
+
+    for (const evId of orderedEvents) {
+        const evParagraphs = extractMonumentTextParagraphs({ id: evId, criteria: yearItem.criteria || {} }, criteriaList, recordsMap);
+        if (evParagraphs.length === 0) continue;
+        if (nonEmptyEvents > 0) {
+            allParagraphs.push('');
+        }
+        allParagraphs.push(...evParagraphs);
+        nonEmptyEvents++;
+    }
+
+    if (allParagraphs.length === 0) {
+        return null;
+    }
+
+    const buffer = await buildPlainTextDocxBuffer(allParagraphs);
+    const yearLabel = String(yearItem.year || yearItem.id).replace(/^siyer-/, '');
+    return {
+        buffer,
+        filename: sanitizeDocxFilename(yearLabel),
+        paragraphCount: allParagraphs.length,
+        eventCount: nonEmptyEvents
     };
 }
 
@@ -169,10 +205,59 @@ async function generateAllMonumentsZipBuffer(items, criteriaList, recordsMap, zi
     };
 }
 
+async function generateAllSiyerYearsZipBuffer(items, siyerEventsMeta, criteriaList, recordsMap, zipFilename) {
+    const zip = new JSZip();
+    const included = [];
+    const skipped = [];
+    const usedNames = new Set();
+    const eventsMeta = siyerEventsMeta && typeof siyerEventsMeta === 'object' ? siyerEventsMeta : {};
+
+    for (const item of items || []) {
+        const extraIds = Array.isArray(eventsMeta[item.id]) ? eventsMeta[item.id] : [];
+        const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)];
+        const result = await generateSiyerYearDocxBuffer(item, eventIds, criteriaList, recordsMap);
+        if (!result) {
+            skipped.push(String(item.year || item.title || item.id));
+            continue;
+        }
+        let uniqueName = result.filename;
+        if (usedNames.has(uniqueName)) {
+            const base = uniqueName.replace(/\.docx$/i, '');
+            uniqueName = `${base}_${item.orderIndex || included.length + 1}.docx`;
+        }
+        usedNames.add(uniqueName);
+        zip.file(uniqueName, result.buffer);
+        included.push(uniqueName);
+    }
+
+    if (included.length === 0) {
+        return {
+            buffer: null,
+            included,
+            skipped
+        };
+    }
+
+    const zipBuffer = await zip.generateAsync({
+        type: 'nodebuffer',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+    });
+
+    return {
+        buffer: zipBuffer,
+        filename: zipFilename || 'Siyer_571_632_Arastirma_Metinleri.zip',
+        included,
+        skipped
+    };
+}
+
 module.exports = {
     sanitizeDocxFilename,
     buildAsciiFallbackFilename,
     extractMonumentTextParagraphs,
     generateMonumentDocxBuffer,
-    generateAllMonumentsZipBuffer
+    generateAllMonumentsZipBuffer,
+    generateSiyerYearDocxBuffer,
+    generateAllSiyerYearsZipBuffer
 };
