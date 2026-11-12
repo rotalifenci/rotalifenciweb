@@ -25,7 +25,7 @@
     let activeFilter = "all";
     let activePeriodFilter = "all";
     let activeStudentFilterId = "all";
-    let activeSort = "alpha";
+    let activeSort = "original";
     let activeYear = 571;
     let searchQuery = "";
     let workspaceView = "research"; // "research" | "analysis"
@@ -495,13 +495,14 @@
                 <!-- 📋 SOL PANEL: LİSTE VE FİLTRELER (4 Sütun) -->
                 <div class="lg:col-span-4 bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
                     
-                    ${activeProjectId === 'proje-tarih' ? renderStudentSelectionPanel(projData) : `
+                    ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? renderStudentSelectionPanel(projData) : ''}
+                    ${activeProjectId !== 'proje-tarih' ? `
                     <!-- Arama Kutusu -->
                     <div class="relative">
-                        <input type="text" id="tubitak-search-input" value="${escapeHtml(searchQuery)}" oninput="window.RotaliTubitak.handleSearch(this.value)" placeholder="Arama yapınız (eser, bilim insanı, yıl)..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-all shadow-2xs">
+                        <input type="text" id="tubitak-search-input" value="${escapeHtml(searchQuery)}" oninput="window.RotaliTubitak.handleSearch(this.value)" placeholder="${activeProjectId === 'proje-bilim' ? 'Bilim insanı adına göre ara...' : 'Arama yapınız (eser, bilim insanı, yıl)...'}" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-all shadow-2xs">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     </div>
-                    `}
+                    ` : ''}
 
                     <!-- PROJEYE ÖZEL FİLTRE BİLEŞENLERİ -->
                     ${renderProjectSpecificFilters()}
@@ -509,7 +510,7 @@
                     <!-- İlerleme Özeti -->
                     <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-600">Listelenen Kayıt:</span>
-                        <span class="font-black text-slate-900">${items.length} ${activeProjectId === 'proje-tarih' ? 'Eser' : 'Konu'}</span>
+                        <span class="font-black text-slate-900">${items.length} ${activeProjectId === 'proje-tarih' ? 'Eser' : (activeProjectId === 'proje-bilim' ? 'Bilim İnsanı' : 'Konu')}</span>
                     </div>
 
                     ${activeProjectId === 'proje-tarih' ? `
@@ -520,37 +521,51 @@
                         </h3>
                         <span class="text-[11px] font-bold text-amber-700">${items.length} Eser</span>
                     </div>
-                    ` : ''}
+                    ` : (activeProjectId === 'proje-bilim' ? `
+                    <div class="flex items-center justify-between px-1 pt-1">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-atom text-amber-600"></i>
+                            <span>Bilim İnsanları</span>
+                        </h3>
+                        <span class="text-[11px] font-bold text-amber-700">${items.length} Bilim İnsanı</span>
+                    </div>
+                    ` : '')}
 
                     <!-- Kayıt Listesi (Kaydırılabilir) -->
                     <div class="space-y-2 max-h-[620px] overflow-y-auto pr-1 custom-scrollbar">
                         ${items.length === 0 ? `
                         <div class="p-6 text-center rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-500">
-                            Seçili filtre kriterlerine uygun eser bulunamadı.
+                            Seçili filtre kriterlerine uygun kayıt bulunamadı.
                         </div>
                         ` : items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
-                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : 18;
+                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 13 : 18);
+                            const pct = totalCriteria > 0 ? Math.round((filledCount / totalCriteria) * 100) : 0;
                             const status = getItemStatus(it.id);
                             const permanentOrder = getItemPermanentOrder(it);
-                            const ownerStu = activeProjectId === 'proje-tarih' ? getStudentById(getItemAssignedStudentId(it)) : null;
+                            const ownerStu = (activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? getStudentById(getItemAssignedStudentId(it)) : null;
 
                             return `
                             <div onclick="window.RotaliTubitak.selectItem('${it.id}')" class="p-3.5 rounded-2xl transition-all cursor-pointer border flex flex-col gap-1.5 ${isSelected ? 'bg-amber-50/80 border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'bg-slate-50/60 hover:bg-slate-100 border-slate-200'}">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                                        ${activeProjectId === 'proje-tarih' ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-black">#${permanentOrder}</span>` : ''}
+                                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-black">#${permanentOrder}</span>` : ''}
                                         <span>${it.district || it.field || (it.year ? `${it.year}. Yıl` : 'Kayıt')}</span>
                                     </span>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${getStatusBadgeClass(status)}">
                                         ${getStatusLabel(status)}
                                     </span>
                                 </div>
-                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${activeProjectId === 'proje-tarih' ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
+                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
                                 ${ownerStu ? `
                                 <div class="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg px-2 py-0.5 self-start">
                                     <i class="fa-solid fa-user-graduate mr-1"></i>${escapeHtml(ownerStu.name)}
+                                </div>
+                                ` : ''}
+                                ${activeProjectId === 'proje-bilim' ? `
+                                <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mt-0.5">
+                                    <div class="h-full ${pct === 100 ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full" style="width: ${pct}%;"></div>
                                 </div>
                                 ` : ''}
                                 <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 pt-1 border-t border-slate-200/60">
@@ -611,26 +626,12 @@
 
         if (activeProjectId === "proje-bilim") {
             return `
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Bilim Dalı</label>
-                    <select onchange="window.RotaliTubitak.setDistrictFilter(this.value)" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
-                        <option value="all" ${activeFilter === 'all' ? 'selected' : ''}>Tüm Alanlar</option>
-                        <option value="astronomi" ${activeFilter === 'astronomi' ? 'selected' : ''}>Astronomi & Geometri</option>
-                        <option value="tip" ${activeFilter === 'tip' ? 'selected' : ''}>Tıp & Biyoloji</option>
-                        <option value="fizik" ${activeFilter === 'fizik' ? 'selected' : ''}>Optik & Fizik</option>
-                        <option value="matematik" ${activeFilter === 'matematik' ? 'selected' : ''}>Matematik & Cebir</option>
-                        <option value="mekanik" ${activeFilter === 'mekanik' ? 'selected' : ''}>Robotik & Mekanik</option>
-                        <option value="felsefe" ${activeFilter === 'felsefe' ? 'selected' : ''}>Felsefe & Mantık</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Sıralama</label>
-                    <select onchange="window.RotaliTubitak.setSortOrder(this.value)" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
-                        <option value="alpha" ${activeSort === 'alpha' ? 'selected' : ''}>Alfabetik (A-Z)</option>
-                        <option value="chrono" ${activeSort === 'chrono' ? 'selected' : ''}>Kronolojik (Tarih)</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Sıralama</label>
+                <select onchange="window.RotaliTubitak.setSortOrder(this.value)" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                    <option value="original" ${activeSort === 'original' ? 'selected' : ''}>Orijinal Sıra (1–98)</option>
+                    <option value="alpha" ${activeSort === 'alpha' ? 'selected' : ''}>Alfabetik (A-Z)</option>
+                </select>
             </div>
             `;
         }
@@ -672,7 +673,7 @@
         const isTeacher = currentSession.role === "teacher";
         const itemStatus = getItemStatus(item.id);
         const permanentOrder = getItemPermanentOrder(item);
-        const ownerStu = activeProjectId === "proje-tarih" ? getStudentById(getItemAssignedStudentId(item)) : null;
+        const ownerStu = (activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim") ? getStudentById(getItemAssignedStudentId(item)) : null;
         const canEditItem = isItemEditableByCurrentUser(item);
 
         return `
@@ -681,9 +682,9 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        ${activeProjectId === 'proje-tarih' ? `
+                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? `
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200 uppercase">
-                            Eser #${permanentOrder}
+                            ${activeProjectId === 'proje-bilim' ? `Bilim İnsanı #${permanentOrder}` : `Eser #${permanentOrder}`}
                         </span>
                         ` : ''}
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-200 uppercase">
@@ -706,10 +707,22 @@
                 </div>
             </div>
 
+            ${activeProjectId === 'proje-bilim' ? `
+            <div class="p-3.5 rounded-2xl bg-slate-100/90 border border-slate-200 flex items-center justify-between gap-3">
+                <div>
+                    <span class="block text-[10px] font-black uppercase tracking-wider text-slate-500">BİLİM İNSANININ ADI</span>
+                    <div class="text-sm sm:text-base font-black text-slate-900 mt-0.5">${escapeHtml(item.title)}</div>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-[10px] font-bold text-slate-500 shrink-0">
+                    <i class="fa-solid fa-shield-halved mr-1 text-indigo-500"></i>Sabit Kayıt
+                </span>
+            </div>
+            ` : ''}
+
             ${!canEditItem && ownerStu ? `
             <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-bold text-amber-900 flex items-center gap-2">
                 <i class="fa-solid fa-lock text-amber-600"></i>
-                <span>Bu eser <strong>${escapeHtml(ownerStu.name)}</strong> sorumluluğundadır. Kendi atanmış eserlerinizi düzenlemek için kendi öğrenci kartınızı seçiniz.</span>
+                <span>Bu ${activeProjectId === 'proje-bilim' ? 'bilim insanı' : 'eser'} <strong>${escapeHtml(ownerStu.name)}</strong> sorumluluğundadır. Kendi atanmış kayıtlarınızı düzenlemek için kendi öğrenci kartınızı seçiniz.</span>
             </div>
             ` : ''}
 
@@ -734,7 +747,7 @@
                     </button>
                     ` : `
                     <div class="flex items-center gap-1.5 flex-wrap">
-                        ${activeProjectId === 'proje-tarih' ? `
+                        ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? `
                         <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Yalnızca kaydedilmiş araştırma metinlerini .docx olarak indir">
                             <i class="fa-solid fa-file-word"></i>
                             <span>Word Olarak İndir</span>
@@ -792,6 +805,16 @@
                         class="tubitak-criterion-textarea resize-y w-full px-3.5 py-2.5 ${canEditItem ? 'bg-white text-slate-800' : 'bg-slate-100 text-slate-500 cursor-not-allowed'} border border-slate-200 rounded-xl text-xs sm:text-sm font-medium placeholder-slate-400 focus:outline-none transition-colors leading-relaxed custom-scrollbar"
                     >${escapeHtml(contentVal)}</textarea>
 
+                    ${crit.supportsLatex ? `
+                    <div class="p-3 rounded-xl bg-indigo-50/70 border border-indigo-200/80 space-y-1">
+                        <div class="flex items-center justify-between text-[10px] font-black text-indigo-800 uppercase tracking-wider">
+                            <span><i class="fa-solid fa-square-root-variable mr-1"></i>LaTeX Matematiksel Gösterim Önizlemesi</span>
+                            <span class="font-semibold text-indigo-600 normal-case">Örnek: $x^2 + bx = c$ veya $$\\sum_{k=1}^n k$$</span>
+                        </div>
+                        <div id="latex-preview-${crit.key}" class="text-xs sm:text-sm text-slate-800 leading-relaxed min-h-[22px] whitespace-pre-wrap">${renderLatexHtmlString(contentVal)}</div>
+                    </div>
+                    ` : ''}
+
                     <!-- Alt Bilgi: Sürüm, Son Düzenleyen & Sınırsız Karakter/Kelime Sayısı -->
                     <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-1">
                         <span class="flex items-center gap-1">
@@ -835,38 +858,44 @@
     }
 
     // 8. Yardımcılar, Öğrenci Görev Dağılımı ve Filtreleme Mantıkları
+    function isProjectDistributionValid(projectId = activeProjectId) {
+        const items = seedData?.projects?.[projectId]?.items || [];
+        if (projectId === "proje-tarih") return items.length === 40;
+        if (projectId === "proje-bilim") return items.length === 98;
+        return true;
+    }
+
     function isProje1DistributionValid() {
-        const items = seedData?.projects?.["proje-tarih"]?.items || [];
-        return items.length === 40;
+        return isProjectDistributionValid("proje-tarih");
+    }
+
+    function getProjectStudents(projectId = activeProjectId) {
+        return seedData?.projects?.[projectId]?.studentTeam || [];
     }
 
     function getProje1Students() {
-        return seedData?.projects?.["proje-tarih"]?.studentTeam || [
-            { id: "stu-busenur", name: "Busenur Esila ÖZDEMİR", groupLabel: "1. GRUP", range: [1, 14] },
-            { id: "stu-hazel", name: "Hazel Mina ŞİMŞEK", groupLabel: "2. GRUP", range: [15, 27] },
-            { id: "stu-zeynep", name: "Zeynep Ecrin ELİŞ", groupLabel: "3. GRUP", range: [28, 40] }
-        ];
+        return getProjectStudents("proje-tarih");
     }
 
-    function getItemPermanentOrder(item) {
+    function getItemPermanentOrder(item, projectId = activeProjectId) {
         if (!item) return 0;
         if (typeof item.orderIndex === "number" && item.orderIndex > 0) return item.orderIndex;
-        const items = seedData?.projects?.[activeProjectId]?.items || [];
+        const items = seedData?.projects?.[projectId]?.items || [];
         const idx = items.findIndex(x => x.id === item.id);
         return idx >= 0 ? idx + 1 : 0;
     }
 
-    function getItemAssignedStudentId(item) {
+    function getItemAssignedStudentId(item, projectId = activeProjectId) {
         if (!item) return null;
         const custom = runtimeAssignments?.[item.id]?.assignedStudentId;
         if (custom) return custom;
-        if (!isProje1DistributionValid()) return null;
+        if (!isProjectDistributionValid(projectId)) return null;
         return item.assignedStudentId || null;
     }
 
-    function getStudentById(stuId) {
+    function getStudentById(stuId, projectId = activeProjectId) {
         if (!stuId) return null;
-        return getProje1Students().find(s => s.id === stuId) || null;
+        return getProjectStudents(projectId).find(s => s.id === stuId) || null;
     }
 
     function normalizeTrName(str) {
@@ -883,9 +912,9 @@
             .trim();
     }
 
-    function resolveCurrentUserStudentId() {
+    function resolveCurrentUserStudentId(projectId = activeProjectId) {
         if (!currentSession) return null;
-        const students = getProje1Students();
+        const students = getProjectStudents(projectId);
         const rawId = String(currentSession.studentId || "").trim();
         if (students.some(s => s.id === rawId)) return rawId;
         const normName = normalizeTrName(currentSession.studentName || "");
@@ -903,20 +932,42 @@
     function isItemEditableByCurrentUser(item) {
         if (!currentSession || !item) return false;
         if (currentSession.role === "teacher") return true;
-        if (activeProjectId !== "proje-tarih") return true;
-        const myStuId = resolveCurrentUserStudentId();
-        const assignedStuId = getItemAssignedStudentId(item);
+        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim") return true;
+        const myStuId = resolveCurrentUserStudentId(activeProjectId);
+        const assignedStuId = getItemAssignedStudentId(item, activeProjectId);
         if (myStuId && assignedStuId) {
             return myStuId === assignedStuId;
         }
         return true;
     }
 
-    function computeStudentStats(stuId) {
-        const projData = seedData?.projects?.["proje-tarih"] || {};
+    function renderLatexHtmlString(rawText) {
+        const text = String(rawText || "");
+        if (!text.trim()) {
+            return '<span class="text-slate-400 italic text-[11px]">Formül önizlemesi için $...$ veya $$...$$ biçiminde LaTeX ifadesi yazabilirsiniz.</span>';
+        }
+        if (typeof window !== "undefined" && window.katex && typeof window.katex.renderToString === "function") {
+            const escaped = escapeHtml(text);
+            return escaped
+                .replace(/\$\$([\s\S]+?)\$\$/g, (_, expr) => {
+                    try {
+                        return `<div class="my-1 overflow-x-auto">${window.katex.renderToString(expr.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"), { displayMode: true, throwOnError: false })}</div>`;
+                    } catch (e) { return _; }
+                })
+                .replace(/\$([^$\n]+?)\$/g, (_, expr) => {
+                    try {
+                        return window.katex.renderToString(expr.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"), { displayMode: false, throwOnError: false });
+                    } catch (e) { return _; }
+                });
+        }
+        return escapeHtml(text);
+    }
+
+    function computeStudentStats(stuId, projectId = activeProjectId) {
+        const projData = seedData?.projects?.[projectId] || {};
         const items = projData.items || [];
-        const totalCriteria = (projData.criteriaList || []).length || 18;
-        const assignedItems = items.filter(it => getItemAssignedStudentId(it) === stuId);
+        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 13 : 18);
+        const assignedItems = items.filter(it => getItemAssignedStudentId(it, projectId) === stuId);
         let startedCount = 0;
         let completedCount = 0;
         let approvedCount = 0;
@@ -924,7 +975,7 @@
         let lastUpdatedAt = null;
 
         assignedItems.forEach(it => {
-            const filled = countItemFilledCriteria(it.id);
+            const filled = countItemFilledCriteria(it.id, projectId);
             filledCriteria += filled;
             if (filled > 0) startedCount++;
             if (filled === totalCriteria) completedCount++;
@@ -956,10 +1007,13 @@
     }
 
     function renderStudentSelectionPanel(projData) {
-        const students = getProje1Students();
+        const projectId = projData?.id || activeProjectId;
+        const students = getProjectStudents(projectId);
         const isTeacher = currentSession?.role === "teacher";
-        const distValid = isProje1DistributionValid();
-        const myStuId = resolveCurrentUserStudentId();
+        const distValid = isProjectDistributionValid(projectId);
+        const myStuId = resolveCurrentUserStudentId(projectId);
+        const expectedTotal = projectId === "proje-bilim" ? 98 : 40;
+        const unitLabel = projectId === "proje-bilim" ? "Bilim İnsanı" : "Eser";
 
         return `
         <div class="space-y-2.5">
@@ -978,15 +1032,15 @@
             ${!distValid && isTeacher ? `
             <div class="p-3 rounded-2xl bg-red-50 border border-red-200 text-[11px] font-bold text-red-800 flex items-start gap-2">
                 <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
-                <span>Uyarı: Mevcut eser sayısı 40 olarak doğrulanamadığı için (${(projData.items || []).length}) otomatik görev dağılımı devre dışı bırakıldı.</span>
+                <span>Uyarı: Mevcut kayıt sayısı ${expectedTotal} olarak doğrulanamadığı için (${(projData.items || []).length}) otomatik görev dağılımı devre dışı bırakıldı.</span>
             </div>
             ` : ''}
 
-            <div class="grid grid-cols-1 gap-2 max-h-[270px] overflow-y-auto pr-0.5 custom-scrollbar">
+            <div class="grid grid-cols-1 gap-2 max-h-[290px] overflow-y-auto pr-0.5 custom-scrollbar">
                 ${students.map(stu => {
                     const isSelected = activeStudentFilterId === stu.id;
                     const isMe = myStuId === stu.id;
-                    const stats = computeStudentStats(stu.id);
+                    const stats = computeStudentStats(stu.id, projectId);
                     return `
                     <button type="button" onclick="window.RotaliTubitak.selectStudentFilter('${stu.id}')" class="w-full text-left p-3 rounded-2xl border transition-all cursor-pointer ${isSelected ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-400/20 shadow-sm' : 'bg-slate-50/80 hover:bg-slate-100 border-slate-200'}">
                         <div class="flex items-center justify-between gap-2">
@@ -999,11 +1053,11 @@
                                         <span>${escapeHtml(stu.name)}</span>
                                         ${isMe ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[9px] font-black">SİZ</span>' : ''}
                                     </div>
-                                    <div class="text-[10px] font-bold text-slate-500">${escapeHtml(stu.groupLabel)} • ${stu.range ? `${stu.range[0]}–${stu.range[1]}. Eserler` : ''}</div>
+                                    <div class="text-[10px] font-bold text-slate-500">${escapeHtml(stu.groupLabel)} • ${stu.range ? `${stu.range[0]}–${stu.range[1]}. ${unitLabel}` : ''}</div>
                                 </div>
                             </div>
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isSelected ? 'bg-amber-500 text-slate-950' : 'bg-white border border-slate-200 text-slate-700'} shrink-0">
-                                ${stats.assignedTotal} Eser
+                                ${stats.assignedTotal} ${unitLabel}
                             </span>
                         </div>
                         <div class="mt-2 space-y-1">
@@ -1012,7 +1066,7 @@
                             </div>
                             <div class="flex items-center justify-between text-[10px] font-bold text-slate-600 flex-wrap gap-1">
                                 <span>Başlanan: <strong class="text-slate-900">${stats.startedCount}</strong> • Tamam: <strong class="text-emerald-700">${stats.completedCount}</strong></span>
-                                <span>Kriter: <strong class="text-indigo-700">${stats.filledCriteria}</strong> / Eksik: <strong class="text-amber-700">${stats.missingCriteria}</strong></span>
+                                <span>İlerleme: <strong class="text-indigo-700">%${stats.pct}</strong> (${stats.filledCriteria}/${stats.totalPossible})</span>
                             </div>
                         </div>
                     </button>
@@ -1027,9 +1081,9 @@
         const projData = seedData?.projects?.[activeProjectId] || {};
         let list = [...(projData.items || [])];
 
-        // Öğrenci Filtresi (Yalnızca Proje 1)
-        if (activeProjectId === "proje-tarih" && activeStudentFilterId !== "all") {
-            list = list.filter(it => getItemAssignedStudentId(it) === activeStudentFilterId);
+        // Öğrenci Filtresi (Proje 1 & Proje 2)
+        if ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim") && activeStudentFilterId !== "all") {
+            list = list.filter(it => getItemAssignedStudentId(it, activeProjectId) === activeStudentFilterId);
         }
 
         // Arama filtresi (Proje 2 & Proje 3)
@@ -1044,13 +1098,9 @@
             );
         }
 
-        // İlçe / Bilim Dalı Filtresi
-        if (activeFilter !== "all") {
-            if (activeProjectId === "proje-tarih") {
-                list = list.filter(it => it.district === activeFilter);
-            } else if (activeProjectId === "proje-bilim") {
-                list = list.filter(it => it.fieldGroup === activeFilter);
-            }
+        // İlçe Filtresi
+        if (activeFilter !== "all" && activeProjectId === "proje-tarih") {
+            list = list.filter(it => it.district === activeFilter);
         }
 
         // Tarihsel Dönem Filtresi
@@ -1063,20 +1113,20 @@
             list = list.filter(it => it.year === activeYear);
         }
 
-        // Sıralama (Proje 1 tanımlı sıra korunur; Bilim İnsanları projesinde sıralama uygulanır)
+        // Sıralama (Proje 1 tanımlı sıra korunur; Bilim İnsanları projesinde orijinal veya alfabetik sıralanır)
         if (activeProjectId === "proje-bilim") {
             if (activeSort === "alpha") {
                 list.sort((a, b) => a.title.localeCompare(b.title, "tr"));
-            } else if (activeSort === "chrono") {
-                list.sort((a, b) => (a.year || 0) - (b.year || 0));
+            } else {
+                list.sort((a, b) => getItemPermanentOrder(a, "proje-bilim") - getItemPermanentOrder(b, "proje-bilim"));
             }
         }
 
         return list;
     }
 
-    function countItemFilledCriteria(itemId) {
-        const projData = seedData?.projects?.[activeProjectId] || {};
+    function countItemFilledCriteria(itemId, projectId = activeProjectId) {
+        const projData = seedData?.projects?.[projectId] || {};
         const criteriaList = projData.criteriaList || [];
         let count = 0;
         for (const crit of criteriaList) {
@@ -1397,6 +1447,107 @@
         `;
     }
 
+    function renderProje2TeacherStudentTracking() {
+        const projData = seedData?.projects?.["proje-bilim"] || {};
+        const items = projData.items || [];
+        const students = getProjectStudents("proje-bilim");
+        const totalCriteria = (projData.criteriaList || []).length || 13;
+        const distValid = isProjectDistributionValid("proje-bilim");
+
+        return `
+        <div class="space-y-4 pt-4 border-t border-slate-200">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+                <h4 class="font-black text-slate-900 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-atom text-purple-600"></i>
+                    <span>Proje 2 – Matematik Tarihi Bilim İnsanları Takibi & Görev Atamaları</span>
+                </h4>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="window.RotaliTubitak.downloadAllProje1Word(this, 'proje-bilim')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="98 bilim insanının her biri için ayrı .docx oluşturup ZIP olarak indir">
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <span>Tüm Bilim İnsanlarını Word Olarak İndir</span>
+                    </button>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-50 text-purple-700 border border-purple-200">
+                        Toplam ${items.length} Bilim İnsanı • ${students.length} Öğrenci
+                    </span>
+                </div>
+            </div>
+
+            ${!distValid ? `
+            <div class="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-xs font-bold text-red-800 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+                <span>Dikkat: Proje 2 bilim insanı sayısı 98 olarak doğrulanamadı (mevcut: ${items.length}).</span>
+            </div>
+            ` : ''}
+
+            <div class="space-y-3">
+                ${students.map(stu => {
+                    const stats = computeStudentStats(stu.id, "proje-bilim");
+                    const lastDateStr = stats.lastUpdatedAt ? new Date(stats.lastUpdatedAt).toLocaleString("tr-TR") : "Henüz işlem yok";
+                    return `
+                    <details class="rounded-2xl border border-slate-200 bg-slate-50/70 overflow-hidden">
+                        <summary class="p-3.5 bg-white border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer select-none">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-xs shrink-0">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                </span>
+                                <div>
+                                    <div class="font-black text-slate-900 text-xs sm:text-sm">${escapeHtml(stu.name)} <span class="text-[10px] font-bold text-slate-500">(${escapeHtml(stu.groupLabel)})</span></div>
+                                    <div class="text-[10px] font-semibold text-slate-500">Son Düzenleme: ${escapeHtml(lastDateStr)}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap text-[10px] font-black">
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-800">${stats.assignedTotal} Kişi</span>
+                                <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Başlanan: ${stats.startedCount}</span>
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Tamam: ${stats.completedCount}</span>
+                                <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Kriter: ${stats.filledCriteria}/${stats.totalPossible} (%${stats.pct})</span>
+                            </div>
+                        </summary>
+                        <div class="p-3 space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar">
+                            ${stats.assignedItems.map(it => {
+                                const orderNum = getItemPermanentOrder(it, "proje-bilim");
+                                const filled = countItemFilledCriteria(it.id, "proje-bilim");
+                                const missing = Math.max(0, totalCriteria - filled);
+                                const status = getItemStatus(it.id);
+                                return `
+                                <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="font-black text-slate-900 text-xs truncate">
+                                            <span class="text-purple-700">#${orderNum}</span> ${escapeHtml(it.title)}
+                                        </div>
+                                        <div class="text-[10px] font-semibold text-slate-500 mt-0.5">
+                                            Dolu: <strong class="text-slate-800">${filled}/${totalCriteria}</strong> • Eksik: <strong class="text-amber-700">${missing}</strong> • Durum: <span class="font-bold">${getStatusLabel(status)}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 flex-wrap shrink-0">
+                                        <select id="reassign-p2-${it.id}" class="px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700">
+                                            ${students.map(optStu => `<option value="${optStu.id}" ${optStu.id === stu.id ? 'selected' : ''}>${escapeHtml(optStu.name)}</option>`).join("")}
+                                        </select>
+                                        <button type="button" onclick="window.RotaliTubitak.reassignStudentWork('${it.id}', document.getElementById('reassign-p2-${it.id}').value, 'proje-bilim')" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] cursor-pointer" title="Öğrenci Atamasını Güncelle">
+                                            Ata
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${it.id}', this, 'proje-bilim')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] cursor-pointer flex items-center gap-1" title="Kayıtlı araştırma metinlerini Word (.docx) olarak indir">
+                                            <i class="fa-solid fa-file-word"></i>
+                                            <span>Word Olarak İndir</span>
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.switchProject('proje-bilim'); window.RotaliTubitak.openItemInEditor('${it.id}'); document.getElementById('tubitak-teacher-modal').classList.add('hidden');" class="px-2 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-[10px] cursor-pointer">
+                                            İncele
+                                        </button>
+                                        <button type="button" onclick="window.RotaliTubitak.teacherReview('${it.id}', 'approved')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer">
+                                            Onayla
+                                        </button>
+                                    </div>
+                                </div>
+                                `;
+                            }).join("")}
+                        </div>
+                    </details>
+                    `;
+                }).join("")}
+            </div>
+        </div>
+        `;
+    }
+
     function openTeacherDashboardModal() {
         let modal = document.getElementById("tubitak-teacher-modal");
         if (!modal) {
@@ -1467,6 +1618,9 @@
 
                 <!-- Proje 1: Öğrenci Araştırma Takibi ve Görev Yönetimi -->
                 ${renderProje1TeacherStudentTracking()}
+
+                <!-- Proje 2: Matematik Tarihi Bilim İnsanları Takibi -->
+                ${renderProje2TeacherStudentTracking()}
 
                 <!-- Son Düzenleme Akışı (Canlı İzleme) -->
                 <div>
@@ -2022,7 +2176,9 @@
                     if (data.role === "student" && data.projectId !== "all") {
                         activeProjectId = data.projectId;
                     }
-                    activeStudentFilterId = (activeProjectId === "proje-tarih" && data.role === "student") ? (resolveCurrentUserStudentId() || "all") : "all";
+                    activeStudentFilterId = ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim") && data.role === "student")
+                        ? (resolveCurrentUserStudentId(activeProjectId) || "all")
+                        : "all";
                     await syncProjectData(activeProjectId);
                     startLivePolling();
                     renderMainContainer(document.getElementById("tubitak-research-container"));
@@ -2073,21 +2229,22 @@
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
-        async downloadMonumentWord(itemId, btnEl) {
+        async downloadMonumentWord(itemId, btnEl, projectId) {
             if (!currentSession || currentSession.role !== "teacher") {
                 showNotice("Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir.", "error");
                 return;
             }
-            const projItems = seedData?.projects?.["proje-tarih"]?.items || [];
+            const targetProjId = projectId || (activeProjectId === "proje-bilim" ? "proje-bilim" : "proje-tarih");
+            const projItems = seedData?.projects?.[targetProjId]?.items || [];
             const item = projItems.find(it => it.id === itemId);
-            const fallbackName = `${(item?.title || itemId || "Tarihi_Eser").replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim()}.docx`;
+            const fallbackName = `${(item?.title || itemId || "Arastirma_Metni").replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim()}.docx`;
             const origHtml = btnEl ? btnEl.innerHTML : "";
             if (btnEl) {
                 btnEl.disabled = true;
                 btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hazırlanıyor...</span>`;
             }
             try {
-                const res = await fetch(`/api/tubitak-records?projectId=proje-tarih&exportDocx=single&itemId=${encodeURIComponent(itemId)}`, {
+                const res = await fetch(`/api/tubitak-records?projectId=${encodeURIComponent(targetProjId)}&exportDocx=single&itemId=${encodeURIComponent(itemId)}`, {
                     headers: { "Authorization": `Bearer ${currentSession.token}` }
                 });
                 if (!res.ok) {
@@ -2119,18 +2276,22 @@
             }
         },
 
-        async downloadAllProje1Word(btnEl) {
+        async downloadAllProje1Word(btnEl, projectId) {
             if (!currentSession || currentSession.role !== "teacher") {
                 showNotice("Toplu Word indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir.", "error");
                 return;
             }
+            const targetProjId = projectId || "proje-tarih";
+            const zipFilename = targetProjId === "proje-bilim"
+                ? "Matematik_Tarihinde_Bilim_Insanlari_Arastirma_Metinleri.zip"
+                : "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip";
             const origHtml = btnEl ? btnEl.innerHTML : "";
             if (btnEl) {
                 btnEl.disabled = true;
                 btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>ZIP Hazırlanıyor...</span>`;
             }
             try {
-                const res = await fetch("/api/tubitak-records?projectId=proje-tarih&exportDocx=all", {
+                const res = await fetch(`/api/tubitak-records?projectId=${encodeURIComponent(targetProjId)}&exportDocx=all`, {
                     headers: { "Authorization": `Bearer ${currentSession.token}` }
                 });
                 if (!res.ok) {
@@ -2148,14 +2309,15 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip";
+                a.download = zipFilename;
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
+                const unitWord = targetProjId === "proje-bilim" ? "bilim insanı" : "eser";
                 const infoText = includedCount
-                    ? `${includedCount} eser için ayrı Word belgeleri ZIP olarak indirildi${Number(skippedCount) > 0 ? ` (${skippedCount} boş eser atlandı)` : ""}.`
-                    : "Tüm eserlerin Word belgeleri ZIP olarak indirildi.";
+                    ? `${includedCount} ${unitWord} için ayrı Word belgeleri ZIP olarak indirildi${Number(skippedCount) > 0 ? ` (${skippedCount} boş kayıt atlandı)` : ""}.`
+                    : "Tüm kayıtların Word belgeleri ZIP olarak indirildi.";
                 showNotice(infoText, "success");
             } catch (err) {
                 showNotice("Toplu Word indirme hatası: " + err.message, "error");
@@ -2167,11 +2329,12 @@
             }
         },
 
-        async reassignStudentWork(itemId, assignedStudentId) {
+        async reassignStudentWork(itemId, assignedStudentId, projectId) {
             if (!currentSession || currentSession.role !== "teacher") {
                 showNotice("Bu işlemi yalnızca öğretmen yapabilir.", "error");
                 return;
             }
+            const targetProjId = projectId || "proje-tarih";
             try {
                 const res = await fetch("/api/tubitak-records", {
                     method: "PUT",
@@ -2181,17 +2344,17 @@
                     },
                     body: JSON.stringify({
                         action: "reassign_item",
-                        projectId: "proje-tarih",
+                        projectId: targetProjId,
                         itemId,
                         assignedStudentId
                     })
                 });
                 const data = await res.json();
                 if (res.ok && data.ok) {
-                    runtimeAssignments = { ...(data.assignments || {}) };
+                    runtimeAssignments = { ...runtimeAssignments, ...(data.assignments || {}) };
                     openTeacherDashboardModal();
                     renderMainContainer(document.getElementById("tubitak-research-container"));
-                    showNotice("Eser görev ataması güncellendi.", "success");
+                    showNotice("Görev ataması güncellendi.", "success");
                 } else {
                     showNotice(data.error || "Görev ataması güncellenemedi.", "error");
                 }
@@ -2259,6 +2422,8 @@
             if (el) autoGrowTextarea(el);
             const countEl = document.getElementById(`char-count-${criterionKey}`);
             if (countEl) countEl.textContent = formatFieldStats(val);
+            const latexPreviewEl = document.getElementById(`latex-preview-${criterionKey}`);
+            if (latexPreviewEl) latexPreviewEl.innerHTML = renderLatexHtmlString(val);
             queueAutoSave(criterionKey, val);
         },
 

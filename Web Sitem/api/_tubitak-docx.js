@@ -125,7 +125,7 @@ async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
     };
 }
 
-async function generateAllMonumentsZipBuffer(items, criteriaList, recordsMap) {
+async function generateAllMonumentsZipBuffer(items, criteriaList, recordsMap, zipFilename) {
     const zip = new JSZip();
     const included = [];
     const skipped = [];
@@ -163,7 +163,7 @@ async function generateAllMonumentsZipBuffer(items, criteriaList, recordsMap) {
 
     return {
         buffer: zipBuffer,
-        filename: 'Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip',
+        filename: zipFilename || 'Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip',
         included,
         skipped
     };

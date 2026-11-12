@@ -334,7 +334,73 @@ async function runTests() {
     assert.ok(zipEntries.includes("Halil Rıfat Paşa Köprüsü.docx"));
     console.log("   ✅ Başarılı! Gerçek .docx formatı, başlık/numara temizliği ve 40 eserin ayrı ZIP çıktısı doğrulandı.\n");
 
-    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (13/13 TEST PASSED)!");
+    // -------------------------------------------------------------
+    // TEST 14: Proje 2 (98 Bilim İnsanı, 5 Öğrenci, Yetki, Word & Toplu ZIP)
+    // -------------------------------------------------------------
+    console.log("14. Proje 2 (Matematik Tarihi Bilim İnsanları) Uçtan Uca Testi:");
+    const bilimLogin = mockReqRes("POST", {
+        password: process.env.TUBITAK_BILIM_PASS || "bilim2026",
+        studentName: "Zümra DURAN",
+        studentPin: "301"
+    });
+    await tubitakAuthHandler(bilimLogin.req, bilimLogin.res);
+    assert.strictEqual(bilimLogin.getStatus(), 200);
+    const zumraToken = bilimLogin.getData().token;
+
+    const p2All = seedParsed.projects["proje-bilim"];
+    const hiraFirstItem = p2All.items[20]; // #21 MUSTAFA SIDKI (Hira)
+    const zumraFirstItem = p2All.items[0]; // #1 BİRCENDÎ (Zümra)
+
+    // Zümra, Hira'nın bilim insanını düzenleyememeli (403)
+    const p2Forbidden = mockReqRes("POST", {
+        projectId: "proje-bilim",
+        itemId: hiraFirstItem.id,
+        criterionKey: "c1_dogum_tarihi_yeri",
+        content: "Yetkisiz düzenleme"
+    }, {}, { authorization: `Bearer ${zumraToken}` });
+    await tubitakRecordsHandler(p2Forbidden.req, p2Forbidden.res);
+    assert.strictEqual(p2Forbidden.getStatus(), 403);
+
+    // Zümra kendi #1 bilim insanını (BİRCENDÎ) kaydedebilmeli (200)
+    const p2OwnSave = mockReqRes("POST", {
+        projectId: "proje-bilim",
+        itemId: zumraFirstItem.id,
+        criterionKey: "c9_yontemler_problemler",
+        content: "Astronomik hesaplamalarda trigonometrik oranlar: $\\sin^2(\\alpha) + \\cos^2(\\alpha) = 1$."
+    }, {}, { authorization: `Bearer ${zumraToken}` });
+    await tubitakRecordsHandler(p2OwnSave.req, p2OwnSave.res);
+    assert.strictEqual(p2OwnSave.getStatus(), 200);
+
+    // Öğretmen BİRCENDÎ için .docx indirebilmeli ve başlık/kriter adı içermemeli
+    const p2DocxReq = mockReqRes("GET", {}, {
+        projectId: "proje-bilim",
+        exportDocx: "single",
+        itemId: zumraFirstItem.id
+    }, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(p2DocxReq.req, p2DocxReq.res);
+    assert.strictEqual(p2DocxReq.getStatus(), 200);
+    const p2DocxZip = await JSZip.loadAsync(p2DocxReq.getData());
+    const p2Xml = await p2DocxZip.file("word/document.xml").async("string");
+    assert.ok(p2Xml.includes("trigonometrik oranlar"), "Proje 2 öğrenci metni Word belgesinde yer almalı");
+    assert.strictEqual(/Geliştirdiği Matematiksel Yöntemler|Doğum Tarihi ve Yeri|Zümra DURAN/.test(p2Xml), false);
+
+    // 98 bilim insanının tamamı için ayrı .docx -> ZIP üretimi
+    const p2Synth = {};
+    p2All.items.forEach((it, idx) => {
+        p2Synth[`${it.id}__c1_dogum_tarihi_yeri`] = { content: `Bilim insanı ${idx + 1} kaynak bilgisi: ${it.title}.` };
+    });
+    const p2ZipRes = await generateAllMonumentsZipBuffer(
+        p2All.items,
+        p2All.criteriaList,
+        p2Synth,
+        "Matematik_Tarihinde_Bilim_Insanlari_Arastirma_Metinleri.zip"
+    );
+    assert.strictEqual(p2ZipRes.included.length, 98, "98 bilim insanının tamamı ayrı .docx dosyası olarak üretilmeli");
+    const p2LoadedZip = await JSZip.loadAsync(p2ZipRes.buffer);
+    assert.strictEqual(Object.keys(p2LoadedZip.files).filter(n => n.endsWith(".docx")).length, 98);
+    console.log("   ✅ Başarılı! Proje 2 (98 bilim insanı, 5 öğrenci, yetki, .docx ve 98'li ZIP) doğrulandı.\n");
+
+    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (14/14 TEST PASSED)!");
 }
 
 runTests().catch(err => {

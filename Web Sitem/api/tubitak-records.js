@@ -16,21 +16,22 @@ const {
 const localStorePath = path.join(__dirname, '../data/tubitak-runtime-store.json');
 const seedDataPath = path.join(__dirname, '../data/tubitak-seed-data.json');
 
-let _cachedProje1Seed = null;
-function getProje1Seed() {
-    if (_cachedProje1Seed) return _cachedProje1Seed;
+const _cachedProjectSeeds = {};
+function getProjectSeed(projectId = 'proje-tarih') {
+    const targetId = projectId || 'proje-tarih';
+    if (_cachedProjectSeeds[targetId]) return _cachedProjectSeeds[targetId];
     try {
         if (fs.existsSync(seedDataPath)) {
             const parsed = JSON.parse(fs.readFileSync(seedDataPath, 'utf8'));
-            const p1 = parsed?.projects?.['proje-tarih'];
-            if (p1) {
-                const students = Array.isArray(p1.studentTeam) ? p1.studentTeam : [];
+            const proj = parsed?.projects?.[targetId];
+            if (proj) {
+                const students = Array.isArray(proj.studentTeam) ? proj.studentTeam : [];
                 const itemMap = {};
-                (p1.items || []).forEach((it) => {
+                (proj.items || []).forEach((it) => {
                     itemMap[it.id] = it.assignedStudentId || null;
                 });
-                _cachedProje1Seed = { students, itemMap };
-                return _cachedProje1Seed;
+                _cachedProjectSeeds[targetId] = { students, itemMap };
+                return _cachedProjectSeeds[targetId];
             }
         }
     } catch (e) {}
@@ -51,8 +52,8 @@ function normalizeTrName(str) {
         .trim();
 }
 
-function resolveSessionStudentId(session) {
-    const { students } = getProje1Seed();
+function resolveSessionStudentId(session, projectId = 'proje-tarih') {
+    const { students } = getProjectSeed(projectId);
     const rawId = String(session?.studentId || '').trim();
     if (students.some((s) => s.id === rawId)) return rawId;
     const normName = normalizeTrName(session?.studentName || '');
@@ -67,10 +68,15 @@ function resolveSessionStudentId(session) {
     return null;
 }
 
-function getEffectiveAssignedStudentId(store, itemId) {
-    const custom = store?.itemsMeta?.['proje-tarih_assignments']?.[itemId]?.assignedStudentId;
+function getEffectiveAssignedStudentId(store, projectId, itemId) {
+    if (itemId === undefined) {
+        itemId = projectId;
+        projectId = 'proje-tarih';
+    }
+    const metaKey = `${projectId}_assignments`;
+    const custom = store?.itemsMeta?.[metaKey]?.[itemId]?.assignedStudentId;
     if (custom) return custom;
-    const { itemMap } = getProje1Seed();
+    const { itemMap } = getProjectSeed(projectId);
     return itemMap[itemId] || null;
 }
 
@@ -144,30 +150,31 @@ module.exports = async function handler(req, res) {
         try {
             const reqProj = req.query.projectId || userProjectId;
 
-            // Dışa Aktarma (Word .docx / Toplu ZIP) - Yalnızca Öğretmen Yetkili (Proje 1)
+            // Dışa Aktarma (Word .docx / Toplu ZIP) - Yalnızca Öğretmen Yetkili (Proje 1 & Proje 2)
             const exportDocxMode = req.query.exportDocx;
             if (exportDocxMode === "single" || exportDocxMode === "all") {
                 if (userRole !== "teacher") {
                     return res.status(403).json({ ok: false, error: "Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir." });
                 }
 
+                const exportProjId = (reqProj === "proje-bilim" || reqProj === "proje-tarih") ? reqProj : "proje-tarih";
                 const parsedSeed = fs.existsSync(seedDataPath) ? JSON.parse(fs.readFileSync(seedDataPath, 'utf8')) : null;
-                const p1 = parsedSeed?.projects?.['proje-tarih'];
-                if (!p1 || !Array.isArray(p1.items) || !Array.isArray(p1.criteriaList)) {
-                    return res.status(500).json({ ok: false, error: "Proje 1 veri şablonu okunamadı." });
+                const projObj = parsedSeed?.projects?.[exportProjId];
+                if (!projObj || !Array.isArray(projObj.items) || !Array.isArray(projObj.criteriaList)) {
+                    return res.status(500).json({ ok: false, error: "Proje veri şablonu okunamadı." });
                 }
 
                 const store = readLocalStore();
                 const mergedRecords = {};
                 for (const [k, v] of Object.entries(store.records || {})) {
-                    if (v && v.projectId === 'proje-tarih') {
+                    if (v && v.projectId === exportProjId) {
                         mergedRecords[k] = v;
                     }
                 }
 
                 // Supabase bulut veritabanındaki daha güncel kayıtları da birleştir
                 const supaRows = await supabaseFetch('tubitak_records', {
-                    query: '?project_id=eq.proje-tarih&select=id,project_id,item_id,criterion_key,content,version,updated_at'
+                    query: `?project_id=eq.${encodeURIComponent(exportProjId)}&select=id,project_id,item_id,criterion_key,content,version,updated_at`
                 });
                 if (Array.isArray(supaRows)) {
                     for (const row of supaRows) {
@@ -178,7 +185,7 @@ module.exports = async function handler(req, res) {
                         if (!existing || rowTime > existingTime || (row.version || 0) > (existing.version || 0)) {
                             mergedRecords[key] = {
                                 id: key,
-                                projectId: 'proje-tarih',
+                                projectId: exportProjId,
                                 itemId: row.item_id,
                                 criterionKey: row.criterion_key,
                                 content: row.content || '',
@@ -191,13 +198,13 @@ module.exports = async function handler(req, res) {
 
                 if (exportDocxMode === "single") {
                     const targetItemId = String(req.query.itemId || '').trim();
-                    const item = p1.items.find((it) => it.id === targetItemId);
+                    const item = projObj.items.find((it) => it.id === targetItemId);
                     if (!item) {
-                        return res.status(404).json({ ok: false, error: "İstenen tarihî eser bulunamadı." });
+                        return res.status(404).json({ ok: false, error: "İstenen araştırma kaydı bulunamadı." });
                     }
-                    const docxResult = await generateMonumentDocxBuffer(item, p1.criteriaList, mergedRecords);
+                    const docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords);
                     if (!docxResult) {
-                        return res.status(404).json({ ok: false, error: "Bu eser için veritabanında kaydedilmiş araştırma metni bulunamadı." });
+                        return res.status(404).json({ ok: false, error: "Bu kayıt için veritabanında kaydedilmiş araştırma metni bulunamadı." });
                     }
                     const asciiName = buildAsciiFallbackFilename(docxResult.filename);
                     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
@@ -206,9 +213,12 @@ module.exports = async function handler(req, res) {
                     return res.status(200).send(docxResult.buffer);
                 }
 
-                const zipResult = await generateAllMonumentsZipBuffer(p1.items, p1.criteriaList, mergedRecords);
+                const zipName = exportProjId === "proje-bilim"
+                    ? "Matematik_Tarihinde_Bilim_Insanlari_Arastirma_Metinleri.zip"
+                    : "Sivas_Tarihi_Eserler_Arastirma_Metinleri.zip";
+                const zipResult = await generateAllMonumentsZipBuffer(projObj.items, projObj.criteriaList, mergedRecords, zipName);
                 if (!zipResult.buffer) {
-                    return res.status(404).json({ ok: false, error: "Hiçbir eser için veritabanında kaydedilmiş araştırma metni bulunamadı." });
+                    return res.status(404).json({ ok: false, error: "Hiçbir kayıt için veritabanında kaydedilmiş araştırma metni bulunamadı." });
                 }
                 res.setHeader("Content-Type", "application/zip");
                 res.setHeader("Content-Disposition", `attachment; filename="${zipResult.filename}"`);
@@ -239,6 +249,13 @@ module.exports = async function handler(req, res) {
             }
             const projFeedbacks = store.feedbacks.filter(f => reqProj === "all" || f.projectId === reqProj);
 
+            const projAssignments = reqProj === "all"
+                ? {
+                    ...((store.itemsMeta && store.itemsMeta['proje-tarih_assignments']) || {}),
+                    ...((store.itemsMeta && store.itemsMeta['proje-bilim_assignments']) || {})
+                }
+                : ((store.itemsMeta && store.itemsMeta[`${reqProj}_assignments`]) || {});
+
             return res.status(200).json({
                 ok: true,
                 projectId: reqProj,
@@ -246,7 +263,7 @@ module.exports = async function handler(req, res) {
                 revisions: projRevisions.slice(-100), // Son 100 revizyon
                 sources: projSources,
                 feedbacks: projFeedbacks,
-                assignments: (store.itemsMeta && store.itemsMeta['proje-tarih_assignments']) || {}
+                assignments: projAssignments
             });
         } catch (err) {
             return res.status(500).json({ ok: false, error: "Kayıtlar yüklenemedi: " + err.message });
@@ -277,12 +294,12 @@ module.exports = async function handler(req, res) {
             const recordKey = `${itemId}__${criterionKey}`;
             const store = readLocalStore();
 
-            // Güvenlik: Proje 1'de tanımlı öğrenci yalnızca kendi atanmış eserlerini düzenleyebilir
-            if (userRole !== "teacher" && projectId === "proje-tarih") {
-                const sessionStuId = resolveSessionStudentId(session);
-                const assignedStuId = getEffectiveAssignedStudentId(store, itemId);
+            // Güvenlik: Proje 1 ve Proje 2'de tanımlı öğrenci yalnızca kendi atanmış kayıtlarını düzenleyebilir
+            if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
+                const sessionStuId = resolveSessionStudentId(session, projectId);
+                const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                 if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
-                    return res.status(403).json({ ok: false, error: "Bu eser başka bir öğrenciye atanmıştır. Yalnızca kendi atanmış eserlerinizi düzenleyebilirsiniz." });
+                    return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi atanmış kayıtlarınızı düzenleyebilirsiniz." });
                 }
             }
             const existing = store.records[recordKey] || {
@@ -448,11 +465,11 @@ module.exports = async function handler(req, res) {
 
             // B) İncelemeye Gönder (Öğrenci)
             if (action === "submit_review") {
-                if (userRole !== "teacher" && projectId === "proje-tarih") {
-                    const sessionStuId = resolveSessionStudentId(session);
-                    const assignedStuId = getEffectiveAssignedStudentId(store, itemId);
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
+                    const sessionStuId = resolveSessionStudentId(session, projectId);
+                    const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
-                        return res.status(403).json({ ok: false, error: "Başka bir öğrenciye ait eseri incelemeye gönderemezsiniz." });
+                        return res.status(403).json({ ok: false, error: "Başka bir öğrenciye ait kaydı incelemeye gönderemezsiniz." });
                     }
                 }
                 for (const [k, rec] of Object.entries(store.records)) {
@@ -465,22 +482,24 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ ok: true, message: "Araştırma inceleme için öğretmene iletildi." });
             }
 
-            // B2) Öğretmen Eser Görev Ataması Güncelleme (Yalnızca Öğretmen)
+            // B2) Öğretmen Görev Ataması Güncelleme (Yalnızca Öğretmen)
             if (action === "reassign_item") {
                 if (userRole !== "teacher") {
                     return res.status(403).json({ ok: false, error: "Görev atama değişikliğini yalnızca yetkili öğretmen yapabilir." });
                 }
+                const targetProjId = (projectId === "proje-bilim" || projectId === "proje-tarih") ? projectId : "proje-tarih";
                 const { assignedStudentId } = req.body || {};
-                const { students, itemMap } = getProje1Seed();
+                const { students, itemMap } = getProjectSeed(targetProjId);
                 if (!itemId || !Object.prototype.hasOwnProperty.call(itemMap, itemId)) {
-                    return res.status(404).json({ ok: false, error: "Atanacak eser bulunamadı." });
+                    return res.status(404).json({ ok: false, error: "Atanacak kayıt bulunamadı." });
                 }
                 if (!students.some((s) => s.id === assignedStudentId)) {
                     return res.status(400).json({ ok: false, error: "Geçersiz öğrenci seçimi." });
                 }
+                const metaKey = `${targetProjId}_assignments`;
                 if (!store.itemsMeta) store.itemsMeta = {};
-                if (!store.itemsMeta["proje-tarih_assignments"]) store.itemsMeta["proje-tarih_assignments"] = {};
-                store.itemsMeta["proje-tarih_assignments"][itemId] = {
+                if (!store.itemsMeta[metaKey]) store.itemsMeta[metaKey] = {};
+                store.itemsMeta[metaKey][itemId] = {
                     itemId,
                     assignedStudentId,
                     updatedAt: now,
@@ -489,8 +508,8 @@ module.exports = async function handler(req, res) {
                 writeLocalStore(store);
                 return res.status(200).json({
                     ok: true,
-                    message: "Eser görev ataması güncellendi.",
-                    assignments: store.itemsMeta["proje-tarih_assignments"]
+                    message: "Görev ataması güncellendi.",
+                    assignments: store.itemsMeta[metaKey]
                 });
             }
 

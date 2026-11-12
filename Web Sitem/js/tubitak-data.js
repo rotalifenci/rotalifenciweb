@@ -784,214 +784,924 @@ window.TUBITAK_SEED_DATA = {
     },
     "proje-bilim": {
       "id": "proje-bilim",
-      "title": "Türk-İslam Bilim İnsanları Araştırma Sistemi",
+      "title": "Matematik Tarihinde Bilim İnsanları Dijital Araştırma Portalı",
       "code": "TUBITAK-2204-BILIM",
-      "badge": "TÜBİTAK 2204-B Bilim Tarihi & Felsefe",
-      "description": "Ortaçağ İslam dünyasında yetişmiş ve dünya bilim mirasına yön vermiş Türk-İslam bilginlerinin biyografi ve buluşları arşivi.",
+      "badge": "TÜBİTAK 2204-B Matematik Tarihi Araştırması",
+      "description": "Matematik tarihinde iz bırakmış 98 bilim insanının hayatları, bilimsel çalışmaları, matematiğe katkıları, eserleri ve matematik tarihindeki etkilerinin kaynaklara dayalı araştırma portalı.",
       "icon": "fa-solid fa-atom",
       "color": "from-cyan-600 via-blue-600 to-indigo-700",
       "criteriaList": [
         {
-          "key": "c1_name_dates",
-          "title": "1. Adı ve Doğum-Ölüm Tarihleri",
-          "placeholder": "Bilim insanının tam künyesi, lakabı, doğum ve ölüm yılları/yerleri...",
+          "key": "c1_dogum_tarihi_yeri",
+          "title": "1. Doğum Tarihi ve Yeri",
+          "placeholder": "Doğum tarihi ve doğduğu yere ilişkin literatür bilgilerini yazınız (belirsizse belirtiniz)...",
           "required": true
         },
         {
-          "key": "c2_period_geography",
-          "title": "2. Yaşadığı Dönem ve Coğrafya",
-          "placeholder": "Hangi yüzyılda, hangi devlet ve şehirlerde yaşadı?...",
+          "key": "c2_milliyeti",
+          "title": "2. Milliyeti",
+          "placeholder": "Kaynaklarda belirtilen milliyet, kültürel aidiyet veya tarihsel coğrafya bilgilerini yazınız...",
           "required": true
         },
         {
-          "key": "c3_education",
-          "title": "3. Eğitim Hayatı",
-          "placeholder": "Hangi medreselerde tahsil gördü, kimlerden ders aldı?...",
+          "key": "c3_yasadigi_donem",
+          "title": "3. Yaşadığı Tarihsel Dönem",
+          "placeholder": "Yaşadığı yüzyıl ve tarihsel dönemi yazınız...",
           "required": true
         },
         {
-          "key": "c4_biography",
+          "key": "c4_hayat_hikayesi",
           "title": "4. Hayat Hikâyesi",
-          "placeholder": "Çocukluğu, saray/rasathane görevleri, seyahatleri ve önemli dönüm noktaları...",
+          "placeholder": "Bilim insanının yaşam öyküsüne ait araştırma bilgilerini yazınız...",
           "required": true
         },
         {
-          "key": "c5_fields",
-          "title": "5. İlgilendiği Bilim Dalları",
-          "placeholder": "Astronomi, matematik, tıp, optik, mekanik vb. çalışma alanları...",
+          "key": "c5_egitim_hayati",
+          "title": "5. Eğitim Hayatı",
+          "placeholder": "Aldığı eğitimler, hocaları ve yetiştiği bilimsel çevreleri yazınız...",
           "required": true
         },
         {
-          "key": "c6_contributions",
-          "title": "6. Bilimsel Çalışmaları ve Katkıları",
-          "placeholder": "Geliştirdiği aletler, deneyler, teoriler ve dünya bilimine öncü katkıları...",
+          "key": "c6_bilim_dallari",
+          "title": "6. İlgilendiği Bilim Dalları",
+          "placeholder": "Çalıştığı bilim dallarını yazınız...",
           "required": true
         },
         {
-          "key": "c7_works",
-          "title": "7. Yazdığı Eserler",
-          "placeholder": "Kaleme aldığı risale ve kitapların adları, içerikleri ve günümüzdeki kütüphane kayıtları...",
+          "key": "c7_katkilar_buluslar",
+          "title": "7. Matematiğe Katkıları ve Buluşları",
+          "placeholder": "Matematik alanındaki çalışmaları, buluşları ve bilimsel katkıları yazınız...",
           "required": true
         },
         {
-          "key": "c8_sources",
-          "title": "8. Kaynakça ve Belgeler",
-          "placeholder": "Akademik kaynaklar, yazma eserler ve çağdaş bilim tarihi yayınları...",
+          "key": "c8_eserleri",
+          "title": "8. Eserleri",
+          "placeholder": "Yazdığı kitaplar, risaleler ve diğer bilimsel eserleri yazınız...",
+          "required": true
+        },
+        {
+          "key": "c9_yontemler_problemler",
+          "title": "9. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri",
+          "placeholder": "Matematiksel yöntemler, çözümler, problem örnekleri ve LaTeX ($...$ / ...) gösterimleri ekleyebilirsiniz...",
+          "required": true,
+          "supportsLatex": true
+        },
+        {
+          "key": "c10_tarihteki_yeri",
+          "title": "10. Matematik Tarihindeki Yeri ve Önemi",
+          "placeholder": "Matematik tarihindeki rolü ve önemini açıklayınız...",
+          "required": true
+        },
+        {
+          "key": "c11_gunumuze_etkileri",
+          "title": "11. Günümüz Matematiğine Etkileri",
+          "placeholder": "Matematik tarihinden günümüze uzanan etkilerini kaynaklarla destekleyerek yazınız...",
+          "required": true
+        },
+        {
+          "key": "c12_olum_tarihi",
+          "title": "12. Ölüm Tarihi",
+          "placeholder": "Ölüm tarihi hakkında kaynak bilgilerini yazınız (belirsizse belirtiniz)...",
+          "required": true
+        },
+        {
+          "key": "c13_kaynakca",
+          "title": "13. KAYNAKÇA",
+          "placeholder": "Yararlanılan güvenilir kaynakları (yazar, eser adı, yıl, yayınevi, sayfa, bağlantı) yazınız...",
           "required": true
         }
       ],
       "items": [
         {
-          "id": "ali-kuscu",
-          "title": "Ali Kuşçu",
-          "lifespan": "1403 - 1474",
-          "field": "Astronomi ve Matematik",
-          "fieldGroup": "astronomi",
-          "geography": "Semerkant - Tebriz - İstanbul",
-          "summary": "Semerkant Rasathanesi'nde yetişen, Fatih Sultan Mehmet tarafından İstanbul'a davet edilen ve Ay'ın ilk detaylı haritasını çıkaran büyük astronom.",
-          "criteria": {
-            "c1_name_dates": "Ali Kuşçu (Alâeddin Ali bin Muhammed). Doğum: 1403 (Semerkant), Vefat: 16 Aralık 1474 (İstanbul).",
-            "c2_period_geography": "15. Yüzyıl Timur İmparatorluğu, Akkoyunlu Devleti ve Osmanlı İmparatorluğu (Fatih Sultan Mehmet dönemi). Semerkant, Tebriz, İstanbul.",
-            "c3_education": "Uluğ Bey, Kadızâde-i Rûmî ve Gıyaseddin Cemşid el-Kâşî'den Semerkant Medresesi'nde astronomi, geometri ve riyaziye tahsil etti. Kirman'da öğrenimini derinleştirdi.",
-            "c4_biography": "Uluğ Bey'in doğancıbaşısı olan babası nedeniyle 'Kuşçu' lakabını aldı. Uluğ Bey'in vefatı sonrası Akkoyunlu hükümdarı Uzun Hasan'a elçi oldu. Fatih'in ısrarlı davetiyle İstanbul'a gelerek Ayasofya Medresesi başmüderrisi oldu.",
-            "c5_fields": "Gökbilim (Astronomi), Matematik, Geometri, Trigonometri, Dilbilim (Kelâm ve Belâgat).",
-            "c6_contributions": "Dünya'nın eğikliğini (ekliptik eğimi) 23 derece 30 dakika 17 saniye olarak inanılmaz bir hassasiyetle hesapladı. Yer çekimi benzeri kuvvet fikirleri tartıştı. NASA, Ay'daki kraterlerden birine onun adını vermiştir.",
-            "c7_works": "Risâle fi'l-Hey'e (Astronomi risalesi), er-Risâletü'l-Fethiyye (Fatih'e ithaf ettiği astronomi kitabı), er-Risâletü'l-Muhammediyye (Matematik kitabı), Şerh-i Zîc-i Uluğ Bey.",
-            "c8_sources": "İhsanoğlu, E. (1992). Osmanlılar ve Bilim. Sayılı, A. (1960). The Observatory in Islam. TDV İA 'Ali Kuşçu' maddesi."
-          }
+          "id": "bilim-01-bircendi",
+          "orderIndex": 1,
+          "title": "BİRCENDÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
-          "id": "ibn-i-sina",
-          "title": "İbn-i Sina (Avicenna)",
-          "lifespan": "980 - 1037",
-          "field": "Tıp ve Felsefe",
-          "fieldGroup": "tip",
-          "geography": "Buhara - Hemedan - İsfahan",
-          "summary": "Modern tıbbın babalarından biri kabul edilen, yazdığı 'El-Kanun fi't-Tıbb' eseri 600 yıl Avrupa üniversitelerinde başucu kitabı okutulan deha.",
-          "criteria": {
-            "c1_name_dates": "Ebu Ali el-Hüseyin İbn Abdullah İbn Sina. Batı'da 'Avicenna' olarak bilinir. 980 (Afşana/Buhara) - 1037 (Hemedan).",
-            "c2_period_geography": "İslam'ın Altın Çağı, Samanîler ve Gazneliler devri. Horasan ve İran coğrafyası.",
-            "c3_education": "10 yaşında Kur'an ve edebiyatı tamamladı. Mantık, geometri ve astronomiyi Ebu Abdullah en-Nâtilî'den öğrendi. 16 yaşında hekimliğe adım attı ve yeni tedavi yöntemleri keşfetti.",
-            "c4_biography": "Samanî hükümdarı Nuh bin Mansur'u tedavi edince saray kütüphanesine erişim kazandı. Hayatı boyunca vezirlik, hekimlik ve hocalık yaptı.",
-            "c5_fields": "Tıp, Farmakoloji, Felsefe (Meşşâiyye), Psikoloji, Fizik, Kimya, Müzik.",
-            "c6_contributions": "Hastalıkların gözle görülmeyen minik kurtçuklarla (mikroplarla) havadan ve sudan bulaştığını savundu. Kan dolaşımı, nabız ritimleri, anestezi ve karantina kavramının temellerini attı.",
-            "c7_works": "El-Kânûn fi't-Tıbb (Tıbbın Kanunu - 5 ciltlik anıtsal tıp ansiklopedisi), Kitâbü'ş-Şifâ (Felsefe ve tabiat ilimleri ansiklopedisi), Kitâbü'n-Necât.",
-            "c8_sources": "Nasr, S. H. (1993). İslam ve İlim. TDV İslâm Ansiklopedisi 'İbn Sînâ' maddesi."
-          }
+          "id": "bilim-02-farisi-muhammed-b-ebu-bekir",
+          "orderIndex": 2,
+          "title": "FÂRİSÎ, Muhammed b. Ebû Bekir",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
-          "id": "ibn-i-heysem",
-          "title": "İbn-i Heysem (Alhazen)",
-          "lifespan": "965 - 1040",
-          "field": "Optik ve Fizik",
-          "fieldGroup": "fizik",
-          "geography": "Basra - Kahire",
-          "summary": "Optik biliminin kurucusu, görme teorisini bilimsel deneylerle kökten değiştiren ve Karanlık Oda (Camera Obscura) prensibini bulan dâhi.",
-          "criteria": {
-            "c1_name_dates": "Ebu Ali el-Hasan İbnü'l-Heysem. Batı dünyasında 'Alhazen'. 965 (Basra) - 1040 (Kahire).",
-            "c2_period_geography": "10–11. Yüzyıl Abbâsîler ve Fâtımîler Devleti dönemi. Irak ve Mısır.",
-            "c3_education": "Basra'da dini ve felsefi ilimleri öğrendikten sonra Bağdat'a giderek matematik, fizik ve astronomi alanında ileri eğitim aldı.",
-            "c4_biography": "Nil Nehri'nin taşkınlarını düzenleyecek bir baraj projesi tasarladı; teknik imkânsızlıklar nedeniyle Fâtımî halifesinin gazabından korunmak için bir süre inzivaya çekildi ve odasında ışık deneylerine odaklandı.",
-            "c5_fields": "Optik, Işık Fiziği, Geometri, Astronomi, Bilimsel Metodoloji.",
-            "c6_contributions": "Eski Yunan'ın 'Gözden ışın çıkar' iddiasını çürüttü. Görmenin, cisimlerden yansıyan ışınların göz merceğine girmesiyle oluştuğunu ispatladı. Fotoğraf makinesinin atası olan Karanlık Oda'yı (Beytü'l-Muzlim) kurdu.",
-            "c7_works": "Kitâbü'l-Menâzır (Optik Kitabı - 7 cilt, modern optiğin temel taşı), Makâle fi'd-Dav' (Işık Üzerine Makale).",
-            "c8_sources": "Sabra, A. I. (1989). The Optics of Ibn al-Haytham. London: Warburg Institute."
-          }
+          "id": "bilim-03-hucendi-hamid-b-hidir",
+          "orderIndex": 3,
+          "title": "HUCENDÎ, Hâmid b. Hıdır",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-04-ibnu-l-havvam",
+          "orderIndex": 4,
+          "title": "İBNÜ’l-HAVVÂM",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-05-ibnu-s-salah-ebu-l-futuh",
+          "orderIndex": 5,
+          "title": "İBNÜ’s-SALÂH, Ebü’l-Fütûh",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-06-ibnu-s-semh",
+          "orderIndex": 6,
+          "title": "İBNÜ’s-SEMH",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-07-kabisi",
+          "orderIndex": 7,
+          "title": "KABÎSÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-08-kuhi",
+          "orderIndex": 8,
+          "title": "KÛHÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-09-mahani",
+          "orderIndex": 9,
+          "title": "MÂHÂNÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-10-mardini-ismail-b-ibrahim",
+          "orderIndex": 10,
+          "title": "MARDÎNÎ, İsmâil b. İbrâhim",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-11-muhammed-b-ebu-l-hayr",
+          "orderIndex": 11,
+          "title": "MUHAMMED b. EBÜ’l-HAYR",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-12-numan-efendi-eginli",
+          "orderIndex": 12,
+          "title": "NÛMAN EFENDİ, Eğinli",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-13-sabit-b-kurre",
+          "orderIndex": 13,
+          "title": "SÂBİT b. KURRE",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-14-semerkandi-muhammed-b-esref",
+          "orderIndex": 14,
+          "title": "SEMERKANDÎ, Muhammed b. Eşref",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-15-sibtu-l-mardini",
+          "orderIndex": 15,
+          "title": "SIBTU’l-MARDÎNÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-16-tusi-serefeddin",
+          "orderIndex": 16,
+          "title": "TÛSÎ, Şerefeddin",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-17-ahdari",
+          "orderIndex": 17,
+          "title": "AHDARÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
           "id": "el-biruni",
-          "title": "El-Bîrûnî (Abu Rayhan al-Biruni)",
-          "lifespan": "973 - 1048",
-          "field": "Astronomi, Coğrafya ve Matematik",
-          "fieldGroup": "astronomi",
-          "geography": "Hârizm - Gazne - Hindistan",
-          "summary": "Gazneli Mahmud'un 'Sarayımın en değerli hazinesi' dediği, Dünya'nın yarıçapını ve çevresini sadece %1 hata payıyla hesaplayan evrensel hezârfen.",
-          "criteria": {
-            "c1_name_dates": "Ebu Reyhan Muhammed bin Ahmed el-Bîrûnî. 4 Eylül 973 (Kât/Hârizm) - 13 Aralık 1048 (Gazne).",
-            "c2_period_geography": "10-11. Yüzyıl, Samanîler ve Gazneliler Devleti dönemi. Orta Asya ve Hindistan.",
-            "c3_education": "Ebu Nasr Mansur'dan ileri matematik ve astronomi eğitimi aldı. Arapça, Farsça, Süryanice, İbranice, Grekçe ve Sanskritçe öğrendi.",
-            "c4_biography": "Sultan Gazneli Mahmud ile birlikte Hindistan seferlerine katıldı; Hint kültürünü, dinlerini ve coğrafyasını yerinde inceledi.",
-            "c5_fields": "Astronomi, Jeodezi, Coğrafya, Trigonometri, Karşılaştırmalı Dinler Tarihi, Madencilik ve Eczacılık.",
-            "c6_contributions": "Dünya'nın kendi ekseni etrafında döndüğünü savundu. Trigonometrik formüllerle Dünya'nın yarıçapını 6339.6 km (gerçeğe %1 yakın) olarak ölçtü. Kıble yönü tayini için matematiksel modeller geliştirdi.",
-            "c7_works": "el-Kānûnü'l-Mes'ûdî (Astronomi ansiklopedisi), Kitâbü't-Tahkîk mâ li'l-Hind (Hindistan Tarihi), Kitâbü's-Saydene fi't-Tıb (Eczacılık kitabı), Tahdîdü Nihâyâti'l-Emâkin.",
-            "c8_sources": "Sezgin, F. (2008). İslam'da Bilim ve Teknik. TÜBİTAK Yayınları."
-          }
+          "orderIndex": 18,
+          "title": "BÎRÛNÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
-          "id": "el-harezmi",
-          "title": "El-Hârizmî (Algoritmanın Babası)",
-          "lifespan": "780 - 850",
-          "field": "Matematik ve Astronomi",
-          "fieldGroup": "matematik",
-          "geography": "Hârizm - Bağdat (Beytü'l-Hikme)",
-          "summary": "Cebir biliminin bağımsız bir disiplin olarak kurucusu, sıfır (0) rakamını matematiğe kazandıran ve algoritma kavramına adını veren dahi.",
-          "criteria": {
-            "c1_name_dates": "Ebu Abdullah Muhammed bin Musa el-Hârizmî. Batı'da 'Algoritmi'. 780 (Hârizm) - 850 (Bağdat).",
-            "c2_period_geography": "9. Yüzyıl Abbasi Devleti, Halife Me'mûn dönemi. Bağdat.",
-            "c3_education": "Bağdat'taki Beytü'l-Hikme'de (Bilgelik Evi) dönemin en seçkin bilginleriyle birlikte çalışarak Babil, Hint ve Grek matematik metinlerini inceledi.",
-            "c4_biography": "Halife Me'mûn tarafından Beytü'l-Hikme kütüphane yöneticiliğine getirildi. Halife adına yeryüzü haritası hazırlayan heyetin başına geçti.",
-            "c5_fields": "Cebir (Algebra), Algoritmik Matematik, Astronomi, Coğrafya.",
-            "c6_contributions": "Birinci ve ikinci dereceden denklemleri cebirsel olarak çözme yöntemlerini kurdu. 'Cebir' ve 'Algoritma' kelimeleri onun eserinden ve isminden türemiştir. Sıfır (0) rakamını ve onluk konumsal sayı sistemini dünyaya tanıttı.",
-            "c7_works": "El-Kitâbü'l-Muhtasar fî Hisâbi'l-Cebr ve'l-Mukābele (Cebir kitabı), Kitâbü'l-Cem' ve't-Tefrîk bi-Hisâbi'l-Hind (Hint Hesabı Üzerine), Sûretü'l-Ard (Coğrafya kitabı), Zîcü's-Sindhind.",
-            "c8_sources": "Rashed, R. (1994). The Development of Arabic Mathematics. Dordrecht: Kluwer."
-          }
+          "id": "bilim-19-fethullah-es-sirvani",
+          "orderIndex": 19,
+          "title": "FETHULLAH eş-ŞİRVÂNÎ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
-          "id": "el-cezeri",
-          "title": "El-Cezerî (Sibernetiğin Öncüsü)",
-          "lifespan": "1136 - 1206",
-          "field": "Mekanik ve Robotik",
-          "fieldGroup": "mekanik",
-          "geography": "Cizre - Diyarbakır (Artuklular)",
-          "summary": "Robotik, otomasyon ve hidrolik makinelerin babası; su saatleri, otomatik abdest otomatı ve şifreli kilitlerin mucidi Artuklu saray mühendisi.",
-          "criteria": {
-            "c1_name_dates": "Bedîuzzamân Ebû el-'İzz İsmâ'îl İbnü'r-Rezzâz el-Cezerî. 1136 (Cizre) - 1206 (Cizre).",
-            "c2_period_geography": "12. Yüzyıl sonu - 13. Yüzyıl başı. Artuklular Beyliği, Diyarbakır ve Cizre.",
-            "c3_education": "Babası gibi Artuklu sarayında başmühendislik yaptı; mekanik araçlar, kaldıraçlar ve hidrolik sistemler üzerine uygulamalı usta-çırak geleneğinde yetişti.",
-            "c4_biography": "25 yıl boyunca Diyarbakır Artuklu hükümdarlarına başmühendis olarak hizmet etti. Hükümdar Nasîrüddin Mahmud'un isteği üzerine icatlarını kitaplaştırdı.",
-            "c5_fields": "Mekanik Mühendisliği, Sibernetik, Otomasyon, Hidrolik, Robotik.",
-            "c6_contributions": "Krank mili ve piston mekanizmasını icat ederek dairesel hareketi doğrusal harekete çevirdi (modern otomobil motorlarının temeli). Programlanabilir müzisyen insansı robotlar, Filli Su Saati ve akıllı şamandıra sistemleri yaptı.",
-            "c7_works": "El-Câmi' Beyne'l-'İlm ve'l-'Ameli'n-Nâfi' fî Sınâ'ati'l-Hiyel (Mekanik Hareketlerden Mühendislikte Faydalanma Kitabı).",
-            "c8_sources": "Hill, D. R. (1974). The Book of Knowledge of Ingenious Mechanical Devices. Dordrecht."
-          }
+          "id": "bilim-20-mirim-celebi",
+          "orderIndex": 20,
+          "title": "MÎRİM ÇELEBİ",
+          "assignedStudentId": "stu2-zumra",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-21-mustafa-sidki",
+          "orderIndex": 21,
+          "title": "MUSTAFA SIDKI",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-22-saidan-ahmed-selim",
+          "orderIndex": 22,
+          "title": "SAÎDÂN, Ahmed Selîm",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-23-cagmini",
+          "orderIndex": 23,
+          "title": "ÇAĞMÎNÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-24-feyyumi-abdulkadir-b-muhammed",
+          "orderIndex": 24,
+          "title": "FEYYÛMÎ, Abdülkādir b. Muhammed",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-25-gelenbevi",
+          "orderIndex": 25,
+          "title": "GELENBEVÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-26-habes-el-hasib",
+          "orderIndex": 26,
+          "title": "HABEŞ el-HÂSİB",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-27-ibn-irak",
+          "orderIndex": 27,
+          "title": "İBN IRÂK",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-28-mehmed-atif-efendi-kuyucaklizade",
+          "orderIndex": 28,
+          "title": "MEHMED ÂTIF EFENDİ, Kuyucaklızâde",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-29-salih-zeki",
+          "orderIndex": 29,
+          "title": "SÂLİH ZEKİ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-30-haraki",
+          "orderIndex": 30,
+          "title": "HARAKĪ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-31-kemaleddin-el-farisi",
+          "orderIndex": 31,
+          "title": "KEMÂLEDDİN el-FÂRİSÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-32-kutbuddin-i-sirazi",
+          "orderIndex": 32,
+          "title": "KUTBÜDDÎN-i ŞÎRÂZÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-33-sedillot-louis-pierre-eugene-amelie",
+          "orderIndex": 33,
+          "title": "SÉDILLOT, Louis Pierre Eugene Amélie",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-34-sefti",
+          "orderIndex": 34,
+          "title": "SEFTÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-35-abdulkahir-el-bagdadi",
+          "orderIndex": 35,
+          "title": "ABDÜLKĀHİR el-BAĞDÂDÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-36-abdullah-b-hasan-el-bagdadi",
+          "orderIndex": 36,
+          "title": "ABDULLAH b. HASAN el-BAĞDÂDÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-37-ali-b-ahmed-el-imrani",
+          "orderIndex": 37,
+          "title": "ALİ b. AHMED el-İMRÂNÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-38-ebheri-eminuddin",
+          "orderIndex": 38,
+          "title": "EBHERÎ, Emînüddin",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-39-hububi",
+          "orderIndex": 39,
+          "title": "HUBÛBÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-40-ibnu-l-benna-el-merrakusi",
+          "orderIndex": 40,
+          "title": "İBNÜ’l-BENNÂ el-MERRÂKÜŞÎ",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-41-ibnu-l-haim",
+          "orderIndex": 41,
+          "title": "İBNÜ’l-HÂİM",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-42-ibnu-n-nakib-el-halebi",
+          "orderIndex": 42,
+          "title": "İBNÜ’n-NAKĪB el-HALEBÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-43-ibrahim-b-sinan-b-sabit",
+          "orderIndex": 43,
+          "title": "İBRÂHİM b. SİNÂN b. SÂBİT",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-44-isfizari-ebu-hatim",
+          "orderIndex": 44,
+          "title": "İSFİZÂRÎ, Ebû Hâtim",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-45-kadizade-i-rumi",
+          "orderIndex": 45,
+          "title": "KADIZÂDE-i RÛMÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-46-kalesadi",
+          "orderIndex": 46,
+          "title": "KALESÂDÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-47-kusyar-b-lebban",
+          "orderIndex": 47,
+          "title": "KÛŞYÂR b. LEBBÂN",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-48-mardini-cemaleddin",
+          "orderIndex": 48,
+          "title": "MARDÎNÎ, Cemâleddin",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-49-mehmed-nadir",
+          "orderIndex": 49,
+          "title": "MEHMED NÂDİR",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-50-muhammed-bakir-yezdi",
+          "orderIndex": 50,
+          "title": "MUHAMMED BÂKIR YEZDÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-51-nesevi-ali-b-ahmed",
+          "orderIndex": 51,
+          "title": "NESEVÎ, Ali b. Ahmed",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-52-neyrizi",
+          "orderIndex": 52,
+          "title": "NEYRÎZÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-53-semev-el-el-magribi",
+          "orderIndex": 53,
+          "title": "SEMEV’EL el-MAĞRİBÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-54-siczi-ebu-said",
+          "orderIndex": 54,
+          "title": "SİCZÎ, Ebû Saîd",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-55-sekerzade-feyzullah-sermed",
+          "orderIndex": 55,
+          "title": "ŞEKERZÂDE FEYZULLAH SERMED",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
           "id": "ulug-bey",
-          "title": "Uluğ Bey",
-          "lifespan": "1394 - 1449",
-          "field": "Astronomi ve Matematik",
-          "fieldGroup": "astronomi",
-          "geography": "Semerkant - Horasan",
-          "summary": "Timur'un torunu olan sultan ve astronom; Semerkant Rasathanesi'ni kurarak 1018 yıldızın konumunu dakik hesaplayan 'Zîc-i Uluğ Bey'i yazmıştır.",
-          "criteria": {
-            "c1_name_dates": "Muhammed Taragay Uluğ Bey. 22 Mart 1394 (Sultaniye) - 27 Ekim 1449 (Semerkant).",
-            "c2_period_geography": "15. Yüzyıl Timur İmparatorluğu dönemi. Semerkant.",
-            "c3_education": "Bursalı Kadızâde-i Rûmî ve Gıyaseddin Cemşid el-Kâşî'den matematik ve astronomi tahsil etti.",
-            "c4_biography": "Devlet yöneticiliğinden ziyade kendini bilime adadı. Semerkant'ı bir bilim ve kültür başkentine dönüştürdü; büyük bir medrese ve devasa bir rasathane inşa ettirdi.",
-            "c5_fields": "Gözlemsel Astronomi, Küresel Geometri, Trigonometri.",
-            "c6_contributions": "Döneminin en büyük meridyen sekstantını (40 metre yarıçaplı fahrî sekstant) kurdu. 1 yılın uzunluğunu 365 gün 5 saat 49 dakika 15 saniye olarak hesapladı (hata payı sadece 25 saniye).",
-            "c7_works": "Zîc-i Uluğ Bey (Zîc-i Sultânî - 1018 yıldızın koordinatlarını içeren şaheser yıldız kataloğu), Risâle fî İshârci Ceyb Derece Vâhida.",
-            "c8_sources": "Sayılı, A. (1960). The Observatory in Islam. Ankara: Türk Tarih Kurumu."
-          }
+          "orderIndex": 56,
+          "title": "ULUĞ BEY",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
         },
         {
-          "id": "el-farabi",
-          "title": "El-Fârâbî (Alpharabius - Muallim-i Sânî)",
-          "lifespan": "872 - 950",
-          "field": "Felsefe, Mantık ve Müzik",
-          "fieldGroup": "felsefe",
-          "geography": "Farab (Otrar) - Bağdat - Şam",
-          "summary": "Aristo'dan sonra 'İkinci Öğretmen' (Muallim-i Sânî) unvanını kazanan, mantık, siyaset felsefesi ve kanun sazını icat eden büyük Türk filozofu.",
-          "criteria": {
-            "c1_name_dates": "Ebu Nasr Muhammed bin Muhammed el-Fârâbî. Batı'da 'Alpharabius'. 872 (Farab/Kazakistan) - 950 (Şam).",
-            "c2_period_geography": "9-10. Yüzyıl Abbâsîler ve Hamdânîler dönemi. Türkistan, Bağdat, Halep, Şam.",
-            "c3_education": "Farab ve Buhara'da ilk tahsilini yaptıktan sonra Bağdat'a giderek mantıkçı Ebû Bişr Mettâ bin Yûnus'tan ve Yuhanna bin Haylan'dan Grek felsefesi ve mantık okudu.",
-            "c4_biography": "Sade ve dervişane bir hayat sürdü. Halep emiri Seyfüddevle'nin sarayında ilmi meclislerde bulundu.",
-            "c5_fields": "Felsefe, Mantık, Siyaset Teorisi, Müzik Teorisi, Psikoloji, Sosyoloji.",
-            "c6_contributions": "İslam felsefesini sistemleştirdi. Aristo mantığını şerh etti. 'El-Medînetü'l-Fâzıla' eserinde ideal erdemli devleti tarif etti. Ses fiziği ve akustiğin kurucularındandır; müzikte ses perdelerini matematiksel olarak açıklamış ve 'kanun' enstrümanını geliştirmiştir.",
-            "c7_works": "el-Medînetü'l-Fâzıla (Erdemli Şehir), Kitâbü'l-Mûsîka'l-Kebîr (Büyük Müzik Kitabı), İhsâ'ü'l-Ulûm (İlimlerin Sayımı - ilk bilimler tasnifi), et-Ta'lîkāt.",
-            "c8_sources": "Kaya, M. (1995). Fârâbî: Hayatı, Eserleri ve Felsefesi. İstanbul."
-          }
+          "id": "bilim-57-dilgan-ahmet-hamit",
+          "orderIndex": 57,
+          "title": "DİLGAN, Ahmet Hamit",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-58-abdulmelik-es-sirazi",
+          "orderIndex": 58,
+          "title": "ABDÜLMELİK eş-ŞÎRÂZÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-59-bedi-el-usturlabi",
+          "orderIndex": 59,
+          "title": "BEDÎ‘ el-USTURLÂBÎ",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-60-ibn-ebu-s-sukr",
+          "orderIndex": 60,
+          "title": "İBN EBÜ’ş-ŞÜKR",
+          "assignedStudentId": "stu2-reyyan",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-61-mecriti",
+          "orderIndex": 61,
+          "title": "MECRÎTÎ",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-62-sinan-b-sabit",
+          "orderIndex": 62,
+          "title": "SİNÂN b. SÂBİT",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-63-woepcke-franz",
+          "orderIndex": 63,
+          "title": "WOEPCKE, Franz",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-64-yanyali-bedreddin-mehmed",
+          "orderIndex": 64,
+          "title": "YANYALI BEDREDDİN MEHMED",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-65-suveysi",
+          "orderIndex": 65,
+          "title": "SÜVEYSÎ",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-66-hazin-ebu-ca-fer",
+          "orderIndex": 66,
+          "title": "HÂZİN, Ebû Ca‘fer",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-67-ibnu-r-rakkam",
+          "orderIndex": 67,
+          "title": "İBNÜ’r-RAKKĀM",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-68-tamani-huseyin-rifki",
+          "orderIndex": 68,
+          "title": "TAMÂNÎ, Hüseyin Rıfkı",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-69-cevheri-abbas-b-said",
+          "orderIndex": 69,
+          "title": "CEVHERÎ, Abbas b. Saîd",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-70-ebheri-esiruddin",
+          "orderIndex": 70,
+          "title": "EBHERÎ, Esîrüddin",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-71-halili-semseddin",
+          "orderIndex": 71,
+          "title": "HALÎLÎ, Şemseddin",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-72-ibn-yunus-ebu-l-hasan",
+          "orderIndex": 72,
+          "title": "İBN YÛNUS, Ebü’l-Hasan",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-73-ibnu-s-saffar-ebu-l-kasim",
+          "orderIndex": 73,
+          "title": "İBNÜ’s-SAFFÂR, Ebü’l-Kāsım",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-74-matrakci-nasuh",
+          "orderIndex": 74,
+          "title": "MATRAKÇI NASUH",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-75-muhammed-b-ebu-l-feth-es-sufi",
+          "orderIndex": 75,
+          "title": "MUHAMMED b. EBÜ’l-FETH es-SÛFÎ",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-76-oklid",
+          "orderIndex": 76,
+          "title": "ÖKLİD",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-77-pisagor",
+          "orderIndex": 77,
+          "title": "PİSAGOR",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-78-sabit-b-sinan",
+          "orderIndex": 78,
+          "title": "SÂBİT b. SİNÂN",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-79-said-el-endelusi",
+          "orderIndex": 79,
+          "title": "SÂİD el-ENDELÜSÎ",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-80-fergani",
+          "orderIndex": 80,
+          "title": "FERGĀNÎ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-81-huseyin-tevfik-pasa",
+          "orderIndex": 81,
+          "title": "HÜSEYİN TEVFİK PAŞA",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-82-ibn-bamsad",
+          "orderIndex": 82,
+          "title": "İBN BÂMŞÂD",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-83-sagani-ahmed-b-muhammed",
+          "orderIndex": 83,
+          "title": "SÂGĀNÎ, Ahmed b. Muhammed",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-84-ahvazi-ahmed-b-huseyin",
+          "orderIndex": 84,
+          "title": "AHVÂZÎ, Ahmed b. Hüseyin",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-85-kasi",
+          "orderIndex": 85,
+          "title": "KÂŞÎ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-86-oklidisi",
+          "orderIndex": 86,
+          "title": "ÖKLÎDİSÎ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-87-abdulvahid-el-cuzcani",
+          "orderIndex": 87,
+          "title": "ABDÜLVÂHİD el-CÛZCÂNÎ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-88-ebu-kamil",
+          "orderIndex": 88,
+          "title": "EBÛ KÂMİL",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-89-abdulhamid-b-vasi-b-turk",
+          "orderIndex": 89,
+          "title": "ABDÜLHAMÎD b. VÂSİ‘ b. TÜRK",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "el-harezmi",
+          "orderIndex": 90,
+          "title": "HÂRİZMÎ, Muhammed b. Mûsâ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-91-batlamyus",
+          "orderIndex": 91,
+          "title": "BATLAMYUS",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-92-kereci",
+          "orderIndex": 92,
+          "title": "KERECÎ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-93-apollonios-pergeli",
+          "orderIndex": 93,
+          "title": "APOLLONİOS, Pergeli",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-94-belhi-ali-b-ahmed",
+          "orderIndex": 94,
+          "title": "BELHÎ, Ali b. Ahmed",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-95-ali-b-suleyman",
+          "orderIndex": 95,
+          "title": "ALİ b. SÜLEYMAN",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "ibn-i-heysem",
+          "orderIndex": 96,
+          "title": "İBNÜ’l-HEYSEM",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "bilim-97-ahmed-b-muhammed-en-nihavendi",
+          "orderIndex": 97,
+          "title": "AHMED b. MUHAMMED en-NİHÂVENDÎ",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        },
+        {
+          "id": "ali-kuscu",
+          "orderIndex": 98,
+          "title": "ALİ KUŞÇU",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {}
+        }
+      ],
+      "studentTeam": [
+        {
+          "id": "stu2-zumra",
+          "name": "Zümra DURAN",
+          "groupLabel": "1. GRUP",
+          "range": [
+            1,
+            20
+          ]
+        },
+        {
+          "id": "stu2-hira",
+          "name": "Hira BÜYÜKDEVECİ",
+          "groupLabel": "2. GRUP",
+          "range": [
+            21,
+            40
+          ]
+        },
+        {
+          "id": "stu2-reyyan",
+          "name": "Reyyan YILMAZ",
+          "groupLabel": "3. GRUP",
+          "range": [
+            41,
+            60
+          ]
+        },
+        {
+          "id": "stu2-mustafa",
+          "name": "Mustafa Emin YERLİKAYA",
+          "groupLabel": "4. GRUP",
+          "range": [
+            61,
+            79
+          ]
+        },
+        {
+          "id": "stu2-muhammed",
+          "name": "Muhammed Enes YERLİKAYA",
+          "groupLabel": "5. GRUP",
+          "range": [
+            80,
+            98
+          ]
         }
       ]
     },
