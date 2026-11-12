@@ -3211,7 +3211,9 @@ function handleRouteChange(options = {}) {
             renderExamsPage(appEl, hash);
         } else if (hash === "stem-lab") {
             renderStemLabPage(appEl);
-        } else if (hash === "projects" || hash === "tubitak" || hash.startsWith("projects/") || hash.startsWith("tubitak/")) {
+        } else if (hash === "tubitak" || hash.startsWith("tubitak/")) {
+            renderTubitakPage(appEl, hash);
+        } else if (hash === "projects" || hash.startsWith("projects/")) {
             renderProjectsPage(appEl, hash);
         } else if (hash === "dosyalar" || hash === "files" || hash === "file-manager") {
             window.location.hash = "home";
@@ -3810,13 +3812,13 @@ function renderHomePage(container) {
                         </div>
                     </a>
 
-                    <a href="#projects/codeweek" class="p-5 bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200/90 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                    <a href="#projects" class="p-5 bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200/90 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
                         <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-indigo-600/20">
-                            <i class="fa-solid fa-laptop-code"></i>
+                            <i class="fa-solid fa-trophy"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-black text-slate-900">🇪🇺 AB Kod Haftası</h4>
-                            <p class="text-xs text-slate-500">5, 6 ve 7. Sınıf Fen & Algoritma</p>
+                            <h4 class="text-sm font-black text-slate-900">🏆 Projeler & Kod Haftası</h4>
+                            <p class="text-xs text-slate-500 font-medium">Yüklenen Projeler & Etkinlikler</p>
                         </div>
                     </a>
 
@@ -8641,24 +8643,45 @@ window.projectFilterData = function() {
     };
 };
 
+function renderTubitakPage(container, activeHash = "tubitak") {
+    container.innerHTML = `
+        <div class="max-w-[1540px] mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 animate-in fade-in duration-300">
+            <!-- 🔬 TÜBİTAK BİLİMSEL ARAŞTIRMA VE OTOMATİK KAYIT SİSTEMİ -->
+            <div id="section-tubitak-research" class="transition-all duration-300">
+                <div id="tubitak-research-container"></div>
+            </div>
+        </div>
+    `;
+
+    setTimeout(() => {
+        const tContainer = document.getElementById("tubitak-research-container");
+        if (tContainer && window.RotaliTubitak && typeof window.RotaliTubitak.renderMainContainer === "function") {
+            window.RotaliTubitak.renderMainContainer(tContainer);
+        }
+    }, 50);
+
+    if (window.Alpine && typeof Alpine.initTree === "function") {
+        try {
+            Alpine.initTree(container);
+        } catch (e) {
+            console.error("Alpine init tree hatası:", e);
+        }
+    }
+}
+window.renderTubitakPage = renderTubitakPage;
+
 function renderProjectsPage(container, activeHash = "projects") {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    const initialTab = activeHash === "projects/codeweek"
-        ? "codeweek"
-        : (activeHash === "projects/guides" ? "guides" : "tubitak-research");
+    const initialTab = activeHash === "projects/guides" ? "guides" : "codeweek";
 
     container.innerHTML = `
         <div class="max-w-[1540px] mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 animate-in fade-in duration-300">
             <!-- 🏆 PROJE VE BİLİM MERKEZİ ÜST GEÇİŞ SEKMELERİ -->
             <div class="mb-8 flex items-center justify-between gap-3 bg-white p-2.5 sm:p-3 rounded-3xl border border-slate-200/90 shadow-sm overflow-x-auto no-scrollbar">
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="switchProjectCenterTab('tubitak-research')" id="tab-btn-tubitak-research" class="px-4 sm:px-6 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer shadow-sm bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-slate-950">
-                        <i class="fa-solid fa-microscope text-sm"></i>
-                        <span>TÜBİTAK Bilimsel Araştırma Merkezi (3 Proje)</span>
-                    </button>
-                    <button type="button" onclick="switchProjectCenterTab('codeweek')" id="tab-btn-codeweek" class="px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                        <i class="fa-solid fa-laptop-code text-sm text-indigo-600"></i>
-                        <span>AB Kod Haftası Etkinlikleri</span>
+                    <button type="button" onclick="switchProjectCenterTab('codeweek')" id="tab-btn-codeweek" class="px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer shadow-sm bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-slate-950">
+                        <i class="fa-solid fa-trophy text-sm"></i>
+                        <span>Projeler & AB Kod Haftası</span>
                     </button>
                     <button type="button" onclick="switchProjectCenterTab('guides')" id="tab-btn-guides" class="px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer text-slate-600 hover:bg-slate-100 hover:text-slate-900">
                         <i class="fa-solid fa-book-open text-sm text-amber-600"></i>
@@ -8667,13 +8690,32 @@ function renderProjectsPage(container, activeHash = "projects") {
                 </div>
             </div>
 
-            <!-- 🔬 1. TÜBİTAK BİLİMSEL ARAŞTIRMA VE OTOMATİK KAYIT SİSTEMİ -->
-            <div id="section-tubitak-research" class="transition-all duration-300">
-                <div id="tubitak-research-container"></div>
-            </div>
+            <!-- 🇪🇺 1. PROJELER & AB KOD HAFTASI BÖLÜMÜ -->
+            <div id="section-codeweek" class="transition-all duration-300">
+                <!-- 🌟 Kullanıcının Yüklediği Proje Materyalleri (Öncelikli Vitrin) -->
+                ${renderCustomMaterialsSection("all", "projeler")}
 
-            <!-- 🇪🇺 2. AB KOD HAFTASI BÖLÜMÜ (GİZLENEBİLİR) -->
-            <div id="section-codeweek" class="hidden transition-all duration-300">
+                <!-- ➕ Yönetici Materyal Ekleme Butonu -->
+                ${isAdmin ? `
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-gradient-to-r from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200 p-5 rounded-3xl shadow-sm">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                            <i class="fa-solid fa-file-circle-plus"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-slate-900">Proje & Materyal Yönetimi</h3>
+                            <p class="text-xs text-slate-500 font-medium">Bu bölüme dilediğiniz ek proje dokümanını, afişi veya çalışma kâğıdını yükleyebilirsiniz.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+                        <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'Projeler')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-plus-circle text-sm"></i>
+                            <span>➕ Yeni Proje / Doküman Ekle</span>
+                        </button>
+                    </div>
+                </div>
+                ` : ''}
+
                 <div x-data="projectFilterData()" x-init="init()">
             <!-- 🌟 EU CODEWEEK ÖZEL BAŞLIK & VİTRİN BANNERI -->
             <div class="mb-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-sky-950 text-white p-6 sm:p-10 border-2 border-indigo-500/30 shadow-2xl relative overflow-hidden">
@@ -9181,15 +9223,10 @@ function renderProjectsPage(container, activeHash = "projects") {
         </div>
     `;
 
-    // 🔬 TÜBİTAK Araştırma Merkezini Başlat ve Doğrudan İlgili Sekmeyi Aç
+    // 🚀 İlgili Sekmeyi Aç
     setTimeout(() => {
         if (typeof window.switchProjectCenterTab === "function") {
             window.switchProjectCenterTab(initialTab);
-        } else {
-            const tContainer = document.getElementById("tubitak-research-container");
-            if (tContainer && window.RotaliTubitak && typeof window.RotaliTubitak.renderMainContainer === "function") {
-                window.RotaliTubitak.renderMainContainer(tContainer);
-            }
         }
     }, 50);
 
@@ -20317,27 +20354,22 @@ window.saveCustomMaterialsSafe = saveCustomMaterialsSafe;
 
 // 🏆 PROJE VE BİLİM MERKEZİ SEKME DEĞİŞTİRİCİSİ
 window.switchProjectCenterTab = function(tabId) {
-    const secResearch = document.getElementById("section-tubitak-research");
+    if (tabId === "tubitak-research") {
+        window.location.hash = "tubitak";
+        return;
+    }
     const secCodeweek = document.getElementById("section-codeweek");
     const secGuides = document.getElementById("section-guides");
 
-    const btnResearch = document.getElementById("tab-btn-tubitak-research");
     const btnCodeweek = document.getElementById("tab-btn-codeweek");
     const btnGuides = document.getElementById("tab-btn-guides");
 
     const activeClasses = "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-slate-950 shadow-sm";
     const inactiveClasses = "text-slate-600 hover:bg-slate-100 hover:text-slate-900";
 
-    if (btnResearch) btnResearch.className = `px-4 sm:px-6 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer ${tabId === 'tubitak-research' ? activeClasses : inactiveClasses}`;
     if (btnCodeweek) btnCodeweek.className = `px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer ${tabId === 'codeweek' ? activeClasses : inactiveClasses}`;
     if (btnGuides) btnGuides.className = `px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 cursor-pointer ${tabId === 'guides' ? activeClasses : inactiveClasses}`;
 
-    if (secResearch) secResearch.classList.toggle("hidden", tabId !== "tubitak-research");
     if (secCodeweek) secCodeweek.classList.toggle("hidden", tabId !== "codeweek");
     if (secGuides) secGuides.classList.toggle("hidden", tabId !== "guides");
-
-    if (tabId === "tubitak-research" && window.RotaliTubitak && typeof window.RotaliTubitak.renderMainContainer === "function") {
-        const tContainer = document.getElementById("tubitak-research-container");
-        if (tContainer) window.RotaliTubitak.renderMainContainer(tContainer);
-    }
 };
