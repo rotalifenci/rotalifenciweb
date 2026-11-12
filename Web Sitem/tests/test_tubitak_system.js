@@ -45,9 +45,9 @@ async function runTests() {
     // -------------------------------------------------------------
     // TEST 1: Öğrenci kendi proje şifresiyle giriş yapabiliyor mu?
     // -------------------------------------------------------------
-    console.log("1. Öğrenci Şifreli Giriş Testi (Tarihî Eserler: sivas2026):");
+    console.log("1. Öğrenci Şifreli Giriş Testi (Tarihî Eserler: tarih1071):");
     const loginTest1 = mockReqRes("POST", {
-        password: "sivas2026",
+        password: "tarih1071",
         studentName: "Ali Veli",
         studentPin: "101"
     });
@@ -337,9 +337,9 @@ async function runTests() {
     // -------------------------------------------------------------
     // TEST 14: Proje 2 (98 Bilim İnsanı, 5 Öğrenci, Yetki, Word & Toplu ZIP)
     // -------------------------------------------------------------
-    console.log("14. Proje 2 (Matematik Tarihi Bilim İnsanları) Uçtan Uca Testi:");
+    console.log("14. Proje 2 (Matematik Tarihi Bilim İnsanları) Uçtan Uca Testi (bilim1453):");
     const bilimLogin = mockReqRes("POST", {
-        password: process.env.TUBITAK_BILIM_PASS || "bilim2026",
+        password: process.env.TUBITAK_BILIM_PASS || "bilim1453",
         studentName: "Zümra DURAN",
         studentPin: "301"
     });
@@ -418,7 +418,7 @@ async function runTests() {
     assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-asaf").length, 12);
 
     // Hümeyra BULUT giriş yapar -> 571'e yazabilir, 584'e yazamaz (403)
-    const p3Login = mockReqRes('POST', { password: process.env.TUBITAK_SIYER_PASS || "siyer2026", studentName: "Hümeyra BULUT" });
+    const p3Login = mockReqRes('POST', { password: process.env.TUBITAK_SIYER_PASS || "siyer571", studentName: "Hümeyra BULUT" });
     await tubitakAuthHandler(p3Login.req, p3Login.res);
     assert.strictEqual(p3Login.getStatus(), 200);
     const p3Token = p3Login.getData().token;

@@ -10,18 +10,21 @@ const SECRET_KEY = process.env.TUBITAK_AUTH_SECRET || "rotali-tubitak-auth-secre
 // Proje Şifreleri Haritası
 const PROJECT_PASSWORDS = {
     // 1. Proje - Sivas Tarihî Eserler
+    "tarih1071": { role: "student", projectId: "proje-tarih", projectName: "Sivas Tarihî Eserler Araştırma Sistemi" },
     "sivas2026": { role: "student", projectId: "proje-tarih", projectName: "Sivas Tarihî Eserler Araştırma Sistemi" },
     "tarih2026": { role: "student", projectId: "proje-tarih", projectName: "Sivas Tarihî Eserler Araştırma Sistemi" },
     "eser2026": { role: "student", projectId: "proje-tarih", projectName: "Sivas Tarihî Eserler Araştırma Sistemi" },
     "tubitak-eser": { role: "student", projectId: "proje-tarih", projectName: "Sivas Tarihî Eserler Araştırma Sistemi" },
 
     // 2. Proje - Türk-İslam Bilim İnsanları
+    "bilim1453": { role: "student", projectId: "proje-bilim", projectName: "Türk-İslam Bilim İnsanları Araştırma Sistemi" },
     "bilim2026": { role: "student", projectId: "proje-bilim", projectName: "Türk-İslam Bilim İnsanları Araştırma Sistemi" },
     "islam2026": { role: "student", projectId: "proje-bilim", projectName: "Türk-İslam Bilim İnsanları Araştırma Sistemi" },
     "alim2026": { role: "student", projectId: "proje-bilim", projectName: "Türk-İslam Bilim İnsanları Araştırma Sistemi" },
     "tubitak-bilim": { role: "student", projectId: "proje-bilim", projectName: "Türk-İslam Bilim İnsanları Araştırma Sistemi" },
 
     // 3. Proje - Siyer Kronolojik Araştırma
+    "siyer571": { role: "student", projectId: "proje-siyer", projectName: "Siyer Kronolojik Araştırma Sistemi (571–632)" },
     "siyer2026": { role: "student", projectId: "proje-siyer", projectName: "Siyer Kronolojik Araştırma Sistemi (571–632)" },
     "kronoloji2026": { role: "student", projectId: "proje-siyer", projectName: "Siyer Kronolojik Araştırma Sistemi (571–632)" },
     "tubitak-siyer": { role: "student", projectId: "proje-siyer", projectName: "Siyer Kronolojik Araştırma Sistemi (571–632)" },
