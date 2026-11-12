@@ -210,4 +210,25 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   const tubitakRecJs = fs.readFileSync(path.join(webDir, "api", "tubitak-records.js"), "utf8");
   assert.equal(tubitakRecJs.includes(".substring(0, 5000)"), false, "Kayıt revizyonlarında karakter kesmesi olmamalı");
   assert.ok(tubitakJs.includes("VERİ ANALİZİ") && tubitakJs.includes("buildSvgDonutChart") && tubitakJs.includes("renderDataAnalysisSection"), "TÜBİTAK Veri Analizi bölümü, grafik ve tablolar mevcut olmalı");
+
+  // Proje 1 öğrenci bazlı görev dağılımı (14 + 13 + 13 = 40)
+  const team = seedJson.projects["proje-tarih"].studentTeam;
+  assert.equal(team.length, 3, "Proje 1 ekibi 3 öğrenciden oluşmalı");
+  assert.deepEqual(team.map(s => s.name), ["Busenur Esila ÖZDEMİR", "Hazel Mina ŞİMŞEK", "Zeynep Ecrin ELİŞ"]);
+  assert.equal(p1Items.filter(it => it.assignedStudentId === "stu-busenur").length, 14);
+  assert.equal(p1Items.filter(it => it.assignedStudentId === "stu-hazel").length, 13);
+  assert.equal(p1Items.filter(it => it.assignedStudentId === "stu-zeynep").length, 13);
+  assert.equal(p1Items[0].orderIndex, 1);
+  assert.equal(p1Items[13].orderIndex, 14);
+  assert.equal(p1Items[13].assignedStudentId, "stu-busenur");
+  assert.equal(p1Items[14].orderIndex, 15);
+  assert.equal(p1Items[14].assignedStudentId, "stu-hazel");
+  assert.equal(p1Items[26].orderIndex, 27);
+  assert.equal(p1Items[26].assignedStudentId, "stu-hazel");
+  assert.equal(p1Items[27].orderIndex, 28);
+  assert.equal(p1Items[27].assignedStudentId, "stu-zeynep");
+  assert.equal(p1Items[39].orderIndex, 40);
+  assert.equal(p1Items[39].assignedStudentId, "stu-zeynep");
+  assert.ok(tubitakJs.includes("ARAŞTIRMA EKİBİ – ÖĞRENCİ SEÇİMİ") && tubitakJs.includes("reassignStudentWork"));
+  assert.ok(tubitakRecJs.includes("reassign_item"));
 });

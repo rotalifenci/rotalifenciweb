@@ -138,7 +138,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "1985 yılında UNESCO Dünya Mirası Listesi'ne Türkiye'den giren ilk mimari eserdir. 2015-2024 yılları arasında asrın restorasyonu yapılmıştır.",
             "c7_comparative_history": "Evliya Çelebi eseri 'Üstat elinden çıkmış öyle bir yapıdır ki benzerini anlatmaya diller kısır, kalemler kırıktır' sözleriyle tanımlamıştır.",
             "c8_sources": "Kuban, D. (2001). Divriği Mucizesi: Selçuklu Çağında İslam Bezeme Sanatı Harikası. YKY."
-          }
+          },
+          "orderIndex": 1,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "cifte-minareli-medrese",
@@ -159,7 +161,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "1882 yılında Sivas Valisi Halil Rıfat Paşa döneminde medrese binasının büyük kısmı yıkılarak yerine sivil hastane inşa edilmiştir; yalnızca ön cephe korunmuştur.",
             "c7_comparative_history": "Erzurum Çifte Minareli Medrese ve Sivas Gök Medrese ile karşılaştırıldığında taş işçiliğindeki derin oyma tekniği ve çinili tuğla süslemeleriyle Tebriz-Azerbaycan etkisini yansıtır.",
             "c8_sources": "Konyalı, İ. H. (1955). Abideleri ve Kitabeleriyle Sivas Tarihi. TDV İslâm Ansiklopedisi, 'Çifte Minareli Medrese' maddesi."
-          }
+          },
+          "orderIndex": 2,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "sivas-ulu-camii",
@@ -180,7 +184,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "1955 yılında Vakıflar Genel Müdürlüğü tarafından çatı onarımı yapılmış, minare eğikliği düzenli lazer sensörlerle izlenmektedir.",
             "c7_comparative_history": "Konya Alâeddin Camii ve Diyarbakır Ulu Camii ile erken dönem Anadolu İslam mimarisini temsil eder.",
             "c8_sources": "Konyalı, İ. H. (1955). Abideleri ve Kitabeleriyle Sivas Tarihi."
-          }
+          },
+          "orderIndex": 3,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "gok-medrese",
@@ -201,7 +207,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "1926 yılında müzeye dönüştürülmüş, 2006-2019 yılları arasında Vakıflar Genel Müdürlüğü tarafından kapsamlı bilimsel restorasyondan geçirilmiştir.",
             "c7_comparative_history": "Konya İnce Minareli Medrese ve Sahip Ata Külliyesi ile mimari benzerlik taşır; Selçuklu barok üslubunun en seçkin örneğidir.",
             "c8_sources": "Sözen, M. (1970). Anadolu Medreseleri. İstanbul: İTÜ Mimarlık Fakültesi Yayınları."
-          }
+          },
+          "orderIndex": 4,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "buruciye-medresesi",
@@ -222,7 +230,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "Uzun yıllar bakımsız kaldıktan sonra 1960'larda ve 2010'lu yıllarda restore edilerek kültür merkezi olarak ziyarete açılmıştır.",
             "c7_comparative_history": "Kayseri Hunat Hatun ve Sivas Şifaiye Medreseleriyle revak düzeni bakımından paraleldir.",
             "c8_sources": "Gabriel, A. (1934). Monuments Turcs d'Anatolie. Paris: De Boccard."
-          }
+          },
+          "orderIndex": 5,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "kursunlu-hamam",
@@ -234,7 +244,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Sivas Beylerbeyi Behram Paşa",
           "location": "Merkez / SİVAS",
           "summary": "1576 yılında Behram Paşa tarafından yaptırılan, taş bağlantılarında kurşun kullanılmasıyla adlandırılan Osmanlı çifte hamamı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 6,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "ataturk-kongre-muzesi",
@@ -255,7 +267,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "1919'da Kongre Salonu ve karargâh, ardından Sivas Lisesi olarak hizmet vermiş, 1984'te müze yapılmıştır.",
             "c7_comparative_history": "Erzurum Kongre Binası ve Ankara 1. TBMM Binası ile birlikte Milli Mücadele'nin kutsal üçgenini oluşturur.",
             "c8_sources": "Atatürk, M. K. (1927). Nutuk. Türk İnkılap Tarihi Enstitüsü."
-          }
+          },
+          "orderIndex": 7,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "sifaiye-medresesi",
@@ -276,7 +290,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "Osmanlı döneminde 1768 fermanıyla medreseye dönüştürülmüş, I. Dünya Savaşı'nda levazım ambarı olarak kullanılmıştır.",
             "c7_comparative_history": "Divriği Turan Melek Dârüşşifası ve Gevher Nesibe Tıp Medresesi ile birlikte Selçuklu tıbbının temel sütunudur.",
             "c8_sources": "Bayat, A. H. (2000). Osmanlı Öncesi Anadolu Türk Tıp Tarihi. İzmir."
-          }
+          },
+          "orderIndex": 8,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "sivas-kalesi",
@@ -288,7 +304,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Çok Katmanlı Kent Savunması",
           "location": "Kaleardı Mahallesi (Topraktepe), Merkez / SİVAS",
           "summary": "Sivas'ın ilk yerleşme noktalarından biri olan, Selçuklu ve Osmanlı dönemlerinde stratejik önem taşıyan tarihî kale tepesi.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 9,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "egri-kopru",
@@ -309,7 +327,9 @@ window.TUBITAK_SEED_DATA = {
             "c6_historical_changes": "Cumhuriyet döneminde yanına yeni betonarme köprü yapılana kadar ana karayolu olarak hizmet vermiş, günümüzde yayalaştırılmıştır.",
             "c7_comparative_history": "Amasya Alçak Köprü ve Tokat Hıdırlık Köprüsü ile benzer Selçuklu kervan köprüleri ailesindendir.",
             "c8_sources": "Çulpan, C. (1975). Türk Taş Köprüleri. Ankara: TTK Yayınları."
-          }
+          },
+          "orderIndex": 10,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "kale-camii",
@@ -321,7 +341,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Vezir Mahmud Paşa",
           "location": "Sivas Kent Meydanı, Merkez / SİVAS",
           "summary": "1580 yılında Vezir Mahmud Paşa tarafından kesme taşla yaptırılmış klasik dönem Osmanlı camii.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 11,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "guduk-minare",
@@ -333,7 +355,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Eretna Beyliği (Şeyh Hasan Bey için)",
           "location": "Dikilitaş / Merkez / SİVAS",
           "summary": "1347 tarihli, silindirik gövdeli tuğla küllahıyla halk arasında Güdük Minare olarak bilinen Eretna dönemi türbesi.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 12,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "divrigi-kalesi-ve-mescidi",
@@ -345,7 +369,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Mengücekoğulları (Şahinşah)",
           "location": "Çaltı Çayı yamacı, Divriği / SİVAS",
           "summary": "Çaltı Çayı'na hâkim sarp kayalık üzerine kurulu tarihî kale ve Mengücekli döneminden kalma kale mescidi.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 13,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "tashan",
@@ -357,7 +383,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Osmanlı Dönemi Ticaret Yapısı",
           "location": "Atatürk Caddesi, Merkez / SİVAS",
           "summary": "İki katlı, açık avlulu ve kesme taş işçilikli geleneksel Sivas ticaret hanı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 14,
+          "assignedStudentId": "stu-busenur"
         },
         {
           "id": "susamislar-konagi",
@@ -369,7 +397,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Benderli Ali Ağa (1815 çeşme/ekler)",
           "location": "Merkez / SİVAS",
           "summary": "Geleneksel Sivas sivil mimarisini yansıtan, günümüzde kültür ve Mevlevihane etkinlikleriyle yaşatılan tarihî konak.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 15,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "kesik-kopru",
@@ -381,7 +411,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Anadolu Selçuklu Devleti",
           "location": "Kızılırmak üzeri, Merkez / SİVAS",
           "summary": "Kızılırmak üzerindeki çok gözlü kesme taş köprü olup Selçuklu kervan yollarının önemli bir geçiş noktasıdır.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 16,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "inonu-konagi",
@@ -393,7 +425,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Göğdünlüoğulları",
           "location": "Merkez / SİVAS",
           "summary": "İsmet İnönü'nün çocukluk yıllarını geçirdiği geleneksel iki katlı Sivas konağı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 17,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "alacahan-kervansarayi",
@@ -405,7 +439,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Osmanlı Dönemi Menzil Yapısı",
           "location": "Alacahan, Kangal / SİVAS",
           "summary": "İpek ve Bağdat Yolu güzergâhında siyah-beyaz almaşık taş örgüsüyle bilinen tarihî menzil hanı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 18,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "mihrali-bey-konagi",
@@ -417,7 +453,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Mihrali Bey",
           "location": "Acıyurt Köyü, Ulaş / SİVAS",
           "summary": "93 Harbi kahramanlarından Mihrali Bey tarafından yaptırılmış taş ve ahşap işçilikli tarihî konak.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 19,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "sivas-hukumet-konagi",
@@ -429,7 +467,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Sivas Valisi Halil Rıfat Paşa",
           "location": "Kent Meydanı, Merkez / SİVAS",
           "summary": "1884 yılında Vali Halil Rıfat Paşa tarafından yaptırılan anıtsal taş yönetim binası.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 20,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "meydan-hamami",
@@ -441,7 +481,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Hasan Paşa",
           "location": "Çarşıbaşı Mahallesi, Merkez / SİVAS",
           "summary": "1564 yılında Hasan Paşa tarafından yaptırılmış klasik dönem Osmanlı hamamı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 21,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "gurun-kilisesi",
@@ -453,7 +495,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Gürün Cemaati",
           "location": "Gürün / SİVAS",
           "summary": "19. yüzyıla tarihlenen kesme taş mimarili Gürün'deki tescilli tarihî kilise yapısı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 22,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "kemankes-kara-mustafa-pasa-camii",
@@ -465,7 +509,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Sadrazam Kemankeş Kara Mustafa Paşa",
           "location": "Yıldızeli / SİVAS",
           "summary": "17. yüzyılda Sadrazam Kemankeş Kara Mustafa Paşa tarafından yaptırılan tarihî külliye camii.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 23,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "ahi-emir-ahmed-kumbeti",
@@ -477,7 +523,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Ahi Teşkilatı",
           "location": "Pulur / Tokmakkapı Mahallesi, Merkez / SİVAS",
           "summary": "14. yüzyılın ilk yarısında inşa edilmiş sekizgen gövdeli ve piramidal külahlı Ahilik dönemi kümbeti.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 24,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "akaylar-konagi",
@@ -489,7 +537,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Sivil Mimari Yapısı",
           "location": "Gökmedrese Mahallesi, Merkez / SİVAS",
           "summary": "Gökmedrese Mahallesi'nde özgün ahşap tavan ve alçı süslemeleriyle korunan 19. yüzyıl Sivas konağı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 25,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "ayanaga-konagi",
@@ -501,7 +551,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Ayan Mehmet Ağa",
           "location": "Divriği / SİVAS",
           "summary": "1838 yılında yaptırılmış, Divriği'nin taş ve ahşap işçiliğini yansıtan tarihî konak kompleksi.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 26,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "tarihi-mehmet-ali-hamami",
@@ -513,7 +565,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Vakıf Eseri",
           "location": "Akdeğirmen Mahallesi, Merkez / SİVAS",
           "summary": "Dört eyvanlı sıcaklık planı ve kesme taş duvarlarıyla 17. yüzyıldan günümüze ulaşan Osmanlı hamamı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 27,
+          "assignedStudentId": "stu-hazel"
         },
         {
           "id": "alacahan-camii",
@@ -525,7 +579,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Osmanlı Dönemi",
           "location": "Alacahan, Kangal / SİVAS",
           "summary": "Alacahan Kervansarayı yakınında bulunan ve kök boyalı kalemişi süslemeleriyle öne çıkan tarihî cami.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 28,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "kangal-merkez-camii",
@@ -537,7 +593,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Abdurrahman Paşa",
           "location": "Kangal İlçe Merkezi / SİVAS",
           "summary": "19. yüzyılda kesme taş ve mermer detaylarla inşa edilmiş kubbeli merkez camii.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 29,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "cevre-kultur-sanat-evi",
@@ -549,7 +607,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Tarihî Hastane ve Kültür Yapısı",
           "location": "Akdeğirmen / Bezirci, Merkez / SİVAS",
           "summary": "20. yüzyıl başından günümüze çeşitli hastane ve kamu işlevleri üstlenmiş, restore edilerek kültür merkezine dönüştürülmüş tarihî yapı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 30,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "abdulvahabi-gazi-turbesi",
@@ -561,7 +621,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Tarihî Vakıf",
           "location": "Yukarı Tekke, Merkez / SİVAS",
           "summary": "Sivas'ın önemli tarihî ve manevi ziyaret merkezlerinden biri olan Yukarı Tekke sırtlarındaki türbe.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 31,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "muhurdarzade-konagi",
@@ -573,7 +635,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Mühürdarzade Ailesi",
           "location": "Divriği / SİVAS",
           "summary": "Divriği'nin geleneksel sivil mimarisini yansıtan ve Nuri Demirağ Müzesi olarak da bilinen tarihî konak.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 32,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "semsi-sivasi-turbesi",
@@ -585,7 +649,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Osmanlı Dönemi",
           "location": "Meydan Camii Avlusu, Merkez / SİVAS",
           "summary": "16. yüzyıl mutasavvıf ve âlimi Şemseddin Sivasi'ye ait, Meydan Camii avlusundaki tarihî türbe.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 33,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "yesil-konak",
@@ -597,7 +663,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Geleneksel Sivil Mimari",
           "location": "Bahtiyarbostan Mahallesi, Merkez / SİVAS",
           "summary": "Bahtiyarbostan Mahallesi'nde yer alan tescilli geleneksel Sivas evi / konak örneği.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 34,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "altinyayla-merkez-camii",
@@ -609,7 +677,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Ahmet Ağa",
           "location": "Aydın Mahallesi, Altınyayla / SİVAS",
           "summary": "1895 yılında yaptırılan, ahşap tavan işçiliği ve kök boya bezemeleriyle ünlü tescilli cami.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 35,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "seyh-coban-turbesi",
@@ -621,7 +691,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "İlhanlı / Eretna Dönemi",
           "location": "Kaleardı Mahallesi, Merkez / SİVAS",
           "summary": "14. yüzyıla tarihlenen Şeyh Hüseyin Raî'ye ait tarihî türbe ve zaviye yapısı.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 36,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "abdi-aga-konagi",
@@ -633,7 +705,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Mütevellizade Abdi Ağa",
           "location": "Kaleardı Mahallesi, Merkez / SİVAS",
           "summary": "1827–1830 yıllarında harem ve selamlık planıyla inşa edilmiş, ahşap tavan göbekleriyle bilinen tarihî konak.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 37,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "yildiz-koprusu",
@@ -645,7 +719,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Selçuklu Onarım ve İnşası",
           "location": "Yıldız Irmağı üzeri, Yıldızeli / SİVAS",
           "summary": "Yıldız Irmağı üzerinde Roma temelli ve Selçuklu döneminde inşa/onarım görmüş tarihî taş köprü.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 38,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "behram-pasa-hani",
@@ -657,7 +733,9 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Sivas Beylerbeyi Behram Paşa",
           "location": "Kurşunlu Hamam yanı, Merkez / SİVAS",
           "summary": "16. yüzyılda Sivas Beylerbeyi Behram Paşa tarafından Kurşunlu Hamamı ile birlikte yaptırılan tarihî han.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 39,
+          "assignedStudentId": "stu-zeynep"
         },
         {
           "id": "halil-rifat-pasa-koprusu",
@@ -669,7 +747,38 @@ window.TUBITAK_SEED_DATA = {
           "builder": "Sivas Valisi Halil Rıfat Paşa Dönemi",
           "location": "Alacahan / Yeşilkale, Kangal / SİVAS",
           "summary": "19. yüzyıl sonlarında Sivas Valisi Halil Rıfat Paşa'nın yol ve bayındırlık çalışmaları kapsamında yaptırılan taş köprü.",
-          "criteria": {}
+          "criteria": {},
+          "orderIndex": 40,
+          "assignedStudentId": "stu-zeynep"
+        }
+      ],
+      "studentTeam": [
+        {
+          "id": "stu-busenur",
+          "name": "Busenur Esila ÖZDEMİR",
+          "groupLabel": "1. GRUP",
+          "range": [
+            1,
+            14
+          ]
+        },
+        {
+          "id": "stu-hazel",
+          "name": "Hazel Mina ŞİMŞEK",
+          "groupLabel": "2. GRUP",
+          "range": [
+            15,
+            27
+          ]
+        },
+        {
+          "id": "stu-zeynep",
+          "name": "Zeynep Ecrin ELİŞ",
+          "groupLabel": "3. GRUP",
+          "range": [
+            28,
+            40
+          ]
         }
       ]
     },

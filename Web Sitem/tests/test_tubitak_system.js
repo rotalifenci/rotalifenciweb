@@ -182,7 +182,62 @@ async function runTests() {
     assert.ok(restoreData.record.version > lastRev.version, "Geri yükleme eski veriyi silmeden yeni bir sürüm oluşturmalı.");
     console.log(`   ✅ Başarılı! Eski sürüm v${lastRev.version}, yeni sürüm v${restoreData.record.version} olarak güvenle geri yüklendi.\n`);
 
-    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (11/11 TEST PASSED)!");
+    // -------------------------------------------------------------
+    // TEST 12: Öğrenci Yetki Sınırı & Öğretmen Görev Ataması (Reassign)
+    // -------------------------------------------------------------
+    console.log("12. Öğrenci Yetki Sınırı & Öğretmen Görev Atama Testi:");
+    const hazelLogin = mockReqRes("POST", {
+        password: process.env.TUBITAK_TARIH_PASS || "sivas2026",
+        studentName: "Hazel Mina ŞİMŞEK",
+        studentPin: "202"
+    });
+    await tubitakAuthHandler(hazelLogin.req, hazelLogin.res);
+    assert.strictEqual(hazelLogin.getStatus(), 200);
+    const hazelToken = hazelLogin.getData().token;
+
+    // Hazel, Busenur'un #1 eserini düzenleyememeli (403)
+    const forbiddenEdit = mockReqRes("POST", {
+        projectId: "proje-tarih",
+        itemId: "divrigi-ulu-camii",
+        criterionKey: "c1_yapi_adi",
+        content: "Yetkisiz düzenleme denemesi"
+    }, {}, { authorization: `Bearer ${hazelToken}` });
+    await tubitakRecordsHandler(forbiddenEdit.req, forbiddenEdit.res);
+    assert.strictEqual(forbiddenEdit.getStatus(), 403, "Başka öğrenciye atanmış eserde 403 dönmeli");
+
+    // Hazel kendi #15 eserini (Susamışlar Konağı) düzenleyebilmeli (200)
+    const ownEdit = mockReqRes("POST", {
+        projectId: "proje-tarih",
+        itemId: "susamislar-konagi",
+        criterionKey: "c1_yapi_adi",
+        content: "Susamışlar Konağı"
+    }, {}, { authorization: `Bearer ${hazelToken}` });
+    await tubitakRecordsHandler(ownEdit.req, ownEdit.res);
+    assert.strictEqual(ownEdit.getStatus(), 200);
+
+    // Öğretmen #15 eseri Zeynep'e yeniden atayabilmeli (200) ve mevcut kayıt korunmalı
+    const reassignReq = mockReqRes("PUT", {
+        action: "reassign_item",
+        projectId: "proje-tarih",
+        itemId: "susamislar-konagi",
+        assignedStudentId: "stu-zeynep"
+    }, {}, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(reassignReq.req, reassignReq.res);
+    assert.strictEqual(reassignReq.getStatus(), 200);
+    assert.strictEqual(reassignReq.getData().assignments["susamislar-konagi"].assignedStudentId, "stu-zeynep");
+
+    // Eski haline geri al (Hazel)
+    const restoreAssignReq = mockReqRes("PUT", {
+        action: "reassign_item",
+        projectId: "proje-tarih",
+        itemId: "susamislar-konagi",
+        assignedStudentId: "stu-hazel"
+    }, {}, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(restoreAssignReq.req, restoreAssignReq.res);
+    assert.strictEqual(restoreAssignReq.getStatus(), 200);
+    console.log("   ✅ Başarılı! Öğrenci yetki izolasyonu ve öğretmen görev atama akışı doğrulandı.\n");
+
+    console.log("🎉 TÜM KABUL TESTLERİ BAŞARIYLA GEÇTİ (12/12 TEST PASSED)!");
 }
 
 runTests().catch(err => {

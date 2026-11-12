@@ -9,6 +9,65 @@ const { verifyToken } = require('./tubitak-auth.js');
 
 // Bellek içi / Yerel önbellek veritabanı (Supabase bağlantısı veya çevrimdışı yedekleme için)
 const localStorePath = path.join(__dirname, '../data/tubitak-runtime-store.json');
+const seedDataPath = path.join(__dirname, '../data/tubitak-seed-data.json');
+
+let _cachedProje1Seed = null;
+function getProje1Seed() {
+    if (_cachedProje1Seed) return _cachedProje1Seed;
+    try {
+        if (fs.existsSync(seedDataPath)) {
+            const parsed = JSON.parse(fs.readFileSync(seedDataPath, 'utf8'));
+            const p1 = parsed?.projects?.['proje-tarih'];
+            if (p1) {
+                const students = Array.isArray(p1.studentTeam) ? p1.studentTeam : [];
+                const itemMap = {};
+                (p1.items || []).forEach((it) => {
+                    itemMap[it.id] = it.assignedStudentId || null;
+                });
+                _cachedProje1Seed = { students, itemMap };
+                return _cachedProje1Seed;
+            }
+        }
+    } catch (e) {}
+    return { students: [], itemMap: {} };
+}
+
+function normalizeTrName(str) {
+    return String(str || '')
+        .toLocaleLowerCase('tr-TR')
+        .replace(/ı/g, 'i')
+        .replace(/İ/gi, 'i')
+        .replace(/ş/g, 's')
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function resolveSessionStudentId(session) {
+    const { students } = getProje1Seed();
+    const rawId = String(session?.studentId || '').trim();
+    if (students.some((s) => s.id === rawId)) return rawId;
+    const normName = normalizeTrName(session?.studentName || '');
+    if (!normName) return null;
+    for (const s of students) {
+        const sNorm = normalizeTrName(s.name);
+        const firstWord = sNorm.split(' ')[0];
+        if (normName === sNorm || (firstWord && normName.includes(firstWord))) {
+            return s.id;
+        }
+    }
+    return null;
+}
+
+function getEffectiveAssignedStudentId(store, itemId) {
+    const custom = store?.itemsMeta?.['proje-tarih_assignments']?.[itemId]?.assignedStudentId;
+    if (custom) return custom;
+    const { itemMap } = getProje1Seed();
+    return itemMap[itemId] || null;
+}
 
 function readLocalStore() {
     try {
@@ -108,7 +167,8 @@ module.exports = async function handler(req, res) {
                 records: projRecords,
                 revisions: projRevisions.slice(-100), // Son 100 revizyon
                 sources: projSources,
-                feedbacks: projFeedbacks
+                feedbacks: projFeedbacks,
+                assignments: (store.itemsMeta && store.itemsMeta['proje-tarih_assignments']) || {}
             });
         } catch (err) {
             return res.status(500).json({ ok: false, error: "Kayıtlar yüklenemedi: " + err.message });
@@ -138,6 +198,15 @@ module.exports = async function handler(req, res) {
 
             const recordKey = `${itemId}__${criterionKey}`;
             const store = readLocalStore();
+
+            // Güvenlik: Proje 1'de tanımlı öğrenci yalnızca kendi atanmış eserlerini düzenleyebilir
+            if (userRole !== "teacher" && projectId === "proje-tarih") {
+                const sessionStuId = resolveSessionStudentId(session);
+                const assignedStuId = getEffectiveAssignedStudentId(store, itemId);
+                if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                    return res.status(403).json({ ok: false, error: "Bu eser başka bir öğrenciye atanmıştır. Yalnızca kendi atanmış eserlerinizi düzenleyebilirsiniz." });
+                }
+            }
             const existing = store.records[recordKey] || {
                 projectId,
                 itemId,
@@ -301,6 +370,13 @@ module.exports = async function handler(req, res) {
 
             // B) İncelemeye Gönder (Öğrenci)
             if (action === "submit_review") {
+                if (userRole !== "teacher" && projectId === "proje-tarih") {
+                    const sessionStuId = resolveSessionStudentId(session);
+                    const assignedStuId = getEffectiveAssignedStudentId(store, itemId);
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                        return res.status(403).json({ ok: false, error: "Başka bir öğrenciye ait eseri incelemeye gönderemezsiniz." });
+                    }
+                }
                 for (const [k, rec] of Object.entries(store.records)) {
                     if (rec.itemId === itemId && rec.projectId === projectId) {
                         rec.status = "in_review";
@@ -309,6 +385,35 @@ module.exports = async function handler(req, res) {
                 }
                 writeLocalStore(store);
                 return res.status(200).json({ ok: true, message: "Araştırma inceleme için öğretmene iletildi." });
+            }
+
+            // B2) Öğretmen Eser Görev Ataması Güncelleme (Yalnızca Öğretmen)
+            if (action === "reassign_item") {
+                if (userRole !== "teacher") {
+                    return res.status(403).json({ ok: false, error: "Görev atama değişikliğini yalnızca yetkili öğretmen yapabilir." });
+                }
+                const { assignedStudentId } = req.body || {};
+                const { students, itemMap } = getProje1Seed();
+                if (!itemId || !Object.prototype.hasOwnProperty.call(itemMap, itemId)) {
+                    return res.status(404).json({ ok: false, error: "Atanacak eser bulunamadı." });
+                }
+                if (!students.some((s) => s.id === assignedStudentId)) {
+                    return res.status(400).json({ ok: false, error: "Geçersiz öğrenci seçimi." });
+                }
+                if (!store.itemsMeta) store.itemsMeta = {};
+                if (!store.itemsMeta["proje-tarih_assignments"]) store.itemsMeta["proje-tarih_assignments"] = {};
+                store.itemsMeta["proje-tarih_assignments"][itemId] = {
+                    itemId,
+                    assignedStudentId,
+                    updatedAt: now,
+                    assignedBy: session.studentName || "Öğretmen"
+                };
+                writeLocalStore(store);
+                return res.status(200).json({
+                    ok: true,
+                    message: "Eser görev ataması güncellendi.",
+                    assignments: store.itemsMeta["proje-tarih_assignments"]
+                });
             }
 
             // C) Öğretmen Onay / Düzeltme Talebi (Yalnızca Öğretmen Yetkili)
