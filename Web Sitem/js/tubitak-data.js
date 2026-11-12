@@ -792,81 +792,87 @@ window.TUBITAK_SEED_DATA = {
       "color": "from-cyan-600 via-blue-600 to-indigo-700",
       "criteriaList": [
         {
+          "key": "c0_bilim_insani_adi",
+          "title": "1. Bilim İnsanının Adı",
+          "placeholder": "Bilim insanının tam adını, künyesini veya literatürdeki adını yazınız...",
+          "required": true
+        },
+        {
           "key": "c1_dogum_tarihi_yeri",
-          "title": "1. Doğum Tarihi ve Yeri",
+          "title": "2. Doğum Tarihi ve Yeri",
           "placeholder": "Doğum tarihi ve doğduğu yere ilişkin literatür bilgilerini yazınız (belirsizse belirtiniz)...",
           "required": true
         },
         {
           "key": "c2_milliyeti",
-          "title": "2. Milliyeti",
+          "title": "3. Milliyeti",
           "placeholder": "Kaynaklarda belirtilen milliyet, kültürel aidiyet veya tarihsel coğrafya bilgilerini yazınız...",
           "required": true
         },
         {
           "key": "c3_yasadigi_donem",
-          "title": "3. Yaşadığı Tarihsel Dönem",
+          "title": "4. Yaşadığı Tarihsel Dönem",
           "placeholder": "Yaşadığı yüzyıl ve tarihsel dönemi yazınız...",
           "required": true
         },
         {
           "key": "c4_hayat_hikayesi",
-          "title": "4. Hayat Hikâyesi",
+          "title": "5. Hayat Hikâyesi",
           "placeholder": "Bilim insanının yaşam öyküsüne ait araştırma bilgilerini yazınız...",
           "required": true
         },
         {
           "key": "c5_egitim_hayati",
-          "title": "5. Eğitim Hayatı",
+          "title": "6. Eğitim Hayatı",
           "placeholder": "Aldığı eğitimler, hocaları ve yetiştiği bilimsel çevreleri yazınız...",
           "required": true
         },
         {
           "key": "c6_bilim_dallari",
-          "title": "6. İlgilendiği Bilim Dalları",
+          "title": "7. İlgilendiği Bilim Dalları",
           "placeholder": "Çalıştığı bilim dallarını yazınız...",
           "required": true
         },
         {
           "key": "c7_katkilar_buluslar",
-          "title": "7. Matematiğe Katkıları ve Buluşları",
+          "title": "8. Matematiğe Katkıları ve Buluşları",
           "placeholder": "Matematik alanındaki çalışmaları, buluşları ve bilimsel katkıları yazınız...",
           "required": true
         },
         {
           "key": "c8_eserleri",
-          "title": "8. Eserleri",
+          "title": "9. Eserleri",
           "placeholder": "Yazdığı kitaplar, risaleler ve diğer bilimsel eserleri yazınız...",
           "required": true
         },
         {
           "key": "c9_yontemler_problemler",
-          "title": "9. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri",
+          "title": "10. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri",
           "placeholder": "Matematiksel yöntemler, çözümler, problem örnekleri ve LaTeX ($...$ / ...) gösterimleri ekleyebilirsiniz...",
           "required": true,
           "supportsLatex": true
         },
         {
           "key": "c10_tarihteki_yeri",
-          "title": "10. Matematik Tarihindeki Yeri ve Önemi",
+          "title": "11. Matematik Tarihindeki Yeri ve Önemi",
           "placeholder": "Matematik tarihindeki rolü ve önemini açıklayınız...",
           "required": true
         },
         {
           "key": "c11_gunumuze_etkileri",
-          "title": "11. Günümüz Matematiğine Etkileri",
+          "title": "12. Günümüz Matematiğine Etkileri",
           "placeholder": "Matematik tarihinden günümüze uzanan etkilerini kaynaklarla destekleyerek yazınız...",
           "required": true
         },
         {
           "key": "c12_olum_tarihi",
-          "title": "12. Ölüm Tarihi",
+          "title": "13. Ölüm Tarihi",
           "placeholder": "Ölüm tarihi hakkında kaynak bilgilerini yazınız (belirsizse belirtiniz)...",
           "required": true
         },
         {
           "key": "c13_kaynakca",
-          "title": "13. KAYNAKÇA",
+          "title": "14. KAYNAKÇA",
           "placeholder": "Yararlanılan güvenilir kaynakları (yazar, eser adı, yıl, yayınevi, sayfa, bağlantı) yazınız...",
           "required": true
         }
