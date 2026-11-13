@@ -4607,9 +4607,14 @@
             const countEl = document.getElementById(`char-count-${itemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
             if (countEl) countEl.textContent = formatFieldStats(newContent);
 
+            const baseItemId = String(itemId).split('__')[0];
+            const p = projectData?.projects?.[activeProjectId] || projectData?.projects?.['proje-siyer'];
+            const targetItem = p?.items?.find(it => it.id === baseItemId) || null;
+            const canEdit = targetItem ? isItemEditableByCurrentUser(targetItem) : (currentSession?.role === 'teacher' || currentSession?.role === 'student');
+
             const container = document.getElementById(`chips-container-${itemId}__${criterionKey}`);
             if (container) {
-                container.innerHTML = renderSiyerRootValueChipsHtml(itemId, criterionKey, selected, isItemEditableByCurrentUser(activeItem));
+                container.innerHTML = renderSiyerRootValueChipsHtml(itemId, criterionKey, selected, canEdit);
             }
 
             queueAutoSave(criterionKey, newContent, itemId);
