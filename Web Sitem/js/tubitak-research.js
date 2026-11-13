@@ -47,7 +47,11 @@
     let runtimeRevisions = [];      // [ { id, recordKey, prevContent, newContent, studentName, version, createdAt } ]
     let runtimeSources = {};        // { "sourceId": { itemId, author, title, year, page, publisher, url, description } }
     let runtimeFeedbacks = [];      // [ { id, itemId, teacherName, message, status, createdAt } ]
-    let runtimeAssignments = {};    // { "itemId": { itemId, assignedStudentId, updatedAt, assignedBy } }
+    let runtimeAssignments = {};
+    let runtimeFinalized = {};
+    let runtimeStudentState = {};
+    let lastSavedTimeString = "";
+    let teacherFilterStatus = "all";    // { "itemId": { itemId, assignedStudentId, updatedAt, assignedBy } }
     let runtimeSiyerEvents = {};    // { "siyer-571": ["siyer-571__ev_2", ...] }
     let runtimeSiyerYearFlags = {}; // { "siyer-571": { status: "no_event_found", label: "..." } }
 
@@ -135,6 +139,8 @@
                     runtimeSources = { ...runtimeSources, ...(data.sources || {}) };
                     runtimeFeedbacks = data.feedbacks || runtimeFeedbacks;
                     runtimeAssignments = { ...(data.assignments || {}) };
+                    if (data.finalized) runtimeFinalized = { ...runtimeFinalized, ...data.finalized };
+                    if (data.studentState) runtimeStudentState = { ...runtimeStudentState, ...data.studentState };
                     if (data.siyerEvents) runtimeSiyerEvents = { ...data.siyerEvents };
                     if (data.siyerYearFlags) runtimeSiyerYearFlags = { ...data.siyerYearFlags };
                     if (data.comparisons) runtimeComparisons = { ...runtimeComparisons, ...(data.comparisons || {}) };
@@ -467,9 +473,19 @@
                             <span class="text-[10px] text-amber-400 lowercase font-medium">takım veya öğretmen parolası</span>
                         </label>
                         <div class="relative">
-                            <input type="password" id="login-password" placeholder="Takım proje şifrenizi veya öğretmen parolanızı giriniz" required class="w-full px-4 py-3 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
+                            <input type="password" id="login-password" oninput="window.RotaliTubitak.onLoginPasswordInput(this.value)" placeholder="Takım proje şifrenizi veya öğretmen parolanızı giriniz" required class="w-full px-4 py-3 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
                             <i class="fa-solid fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         </div>
+                    </div>
+
+                    <div id="login-student-selector-container" class="hidden">
+                        <label class="block text-xs font-black uppercase tracking-wider text-amber-300 mb-1.5 flex items-center justify-between">
+                            <span>👤 Takım Üyesi Seçiniz</span>
+                            <span class="text-[10px] text-slate-400 lowercase">otomatik eşleştirme</span>
+                        </label>
+                        <select id="login-student-select" onchange="window.RotaliTubitak.onLoginStudentSelect(this.value)" class="w-full px-4 py-2.5 bg-slate-800/95 border border-amber-400/50 rounded-2xl text-xs font-bold text-white focus:outline-none transition-all">
+                            <option value="">-- Takımınızdaki Adınızı Seçiniz --</option>
+                        </select>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -873,6 +889,8 @@
         });
 
         return `
+        ${renderItemStatusBanner(item, getItemStatus(yearId), null, canEditItem)}
+
         <!-- Siyer Bilgilendirme Bannerı -->
         <div class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex items-start gap-3">
             <div class="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
@@ -1045,7 +1063,227 @@
     }
 
     // Aktif Araştırma Formu (Kriterler, Toolbar, Geri Al, İleri Al, Kaydetme Durumu)
-    function renderActiveItemForm(item, projData) {
+    
+    function renderItemStatusBanner(item, itemStatus, ownerStu, canEditItem) {
+        const isTeacher = currentSession?.role === "teacher";
+        const feedbacks = (runtimeFeedbacks || []).filter(f => f.itemId === item.id);
+        const latestFeedback = feedbacks.length > 0 ? feedbacks[feedbacks.length - 1] : null;
+
+        if (itemStatus === "in_review") {
+            return `
+            <div class="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </span>
+                    <div>
+                        <strong class="font-black text-purple-950">Çalışma İncelemede:</strong>
+                        <span>Bu araştırma kesinleştirilerek danışman öğretmen incelemesine sunulmuştur.${isTeacher ? ' Öğretmen olarak inceleyip onaylayabilir veya düzeltme isteyebilirsiniz.' : ' İnceleme süresince doğrudan düzenlenemez.'}</span>
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-purple-200 text-purple-950 font-black text-[10px] uppercase shrink-0">
+                    İnceleme Bekliyor ⏳
+                </span>
+            </div>
+            `;
+        }
+
+        if (itemStatus === "approved") {
+            return `
+            <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+                    <div>
+                        <strong class="font-black text-emerald-950">Araştırma Onaylandı:</strong>
+                        <span>Bu çalışma danışman öğretmeniniz tarafından onaylanmıştır. Akademik yayın standartlarına uygundur.</span>
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-emerald-200 text-emerald-950 font-black text-[10px] uppercase shrink-0">
+                    Onaylandı ✅
+                </span>
+            </div>
+            `;
+        }
+
+        if (itemStatus === "correction_requested") {
+            return `
+            <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs font-semibold space-y-2 shadow-2xs">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </span>
+                        <strong class="font-black text-amber-950 text-sm">Danışman Öğretmen Düzeltme İstedi:</strong>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-xl bg-amber-200 text-amber-950 font-black text-[10px] uppercase shrink-0">
+                        Düzenleme Açık ⚠️
+                    </span>
+                </div>
+                ${latestFeedback?.message ? `
+                <div class="p-2.5 rounded-xl bg-white/80 border border-amber-200 text-xs text-amber-900 font-medium">
+                    <i class="fa-solid fa-quote-left mr-1.5 text-amber-500"></i>${escapeHtml(latestFeedback.message)}
+                </div>
+                ` : ''}
+                <p class="text-[11px] text-amber-800">Lütfen öğretmenin belirttiği eksikleri tamamlayıp tekrar <strong>KAYDET</strong> ve ardından <strong>KESİNLEŞTİR</strong> butonuna basınız.</p>
+            </div>
+            `;
+        }
+
+        return '';
+    }
+
+    async function saveCurrentItemDraft(targetItemId = activeItemId) {
+        if (!currentSession || !targetItemId) return;
+        await flushPendingSaves();
+        updateUIAutosaveBadge("saving", "Taslak kaydediliyor...");
+
+        const recordsToSave = [];
+        if (activeProjectId === "proje-siyer") {
+            const keys = [
+                "c1_olay", "c2_kok_deger", "c3_kaynakca",
+                "c1_olay_2", "c2_kok_deger_2", "c3_kaynakca_2",
+                "c1_olay_3", "c2_kok_deger_3", "c3_kaynakca_3"
+            ];
+            keys.forEach(k => {
+                const el = document.getElementById(`input-${k}`);
+                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${k}`]?.content || "");
+                recordsToSave.push({
+                    criterionKey: k,
+                    content: contentVal,
+                    clientVersion: runtimeRecords[`${targetItemId}__${k}`]?.version || 0
+                });
+            });
+        } else {
+            const projData = seedData?.projects?.[activeProjectId] || {};
+            const critList = projData.criteriaList || [];
+            critList.forEach(crit => {
+                const el = document.getElementById(`input-${crit.key}`);
+                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "");
+                recordsToSave.push({
+                    criterionKey: crit.key,
+                    content: contentVal,
+                    clientVersion: runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
+                });
+            });
+        }
+
+        try {
+            const res = await fetch("/api/tubitak-records", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${currentSession.token}`
+                },
+                body: JSON.stringify({
+                    action: "save_item_batch",
+                    projectId: activeProjectId,
+                    itemId: targetItemId,
+                    records: recordsToSave,
+                    clientTimestamp: new Date().toISOString()
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.ok) {
+                if (data.records) {
+                    runtimeRecords = { ...runtimeRecords, ...data.records };
+                }
+                updateUIAutosaveBadge("saved", "Tüm değişiklikler kaydedildi");
+                showNotice("Çalışmanız başarıyla taslak olarak kaydedildi! ✅", "success");
+                updateProgressBadge();
+            } else {
+                updateUIAutosaveBadge("error", "Kayıt başarısız");
+                showNotice(data.error || "Kayıt sırasında bir hata oluştu. Verileriniz yerel hafızada korundu.", "error");
+            }
+        } catch (err) {
+            const isOnline = (typeof navigator !== "undefined" && navigator.onLine);
+            updateUIAutosaveBadge(isOnline ? "error" : "waiting_connection");
+            showNotice("Bağlantı hatası: " + err.message + ". Değişiklikleriniz çevrimdışı kuyruğa alındı.", "warning");
+        }
+    }
+
+    async function finalizeCurrentItem(targetItemId = activeItemId) {
+        if (!currentSession || !targetItemId) return;
+        const projData = seedData?.projects?.[activeProjectId] || {};
+        const items = projData.items || [];
+        const currentItem = items.find(it => it.id === targetItemId) || { id: targetItemId };
+
+        const canEdit = isItemEditableByCurrentUser(currentItem);
+        if (!canEdit) {
+            showNotice("Bu kayıt üzerinde kesinleştirme yetkiniz bulunmuyor (İncelemede veya Onaylandı durumunda kilitlidir).", "error");
+            return;
+        }
+
+        const confirmMsg = "Çalışmanızı kesinleştirip danışman öğretmene göndermek istiyor musunuz?\n\nKesinleştirilen çalışma öğretmen onayına sunulacak ve inceleme süresince doğrudan düzenlenemeyecektir.";
+        if (typeof confirm === "function" && !confirm(confirmMsg)) {
+            return;
+        }
+
+        await flushPendingSaves();
+        updateUIAutosaveBadge("saving", "Kesinleştiriliyor...");
+
+        const recordsToSave = [];
+        if (activeProjectId === "proje-siyer") {
+            const keys = [
+                "c1_olay", "c2_kok_deger", "c3_kaynakca",
+                "c1_olay_2", "c2_kok_deger_2", "c3_kaynakca_2",
+                "c1_olay_3", "c2_kok_deger_3", "c3_kaynakca_3"
+            ];
+            keys.forEach(k => {
+                const el = document.getElementById(`input-${k}`);
+                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${k}`]?.content || "");
+                recordsToSave.push({
+                    criterionKey: k,
+                    content: contentVal,
+                    clientVersion: runtimeRecords[`${targetItemId}__${k}`]?.version || 0
+                });
+            });
+        } else {
+            const critList = projData.criteriaList || [];
+            critList.forEach(crit => {
+                const el = document.getElementById(`input-${crit.key}`);
+                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "");
+                recordsToSave.push({
+                    criterionKey: crit.key,
+                    content: contentVal,
+                    clientVersion: runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
+                });
+            });
+        }
+
+        try {
+            const res = await fetch("/api/tubitak-records", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${currentSession.token}`
+                },
+                body: JSON.stringify({
+                    action: "finalize_item",
+                    projectId: activeProjectId,
+                    itemId: targetItemId,
+                    records: recordsToSave
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.ok) {
+                showNotice("Çalışmanız başarıyla kesinleştirildi ve öğretmen incelemesine sunuldu! 🎓", "success");
+                await syncProjectData(activeProjectId);
+                renderMainContainer(document.getElementById("tubitak-research-container"));
+            } else {
+                updateUIAutosaveBadge("error", "Kesinleştirme başarısız");
+                showNotice("Kesinleştirme işlemi başarısız: " + (data.error || "Bilinmeyen hata"), "error");
+            }
+        } catch (err) {
+            updateUIAutosaveBadge("error", "Bağlantı hatası");
+            showNotice("Bağlantı hatası: " + err.message, "error");
+        }
+    }
+
+function renderActiveItemForm(item, projData) {
         if (!item || !item.id) {
             return `
             <div class="p-10 text-center text-slate-400">
@@ -1086,10 +1324,37 @@
                     <p class="text-xs text-slate-500 font-medium mt-0.5">${escapeHtml(item.summary || item.location || '')}</p>
                 </div>
 
-                <!-- 🔄 OTO-KAYIT DURUM GÖSTERGESİ -->
-                <div id="tubitak-autosave-indicator" class="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs self-start sm:self-auto">
-                    <span id="autosave-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span id="autosave-text" class="text-xs font-black text-slate-700">${canEditItem ? 'Kayıt Hazır' : 'Salt Okunur'}</span>
+                <!-- 🔄 3 AŞAMALI KAYIT SİSTEMİ ÇUBUĞU (OTOMATİK + KAYDET + KESİNLEŞTİR) -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div id="tubitak-autosave-indicator" class="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs">
+                        <span id="autosave-dot" class="w-2.5 h-2.5 rounded-full ${canEditItem ? 'bg-emerald-500' : (itemStatus === 'in_review' ? 'bg-purple-500' : (itemStatus === 'approved' ? 'bg-emerald-600' : 'bg-slate-400'))}"></span>
+                        <span id="autosave-text" class="text-xs font-black text-slate-700">${canEditItem ? (lastSavedTimeString ? 'Tüm değişiklikler kaydedildi' : 'Kayıt Hazır') : (itemStatus === 'in_review' ? 'İncelemede (Kilitli)' : (itemStatus === 'approved' ? 'Onaylandı' : (itemStatus === 'correction_requested' ? 'Düzeltme İstendi' : 'Salt Okunur')))}</span>
+                        <span id="autosave-time" class="text-[10px] text-slate-400 font-bold ml-1">${lastSavedTimeString ? `(${lastSavedTimeString})` : ''}</span>
+                    </div>
+
+                    ${canEditItem ? `
+                    <!-- 💾 2. AŞAMA: KAYDET BUTONU (Taslak Kaydet) -->
+                    <button type="button" onclick="window.RotaliTubitak.saveCurrentItemDraft('${item.id}')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Tüm alanları taslak olarak kaydeder">
+                        <i class="fa-solid fa-floppy-disk text-amber-400"></i>
+                        <span>KAYDET</span>
+                    </button>
+
+                    <!-- 🎓 3. AŞAMA: KESİNLEŞTİR BUTONU (Öğretmene Gönder) -->
+                    <button type="button" onclick="window.RotaliTubitak.finalizeCurrentItem('${item.id}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-md" title="Son halini kesinleştirerek öğretmen incelemesine sunar">
+                        <i class="fa-solid fa-check-double text-white"></i>
+                        <span>KESİNLEŞTİR</span>
+                    </button>
+                    ` : (itemStatus === 'in_review' && !isTeacher ? `
+                    <span class="px-3.5 py-2 rounded-xl bg-purple-100 border border-purple-200 text-purple-800 text-xs font-black flex items-center gap-1.5 shadow-2xs">
+                        <i class="fa-solid fa-lock text-purple-600"></i>
+                        <span>İncelemede</span>
+                    </span>
+                    ` : (itemStatus === 'approved' && !isTeacher ? `
+                    <span class="px-3.5 py-2 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-black flex items-center gap-1.5 shadow-2xs">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                        <span>Onaylandı</span>
+                    </span>
+                    ` : ''))}
                 </div>
             </div>
 
@@ -1166,6 +1431,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- 📜 ARAŞTIRMA KRİTERLERİ LİSTESİ -->
+        ${renderItemStatusBanner(item, itemStatus, ownerStu, canEditItem)}
 
         <!-- 📜 ARAŞTIRMA KRİTERLERİ LİSTESİ -->
         <div class="space-y-5">
@@ -1342,11 +1610,20 @@
         if (!currentSession || !item) return false;
         if (currentSession.role === "teacher") return true;
         if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim" && activeProjectId !== "proje-siyer") return true;
+
         const myStuId = resolveCurrentUserStudentId(activeProjectId);
         const assignedStuId = getItemAssignedStudentId(item, activeProjectId);
-        if (myStuId && assignedStuId) {
-            return myStuId === assignedStuId;
+        if (myStuId && assignedStuId && myStuId !== assignedStuId) {
+            return false;
         }
+
+        // KESİNLEŞTİRME KİLİDİ: İncelemede veya onaylanmışsa öğrenci doğrudan düzenleyemez
+        // Öğretmen 'Düzeltme İstendi' verirse kilit açılır ve öğrenci tekrar düzenleyebilir!
+        const status = getItemStatus(item.id);
+        if (status === "in_review" || status === "approved") {
+            return false;
+        }
+
         return true;
     }
 
@@ -1569,6 +1846,10 @@
         let hasInReview = false;
         let hasApproved = false;
         let hasCorrection = false;
+        const finalMeta = runtimeFinalized?.[itemId];
+        if (finalMeta?.status === "in_review") hasInReview = true;
+        if (finalMeta?.status === "approved") hasApproved = true;
+        if (finalMeta?.status === "correction_requested") hasCorrection = true;
 
         for (const [k, v] of Object.entries(runtimeRecords)) {
             if (k.startsWith(`${itemId}__`)) {
@@ -2126,6 +2407,8 @@
         let totalRecords = Object.keys(runtimeRecords).length;
         let inReviewCount = Object.values(runtimeRecords).filter(r => r.status === "in_review").length;
         let approvedCount = Object.values(runtimeRecords).filter(r => r.status === "approved").length;
+        let correctionCount = Object.values(runtimeRecords).filter(r => r.status === "correction_requested").length;
+        let draftCount = Object.values(runtimeRecords).filter(r => !r.status || r.status === "draft").length;
         let recentRevs = [...runtimeRevisions].reverse().slice(0, 15);
 
         modal.innerHTML = `
@@ -2143,6 +2426,26 @@
                 </div>
                 <button type="button" onclick="document.getElementById('tubitak-teacher-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Durum Filtre Çubuğu (Taslak, İncelemede, Düzeltme İstendi, Onaylandı) -->
+            <div id="teacher-filter-bar" class="px-6 py-2.5 bg-slate-100 border-b border-slate-200 flex items-center gap-2 overflow-x-auto">
+                <span class="text-[11px] font-black text-slate-500 uppercase shrink-0">Filtre:</span>
+                <button type="button" onclick="window.RotaliTubitak.setTeacherFilterStatus('all')" class="px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${teacherFilterStatus === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-200'}">
+                    Tümü (${totalRecords})
+                </button>
+                <button type="button" onclick="window.RotaliTubitak.setTeacherFilterStatus('in_review')" class="px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${teacherFilterStatus === 'in_review' ? 'bg-purple-600 text-white shadow-sm' : 'bg-purple-50 text-purple-800 hover:bg-purple-100'}">
+                    İncelemede (${inReviewCount})
+                </button>
+                <button type="button" onclick="window.RotaliTubitak.setTeacherFilterStatus('correction_requested')" class="px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${teacherFilterStatus === 'correction_requested' ? 'bg-amber-600 text-white shadow-sm' : 'bg-amber-50 text-amber-900 hover:bg-amber-100'}">
+                    Düzeltme İstendi (${correctionCount})
+                </button>
+                <button type="button" onclick="window.RotaliTubitak.setTeacherFilterStatus('approved')" class="px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${teacherFilterStatus === 'approved' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}">
+                    Onaylanan (${approvedCount})
+                </button>
+                <button type="button" onclick="window.RotaliTubitak.setTeacherFilterStatus('draft')" class="px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${teacherFilterStatus === 'draft' ? 'bg-slate-700 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-200'}">
+                    Taslaklar (${draftCount})
                 </button>
             </div>
 
@@ -4157,8 +4460,18 @@
             }
         },
 
-        handleLogout() {
-            flushPendingSaves();
+        async handleLogout() {
+            const hasPendingTimers = Object.keys(autoSaveTimers).length > 0;
+            const offlineQueue = JSON.parse(localStorage.getItem("rotali_tubitak_offline_queue") || "[]");
+            if (hasPendingTimers || offlineQueue.length > 0) {
+                const proceed = confirm("Kaydedilmemiş veya sunucuya henüz ulaşmamış değişiklikleriniz bulunuyor. Çıkmadan önce değişiklikleriniz sunucuya gönderilsin mi?");
+                if (proceed) {
+                    await flushPendingSaves();
+                    await processOfflineQueue();
+                }
+            } else {
+                await flushPendingSaves();
+            }
             currentSession = null;
             workspaceView = "research";
             analysisCategoryFilter = "all";
@@ -4339,6 +4652,18 @@
 
         openItemInEditor(itemId) {
             activeItemId = itemId;
+            if (currentSession?.studentId) {
+                try {
+                    localStorage.setItem(`rotali_last_active_${activeProjectId}_${currentSession.studentId}`, itemId);
+                    if (currentSession.token) {
+                        fetch("/api/tubitak-records", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentSession.token}` },
+                            body: JSON.stringify({ action: "save_last_active", projectId: activeProjectId, itemId })
+                        }).catch(() => {});
+                    }
+                } catch (e) {}
+            }
             workspaceView = "research";
             activeFilter = "all";
             activePeriodFilter = "all";
@@ -4552,6 +4877,51 @@
         openHistoryModal,
         openAddSourceModal,
         openTeacherDashboardModal,
+        setTeacherFilterStatus(status) {
+            teacherFilterStatus = status || "all";
+            openTeacherDashboardModal();
+        },
+        saveCurrentItemDraft,
+        finalizeCurrentItem,
+
+        onLoginPasswordInput(val) {
+            const selectEl = document.getElementById("login-student-select");
+            const selectContainer = document.getElementById("login-student-selector-container");
+            if (!selectEl) return;
+            const clean = String(val || "").trim().toLowerCase();
+            let projKey = null;
+            if (clean === "tarih1071" || clean.startsWith("tarih") || clean.startsWith("sivas") || clean === "tubitak-eser") projKey = "proje-tarih";
+            else if (clean === "bilim1453" || clean.startsWith("bilim") || clean.startsWith("islam") || clean === "tubitak-bilim") projKey = "proje-bilim";
+            else if (clean === "siyer571" || clean.startsWith("siyer") || clean.startsWith("kronoloji") || clean === "tubitak-siyer") projKey = "proje-siyer";
+
+            if (projKey && seedData?.projects?.[projKey]?.studentTeam) {
+                const team = seedData.projects[projKey].studentTeam;
+                selectEl.innerHTML = '<option value="">-- Takımınızdaki Adınızı Seçiniz --</option>' +
+                    team.map(s => `<option value="${s.id}" data-name="${escapeHtml(s.name)}">${escapeHtml(s.name)} (${s.groupLabel || 'Araştırmacı'})</option>`).join("") +
+                    '<option value="custom">👤 Listede Yokum (Manuel Ad Gir)</option>';
+                if (selectContainer) selectContainer.classList.remove("hidden");
+            } else {
+                if (selectContainer) selectContainer.classList.add("hidden");
+            }
+        },
+
+        onLoginStudentSelect(val) {
+            const selectEl = document.getElementById("login-student-select");
+            const nameEl = document.getElementById("login-student-name");
+            const pinEl = document.getElementById("login-student-pin");
+            if (!selectEl || !nameEl) return;
+            if (val && val !== "custom") {
+                const selectedOpt = selectEl.options[selectEl.selectedIndex];
+                const studentName = selectedOpt.getAttribute("data-name") || selectedOpt.textContent;
+                nameEl.value = studentName.split(' (')[0].trim();
+                if (pinEl) pinEl.value = val;
+            } else if (val === "custom") {
+                nameEl.value = "";
+                nameEl.focus();
+            }
+        },
+
+        finalizeCurrentItem,
         toggleSiyerRootValue(itemId, criterionKey, valName) {
             const recordKey = `${itemId}__${criterionKey}`;
             const existing = runtimeRecords[recordKey];

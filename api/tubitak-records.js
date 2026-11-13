@@ -263,6 +263,14 @@ module.exports = async function handler(req, res) {
                 : ((store.itemsMeta && store.itemsMeta[`${reqProj}_assignments`]) || {});
 
             const includeSiyerMeta = reqProj === "all" || reqProj === "proje-siyer";
+            const projFinalized = reqProj === "all"
+                ? {
+                    ...((store.itemsMeta && store.itemsMeta['proje-tarih_finalized']) || {}),
+                    ...((store.itemsMeta && store.itemsMeta['proje-bilim_finalized']) || {}),
+                    ...((store.itemsMeta && store.itemsMeta['proje-siyer_finalized']) || {})
+                }
+                : ((store.itemsMeta && store.itemsMeta[`${reqProj}_finalized`]) || {});
+
             return res.status(200).json({
                 ok: true,
                 projectId: reqProj,
@@ -271,6 +279,8 @@ module.exports = async function handler(req, res) {
                 sources: projSources,
                 feedbacks: projFeedbacks,
                 assignments: projAssignments,
+                finalized: projFinalized,
+                studentState: store.studentState || {},
                 siyerEvents: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_events']) || {}) : {},
                 siyerYearFlags: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_year_flags']) || {}) : {},
                 comparisons: store.comparisons || {},
@@ -421,6 +431,223 @@ module.exports = async function handler(req, res) {
                 });
             }
 
+            // Son Çalışılan Konuyu Hatırla (Save Last Active Item)
+            if (bodyAction === "save_last_active") {
+                const { projectId, itemId } = req.body || {};
+                const store = await getCloudStore();
+                if (!store.studentState) store.studentState = {};
+                store.studentState[session.studentId] = {
+                    projectId: projectId || userProjectId,
+                    itemId: String(itemId || '').trim(),
+                    studentName: session.studentName,
+                    updatedAt: now
+                };
+                await saveCloudStore(store);
+                return res.status(200).json({ ok: true, studentId: session.studentId, itemId });
+            }
+
+            // 💾 2. AŞAMA: KAYDET BUTONU (Toplu Taslak Kaydetme - Batch Save Draft)
+            if (bodyAction === "save_item_batch" || bodyAction === "save_draft") {
+                const { projectId, itemId, records = [], clientTimestamp } = req.body || {};
+                if (!projectId || !itemId) {
+                    return res.status(400).json({ ok: false, error: "Eksik parametreler (projectId, itemId zorunludur)." });
+                }
+                if (userRole !== "teacher" && userProjectId !== "all" && projectId !== userProjectId) {
+                    return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
+                }
+                const store = await getCloudStore();
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                    const sessionStuId = resolveSessionStudentId(session, projectId);
+                    const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                        return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi atanmış kayıtlarınızı düzenleyebilirsiniz." });
+                    }
+                }
+                if (!store.records) store.records = {};
+                if (!store.revisions) store.revisions = [];
+
+                let savedCount = 0;
+                const savedRecords = {};
+                for (const itemRec of records) {
+                    const critKey = String(itemRec.criterionKey || '').trim();
+                    if (!critKey) continue;
+                    const recItemId = String(itemRec.itemId || itemId).trim();
+                    const newContent = String(itemRec.content || '');
+                    const recKey = `${recItemId}__${critKey}`;
+                    const existing = store.records[recKey] || {
+                        projectId,
+                        itemId: recItemId,
+                        criterionKey: critKey,
+                        content: "",
+                        version: 0,
+                        status: "draft",
+                        updatedAt: now
+                    };
+
+                    // Zaman damgası ve sürüm çakışma kontrolü (Stale overwrite koruması)
+                    if (clientTimestamp && existing.updatedAt && new Date(clientTimestamp) < new Date(existing.updatedAt) && (itemRec.clientVersion || 0) < existing.version) {
+                        continue;
+                    }
+
+                    const prevContent = existing.content || "";
+                    if (prevContent.trim() !== newContent.trim() || existing.version === 0) {
+                        const newVersion = (existing.version || 0) + 1;
+                        const updatedRec = {
+                            id: recKey,
+                            projectId,
+                            itemId: recItemId,
+                            criterionKey: critKey,
+                            content: newContent,
+                            studentId: session.studentId,
+                            studentName: session.studentName,
+                            version: newVersion,
+                            status: existing.status === "approved" ? "in_review" : (existing.status || "draft"),
+                            updatedAt: now
+                        };
+                        store.records[recKey] = updatedRec;
+                        savedRecords[recKey] = updatedRec;
+                        savedCount++;
+
+                        store.revisions.push({
+                            id: `rev-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                            recordKey: recKey,
+                            projectId,
+                            itemId: recItemId,
+                            criterionKey: critKey,
+                            prevContent,
+                            newContent,
+                            studentId: session.studentId,
+                            studentName: session.studentName,
+                            version: newVersion,
+                            createdAt: now
+                        });
+                    } else {
+                        savedRecords[recKey] = existing;
+                    }
+                }
+
+                if (store.revisions.length > 500) {
+                    store.revisions = store.revisions.slice(-500);
+                }
+
+                if (!store.studentState) store.studentState = {};
+                store.studentState[session.studentId] = { projectId, itemId, studentName: session.studentName, updatedAt: now };
+
+                await saveCloudStore(store);
+
+                return res.status(200).json({
+                    ok: true,
+                    status: "saved",
+                    message: "Çalışmanız başarıyla kaydedildi.",
+                    savedCount,
+                    updatedAt: now,
+                    records: savedRecords
+                });
+            }
+
+            // 🎓 3. AŞAMA: KESİNLEŞTİR BUTONU (Öğretmen İncelemesine Sunma)
+            if (bodyAction === "finalize_item") {
+                const { projectId, itemId, records = [] } = req.body || {};
+                if (!projectId || !itemId) {
+                    return res.status(400).json({ ok: false, error: "Eksik parametreler (projectId, itemId zorunludur)." });
+                }
+                if (userRole !== "teacher" && userProjectId !== "all" && projectId !== userProjectId) {
+                    return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
+                }
+                const store = await getCloudStore();
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                    const sessionStuId = resolveSessionStudentId(session, projectId);
+                    const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                        return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır." });
+                    }
+                }
+                if (!store.records) store.records = {};
+                if (!store.revisions) store.revisions = [];
+
+                // Varsa gönderilen son değişiklikleri de yaz
+                for (const itemRec of records) {
+                    const critKey = String(itemRec.criterionKey || '').trim();
+                    if (!critKey) continue;
+                    const recItemId = String(itemRec.itemId || itemId).trim();
+                    const newContent = String(itemRec.content || '');
+                    const recKey = `${recItemId}__${critKey}`;
+                    const existing = store.records[recKey] || {
+                        projectId,
+                        itemId: recItemId,
+                        criterionKey: critKey,
+                        content: "",
+                        version: 0,
+                        status: "draft"
+                    };
+                    const prevContent = existing.content || "";
+                    const newVersion = (existing.version || 0) + (prevContent.trim() !== newContent.trim() ? 1 : 0);
+                    store.records[recKey] = {
+                        id: recKey,
+                        projectId,
+                        itemId: recItemId,
+                        criterionKey: critKey,
+                        content: newContent,
+                        studentId: session.studentId,
+                        studentName: session.studentName,
+                        version: newVersion || 1,
+                        status: "in_review",
+                        updatedAt: now
+                    };
+                }
+
+                // Eser/Yıl/Bilim İnsanı altındaki tüm kriterleri incelemede durumuna getir
+                let updatedCount = 0;
+                for (const [k, rec] of Object.entries(store.records)) {
+                    const isMatching = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
+                    if (isMatching && (projectId === "all" || rec.projectId === projectId)) {
+                        rec.status = "in_review";
+                        rec.updatedAt = now;
+                        updatedCount++;
+                    }
+                }
+
+                // Sürüm geçmişine Kesinleştirme damgası vur
+                store.revisions.push({
+                    id: `rev-final-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    recordKey: `${itemId}__finalized`,
+                    projectId,
+                    itemId,
+                    criterionKey: "finalized",
+                    prevContent: "draft",
+                    newContent: "[Kesinleştirildi - Öğretmen İncelemesinde]",
+                    studentId: session.studentId,
+                    studentName: session.studentName,
+                    version: 1,
+                    status: "in_review",
+                    createdAt: now
+                });
+
+                if (!store.itemsMeta) store.itemsMeta = {};
+                const finalMetaKey = `${projectId}_finalized`;
+                if (!store.itemsMeta[finalMetaKey]) store.itemsMeta[finalMetaKey] = {};
+                store.itemsMeta[finalMetaKey][itemId] = {
+                    itemId,
+                    studentId: session.studentId,
+                    studentName: session.studentName,
+                    status: "in_review",
+                    finalizedAt: now
+                };
+
+                if (!store.studentState) store.studentState = {};
+                store.studentState[session.studentId] = { projectId, itemId, studentName: session.studentName, updatedAt: now };
+
+                await saveCloudStore(store);
+
+                return res.status(200).json({
+                    ok: true,
+                    status: "in_review",
+                    message: "Çalışmanız başarıyla kesinleştirildi ve öğretmen incelemesine sunuldu.",
+                    updatedCount,
+                    updatedAt: now
+                });
+            }
+
             const {
                 projectId,
                 itemId,
@@ -484,13 +711,28 @@ module.exports = async function handler(req, res) {
                 });
             }
 
-            // Çakışma Kontrolü (Optimistic Concurrency)
+            // Çakışma ve Sıra Kontrolü (Stale Request & Optimistic Concurrency)
+            const clientTimestamp = req.body?.clientTimestamp;
+            const isStaleTimestamp = clientTimestamp && existing.updatedAt && (new Date(clientTimestamp) < new Date(existing.updatedAt));
+            const isStaleVersion = clientVersion && existing.version && (clientVersion < existing.version);
+
+            if ((isStaleTimestamp || isStaleVersion) && existing.version > 0 && prevContent.trim() !== newContent.trim()) {
+                return res.status(409).json({
+                    ok: false,
+                    status: "conflict",
+                    error: "Daha yeni bir kayıt mevcuttur. Eski istek üzerine yazılamaz.",
+                    currentVersion: existing.version,
+                    currentContent: existing.content,
+                    updatedAt: existing.updatedAt
+                });
+            }
+
             let isConflict = false;
             if (clientVersion < existing.version && prevContent.trim() !== "") {
                 isConflict = true;
             }
 
-            const newVersion = existing.version + 1;
+            const newVersion = Math.max(existing.version || 0, clientVersion || 0) + 1;
 
             // Kaydı güncelle
             const updatedRecord = {
@@ -700,6 +942,33 @@ module.exports = async function handler(req, res) {
                         createdAt: now
                     });
                 }
+
+                const targetProjId = (projectId === "proje-bilim" || projectId === "proje-tarih" || projectId === "proje-siyer") ? projectId : "proje-tarih";
+                if (!store.itemsMeta) store.itemsMeta = {};
+                const finalMetaKey = `${targetProjId}_finalized`;
+                if (!store.itemsMeta[finalMetaKey]) store.itemsMeta[finalMetaKey] = {};
+                if (!store.itemsMeta[finalMetaKey][itemId]) {
+                    store.itemsMeta[finalMetaKey][itemId] = { itemId, status: targetStatus, reviewedAt: now };
+                } else {
+                    store.itemsMeta[finalMetaKey][itemId].status = targetStatus;
+                    store.itemsMeta[finalMetaKey][itemId].reviewedAt = now;
+                }
+
+                if (!store.revisions) store.revisions = [];
+                store.revisions.push({
+                    id: `rev-review-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    recordKey: `${itemId}__teacher_review`,
+                    projectId: targetProjId,
+                    itemId,
+                    criterionKey: "review",
+                    prevContent: "in_review",
+                    newContent: targetStatus === "approved" ? "[Öğretmen Onayladı]" : `[Düzeltme İstendi: ${String(feedbackMessage || '').slice(0, 50)}]`,
+                    studentId: session.studentId,
+                    studentName: session.studentName || "Danışman Öğretmen",
+                    version: 1,
+                    status: targetStatus,
+                    createdAt: now
+                });
 
                 await saveCloudStore(store);
 

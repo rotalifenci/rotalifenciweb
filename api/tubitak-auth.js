@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * 🔐 ROTALI FENCİ - TÜBİTAK ARAŞTIRMA SİSTEMİ KİMLİK DOĞRULAMA SERVİSİ
@@ -6,6 +8,34 @@ const crypto = require('crypto');
  */
 
 const SECRET_KEY = process.env.TUBITAK_AUTH_SECRET || "rotali-tubitak-auth-secret-key-2026";
+const seedDataPath = path.join(__dirname, '../data/tubitak-seed-data.json');
+
+function getProjectSeedTeam(projectId) {
+    try {
+        if (fs.existsSync(seedDataPath)) {
+            const parsed = JSON.parse(fs.readFileSync(seedDataPath, 'utf8'));
+            const proj = parsed?.projects?.[projectId];
+            if (proj && Array.isArray(proj.studentTeam)) {
+                return proj.studentTeam;
+            }
+        }
+    } catch (e) {}
+    return [];
+}
+
+function normalizeTr(str) {
+    return String(str || '')
+        .toLocaleLowerCase('tr-TR')
+        .replace(/ı/g, 'i')
+        .replace(/İ/gi, 'i')
+        .replace(/ş/g, 's')
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
 
 // Proje Şifreleri Haritası
 const PROJECT_PASSWORDS = {
@@ -64,6 +94,23 @@ module.exports = async function handler(req, res) {
     if (req.method === "OPTIONS") return res.status(200).end();
 
     if (req.method === "GET") {
+        const queryAction = req.query?.action;
+        if (queryAction === "get_team") {
+            const pass = String(req.query.password || "").trim().toLowerCase();
+            const pAuth = PROJECT_PASSWORDS[pass];
+            if (!pAuth) {
+                return res.status(401).json({ ok: false, error: "Geçersiz şifre." });
+            }
+            const team = getProjectSeedTeam(pAuth.projectId);
+            return res.status(200).json({
+                ok: true,
+                projectId: pAuth.projectId,
+                projectName: pAuth.projectName,
+                role: pAuth.role,
+                team
+            });
+        }
+
         // Oturum doğrulama kontrolü
         const authHeader = req.headers.authorization || "";
         const token = authHeader.replace(/^Bearer\s+/i, "").trim();
@@ -79,7 +126,7 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { password, studentName, studentPin } = req.body || {};
+        const { password, studentName, studentPin, studentId: reqStudentId } = req.body || {};
         const cleanPass = String(password || "").trim().toLowerCase();
 
         if (!cleanPass) {
@@ -95,9 +142,45 @@ module.exports = async function handler(req, res) {
         }
 
         const isTeacher = projectAuth.role === "teacher";
-        const finalStudentName = String(studentName || (isTeacher ? "Öğretmen" : "Araştırmacı")).trim();
-        const finalStudentPin = String(studentPin || (isTeacher ? "ADM" : Math.floor(100 + Math.random() * 900))).trim();
-        const studentId = isTeacher ? "teacher-admin" : `stu-${cleanPass.slice(0, 4)}-${finalStudentPin}`;
+        const team = getProjectSeedTeam(projectAuth.projectId);
+
+        let finalStudentId = "";
+        let finalStudentName = "";
+        let finalStudentPin = String(studentPin || (isTeacher ? "ADM" : "100")).trim();
+
+        if (isTeacher) {
+            finalStudentId = "teacher-admin";
+            finalStudentName = String(studentName || "Danışman Öğretmen").trim();
+            finalStudentPin = "ADM";
+        } else {
+            // 1. Doğrudan studentId gönderilmişse
+            let matchedStudent = null;
+            if (reqStudentId) {
+                matchedStudent = team.find(s => s.id === reqStudentId);
+            }
+            // 2. studentName eşleşmesi
+            if (!matchedStudent && studentName) {
+                const normInput = normalizeTr(studentName);
+                matchedStudent = team.find(s => {
+                    const normS = normalizeTr(s.name);
+                    const firstWord = normS.split(' ')[0];
+                    return normInput === normS || (firstWord && normInput.includes(firstWord));
+                });
+            }
+            // 3. studentPin eşleşmesi
+            if (!matchedStudent && studentPin) {
+                matchedStudent = team.find(s => s.id.endsWith(String(studentPin).trim()));
+            }
+
+            if (matchedStudent) {
+                finalStudentId = matchedStudent.id;
+                finalStudentName = matchedStudent.name;
+            } else {
+                finalStudentName = String(studentName || "Öğrenci Araştırmacı").trim();
+                const slugName = normalizeTr(finalStudentName).replace(/[^a-z0-9]/g, '').slice(0, 10);
+                finalStudentId = `stu-${cleanPass.slice(0, 4)}-${slugName || finalStudentPin}`;
+            }
+        }
 
         const issuedAt = Date.now();
         const expiresAt = issuedAt + (isTeacher ? 12 : 24) * 60 * 60 * 1000; // 12-24 saat
@@ -106,7 +189,7 @@ module.exports = async function handler(req, res) {
             role: projectAuth.role,
             projectId: projectAuth.projectId,
             projectName: projectAuth.projectName,
-            studentId,
+            studentId: finalStudentId,
             studentName: finalStudentName,
             studentPin: finalStudentPin,
             iat: issuedAt,
@@ -121,7 +204,7 @@ module.exports = async function handler(req, res) {
             role: projectAuth.role,
             projectId: projectAuth.projectId,
             projectName: projectAuth.projectName,
-            studentId,
+            studentId: finalStudentId,
             studentName: finalStudentName,
             studentPin: finalStudentPin,
             expiresAt

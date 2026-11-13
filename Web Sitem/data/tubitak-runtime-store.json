@@ -6,11 +6,11 @@
       "itemId": "cifte-minareli-medrese",
       "criterionKey": "c1_location",
       "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
-      "studentId": "stu-tari-101",
-      "studentName": "Ali Veli (Geri Yükleme v28)",
-      "version": 29,
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (Geri Yükleme v32)",
+      "version": 33,
       "status": "draft",
-      "updatedAt": "2026-11-13T21:42:07.079Z"
+      "updatedAt": "2026-11-13T23:29:05.219Z"
     },
     "susamislar-konagi__c1_yapi_adi": {
       "id": "susamislar-konagi__c1_yapi_adi",
@@ -32,9 +32,9 @@
       "content": "Çifte Minareli Medrese, Sivas merkezde yer alan Anadolu Selçuklu dönemi eseridir.",
       "studentId": "teacher-admin",
       "studentName": "Fenci Öğretmen",
-      "version": 1,
+      "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-13T21:42:04.846Z"
+      "updatedAt": "2026-11-13T23:29:01.813Z"
     },
     "cifte-minareli-medrese__c2_yapim_yili": {
       "id": "cifte-minareli-medrese__c2_yapim_yili",
@@ -42,11 +42,11 @@
       "itemId": "cifte-minareli-medrese",
       "criterionKey": "c2_yapim_yili",
       "content": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
-      "studentId": "teacher-admin",
-      "studentName": "Fenci Öğretmen",
-      "version": 1,
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-13T21:42:04.846Z"
+      "updatedAt": "2026-11-13T23:29:01.813Z"
     },
     "bilim-01-bircendi__c9_yontemler_problemler": {
       "id": "bilim-01-bircendi__c9_yontemler_problemler",
@@ -66,11 +66,11 @@
       "itemId": "siyer-571",
       "criterionKey": "c1_olay",
       "content": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
-      "studentId": "stu-siye-299",
+      "studentId": "stu3-humeyra",
       "studentName": "Hümeyra BULUT",
-      "version": 3,
+      "version": 5,
       "status": "draft",
-      "updatedAt": "2026-11-13T21:06:09.840Z"
+      "updatedAt": "2026-11-13T23:29:14.865Z"
     },
     "siyer-571__ev_2__c1_olay": {
       "id": "siyer-571__ev_2__c1_olay",
@@ -605,12 +605,12 @@
       "projectId": "proje-siyer",
       "itemId": "siyer-571",
       "criterionKey": "c2_kok_deger",
-      "content": "Merhamet, Adalet ve Tevhid inancının doğuşu.",
-      "studentId": "stu-siye-301",
+      "content": "Adalet, Sevgi",
+      "studentId": "stu3-humeyra",
       "studentName": "Hümeyra BULUT",
-      "version": 1,
+      "version": 2,
       "status": "draft",
-      "updatedAt": "2026-11-13T21:03:37.612Z"
+      "updatedAt": "2026-11-13T23:20:47.419Z"
     },
     "cifte-minareli-medrese__c18_degerlendirme": {
       "id": "cifte-minareli-medrese__c18_degerlendirme",
@@ -622,7 +622,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-13T21:42:04.846Z"
+      "updatedAt": "2026-11-13T23:29:01.813Z"
     },
     "siyer-571__ev_5__c1_olay": {
       "id": "siyer-571__ev_5__c1_olay",
@@ -671,6 +671,198 @@
       "version": 1,
       "status": "draft",
       "updatedAt": "2026-11-13T21:42:19.783Z"
+    },
+    "divrigi-ulu-camii__c1_yapi_adi": {
+      "id": "divrigi-ulu-camii__c1_yapi_adi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c1_yapi_adi",
+      "content": "",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:45:02.876Z"
+    },
+    "cifte-minareli-medrese__c18_kaynak": {
+      "id": "cifte-minareli-medrese__c18_kaynak",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c18_kaynak",
+      "content": "",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "cifte-minareli-medrese__c3_medeniyet": {
+      "id": "cifte-minareli-medrese__c3_medeniyet",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c3_medeniyet",
+      "content": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "cifte-minareli-medrese__c5_yaptiran": {
+      "id": "cifte-minareli-medrese__c5_yaptiran",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c5_yaptiran",
+      "content": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "cifte-minareli-medrese__c6_mimar": {
+      "id": "cifte-minareli-medrese__c6_mimar",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c6_mimar",
+      "content": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "cifte-minareli-medrese__c7_mimari_tarz": {
+      "id": "cifte-minareli-medrese__c7_mimari_tarz",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c7_mimari_tarz",
+      "content": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "siyer-572__ev_14__c1_olay": {
+      "id": "siyer-572__ev_14__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_14",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-299",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T22:00:02.370Z"
+    },
+    "siyer-572__ev_15__c1_olay": {
+      "id": "siyer-572__ev_15__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_15",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T22:47:41.715Z"
+    },
+    "cifte-minareli-medrese__c1_mimari": {
+      "id": "cifte-minareli-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_mimari",
+      "content": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794612451044)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 2,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "bircendi__c1_eserler": {
+      "id": "bircendi__c1_eserler",
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "criterionKey": "c1_eserler",
+      "content": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794612454797)",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 2,
+      "status": "draft",
+      "updatedAt": "2026-11-13T23:27:34.797Z"
+    },
+    "divrigi-darussifasi__c1_tarihce": {
+      "id": "divrigi-darussifasi__c1_tarihce",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "c1_tarihce",
+      "content": "Test 4 Kesinleştirilen Metin: Divriği Ulu Camii kapı bezemeleri (1794612459132) [Düzenleme: Kaynakça eklendi]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 4,
+      "status": "in_review",
+      "updatedAt": "2026-11-13T23:27:45.209Z"
+    },
+    "gok-medrese__c1_mimari": {
+      "id": "gok-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "gok-medrese",
+      "criterionKey": "c1_mimari",
+      "content": "Taze ve Güncel Metin (v5)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 6,
+      "status": "draft",
+      "updatedAt": "2026-11-13T23:27:47.236Z"
+    },
+    "cifte-minareli-medrese__c2_kitabe": {
+      "id": "cifte-minareli-medrese__c2_kitabe",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c2_kitabe",
+      "content": "Proje 1 Kitabe Analizi",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "approved",
+      "updatedAt": "2026-11-13T23:29:01.813Z"
+    },
+    "bircendi__c2_matematik": {
+      "id": "bircendi__c2_matematik",
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "criterionKey": "c2_matematik",
+      "content": "Proje 2 Bircendi Astronomi ve Matematik",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T23:20:45.478Z"
+    },
+    "siyer-571__c3_kaynakca": {
+      "id": "siyer-571__c3_kaynakca",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c3_kaynakca",
+      "content": "İbn İshak, Siret",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T23:20:47.419Z"
+    },
+    "siyer-572__ev_16__c1_olay": {
+      "id": "siyer-572__ev_16__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_16",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T23:29:20.296Z"
     }
   },
   "revisions": [
@@ -1843,6 +2035,455 @@
       "studentName": "Ali Veli (v28 Geri Yüklendi)",
       "version": 29,
       "createdAt": "2026-11-13T21:42:07.079Z"
+    },
+    {
+      "id": "rev-1794606302876-64",
+      "recordKey": "divrigi-ulu-camii__c1_yapi_adi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c1_yapi_adi",
+      "prevContent": "",
+      "newContent": "",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "createdAt": "2026-11-13T21:45:02.876Z"
+    },
+    {
+      "id": "rev-1794606326144-183",
+      "recordKey": "cifte-minareli-medrese__c2_yapim_yili",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c2_yapim_yili",
+      "prevContent": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "newContent": "",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 2,
+      "createdAt": "2026-11-13T21:45:26.144Z"
+    },
+    {
+      "id": "rev-1794606327196-861",
+      "recordKey": "cifte-minareli-medrese__c2_yapim_yili",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c2_yapim_yili",
+      "prevContent": "",
+      "newContent": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 3,
+      "createdAt": "2026-11-13T21:45:27.196Z"
+    },
+    {
+      "id": "rev-1794606333635-484",
+      "recordKey": "cifte-minareli-medrese__c1_yapi_adi",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_yapi_adi",
+      "prevContent": "Çifte Minareli Medrese, Sivas merkezde yer alan Anadolu Selçuklu dönemi eseridir.",
+      "newContent": "Çifte Minareli Medrese",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 2,
+      "createdAt": "2026-11-13T21:45:33.635Z"
+    },
+    {
+      "id": "rev-1794606340635-729",
+      "recordKey": "cifte-minareli-medrese__c18_kaynak",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c18_kaynak",
+      "prevContent": "",
+      "newContent": "",
+      "studentId": "stu-tari-210",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "createdAt": "2026-11-13T21:45:40.635Z"
+    },
+    {
+      "id": "rev-1794606362201-860",
+      "recordKey": "cifte-minareli-medrese__c3_medeniyet",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c3_medeniyet",
+      "prevContent": "",
+      "newContent": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "createdAt": "2026-11-13T21:46:02.201Z"
+    },
+    {
+      "id": "rev-1794606363141-265",
+      "recordKey": "cifte-minareli-medrese__c5_yaptiran",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c5_yaptiran",
+      "prevContent": "",
+      "newContent": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "createdAt": "2026-11-13T21:46:03.141Z"
+    },
+    {
+      "id": "rev-1794606363792-72",
+      "recordKey": "cifte-minareli-medrese__c6_mimar",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c6_mimar",
+      "prevContent": "",
+      "newContent": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "createdAt": "2026-11-13T21:46:03.792Z"
+    },
+    {
+      "id": "rev-1794606365398-751",
+      "recordKey": "cifte-minareli-medrese__c7_mimari_tarz",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c7_mimari_tarz",
+      "prevContent": "",
+      "newContent": "1271 yılında İlhanlı Veziri Şemseddin Cüveynî tarafından yaptırılmıştır.",
+      "studentId": "stu-tari-307",
+      "studentName": "Araştırmacı",
+      "version": 1,
+      "createdAt": "2026-11-13T21:46:05.398Z"
+    },
+    {
+      "id": "rev-1794607189167-879",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-101",
+      "studentName": "Ali Veli (v29 Geri Yüklendi)",
+      "version": 30,
+      "createdAt": "2026-11-13T21:59:49.167Z"
+    },
+    {
+      "id": "rev-1794607196055-877",
+      "recordKey": "cifte-minareli-medrese__c1_yapi_adi",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_yapi_adi",
+      "prevContent": "Çifte Minareli Medrese",
+      "newContent": "Çifte Minareli Medrese, Sivas merkezde yer alan Anadolu Selçuklu dönemi eseridir.",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 3,
+      "createdAt": "2026-11-13T21:59:56.055Z"
+    },
+    {
+      "id": "rev-1794609949551-931",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-101",
+      "studentName": "Ali Veli (v30 Geri Yüklendi)",
+      "version": 31,
+      "createdAt": "2026-11-13T22:45:49.551Z"
+    },
+    {
+      "id": "rev-1794610050057-423",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-101",
+      "studentName": "Ali Veli (v31 Geri Yüklendi)",
+      "version": 32,
+      "createdAt": "2026-11-13T22:47:30.057Z"
+    },
+    {
+      "id": "rev-1794612022969-271",
+      "recordKey": "cifte-minareli-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "",
+      "newContent": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794612022151)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "createdAt": "2026-11-13T23:20:22.153Z"
+    },
+    {
+      "id": "rev-1794612025821-174",
+      "recordKey": "bircendi__c1_eserler",
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "criterionKey": "c1_eserler",
+      "prevContent": "",
+      "newContent": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794612025820)",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "createdAt": "2026-11-13T23:20:25.820Z"
+    },
+    {
+      "id": "rev-final-1794612030599-982",
+      "recordKey": "divrigi-darussifasi__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-13T23:20:30.599Z"
+    },
+    {
+      "id": "rev-review-1794612033509-709",
+      "recordKey": "divrigi-darussifasi__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Düzeltme İstendi: Lütfen kaynakça sayfa numarasını ekleyiniz.]",
+      "studentId": "teacher-admin",
+      "studentName": "Danışman Öğretmen",
+      "version": 1,
+      "status": "correction_requested",
+      "createdAt": "2026-11-13T23:20:33.509Z"
+    },
+    {
+      "id": "rev-final-1794612036495-876",
+      "recordKey": "divrigi-darussifasi__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-13T23:20:36.495Z"
+    },
+    {
+      "id": "rev-1794612038643-758",
+      "recordKey": "gok-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "gok-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "",
+      "newContent": "Taze ve Güncel Metin (v5)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "createdAt": "2026-11-13T23:20:38.643Z"
+    },
+    {
+      "id": "rev-1794612041070-433",
+      "recordKey": "gok-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "gok-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "Taze ve Güncel Metin (v5)",
+      "newContent": "Eski Bayat Metin (v2)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 2,
+      "createdAt": "2026-11-13T23:20:41.070Z"
+    },
+    {
+      "id": "rev-1794612043338-682",
+      "recordKey": "cifte-minareli-medrese__c2_kitabe",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c2_kitabe",
+      "prevContent": "",
+      "newContent": "Proje 1 Kitabe Analizi",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "createdAt": "2026-11-13T23:20:43.338Z"
+    },
+    {
+      "id": "rev-1794612045478-749",
+      "recordKey": "bircendi__c2_matematik",
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "criterionKey": "c2_matematik",
+      "prevContent": "",
+      "newContent": "Proje 2 Bircendi Astronomi ve Matematik",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "createdAt": "2026-11-13T23:20:45.478Z"
+    },
+    {
+      "id": "rev-1794612047420-657",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+      "newContent": "1. Olay: Hz. Muhammed dünyaya geldi",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 4,
+      "createdAt": "2026-11-13T23:20:47.419Z"
+    },
+    {
+      "id": "rev-1794612047420-942",
+      "recordKey": "siyer-571__c2_kok_deger",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c2_kok_deger",
+      "prevContent": "Merhamet, Adalet ve Tevhid inancının doğuşu.",
+      "newContent": "Adalet, Sevgi",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 2,
+      "createdAt": "2026-11-13T23:20:47.419Z"
+    },
+    {
+      "id": "rev-1794612047420-245",
+      "recordKey": "siyer-571__c3_kaynakca",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c3_kaynakca",
+      "prevContent": "",
+      "newContent": "İbn İshak, Siret",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "createdAt": "2026-11-13T23:20:47.419Z"
+    },
+    {
+      "id": "rev-1794612451862-251",
+      "recordKey": "cifte-minareli-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794612022151)",
+      "newContent": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794612451044)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 2,
+      "createdAt": "2026-11-13T23:27:31.047Z"
+    },
+    {
+      "id": "rev-1794612454798-666",
+      "recordKey": "bircendi__c1_eserler",
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "criterionKey": "c1_eserler",
+      "prevContent": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794612025820)",
+      "newContent": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794612454797)",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 2,
+      "createdAt": "2026-11-13T23:27:34.797Z"
+    },
+    {
+      "id": "rev-final-1794612459132-384",
+      "recordKey": "divrigi-darussifasi__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-13T23:27:39.132Z"
+    },
+    {
+      "id": "rev-review-1794612462117-425",
+      "recordKey": "divrigi-darussifasi__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Düzeltme İstendi: Lütfen kaynakça sayfa numarasını ekleyiniz.]",
+      "studentId": "teacher-admin",
+      "studentName": "Danışman Öğretmen",
+      "version": 1,
+      "status": "correction_requested",
+      "createdAt": "2026-11-13T23:27:42.117Z"
+    },
+    {
+      "id": "rev-final-1794612465209-957",
+      "recordKey": "divrigi-darussifasi__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-13T23:27:45.209Z"
+    },
+    {
+      "id": "rev-1794612467236-826",
+      "recordKey": "gok-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "gok-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "Eski Bayat Metin (v2)",
+      "newContent": "Taze ve Güncel Metin (v5)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 6,
+      "createdAt": "2026-11-13T23:27:47.236Z"
+    },
+    {
+      "id": "rev-review-1794612541813-697",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-13T23:29:01.813Z"
+    },
+    {
+      "id": "rev-1794612545219-742",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v32 Geri Yüklendi)",
+      "version": 33,
+      "createdAt": "2026-11-13T23:29:05.219Z"
+    },
+    {
+      "id": "rev-1794612554866-942",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "1. Olay: Hz. Muhammed dünyaya geldi",
+      "newContent": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 5,
+      "createdAt": "2026-11-13T23:29:14.865Z"
     }
   ],
   "sources": {},
@@ -2098,6 +2739,60 @@
       "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
       "status": "approved",
       "createdAt": "2026-11-13T21:42:04.846Z"
+    },
+    {
+      "id": "fb-1794607185674",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-13T21:59:45.673Z"
+    },
+    {
+      "id": "fb-1794609947331",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-13T22:45:47.331Z"
+    },
+    {
+      "id": "fb-1794610046728",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-13T22:47:26.728Z"
+    },
+    {
+      "id": "fb-1794612033509",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "teacherName": "Danışman Öğretmen",
+      "message": "Lütfen kaynakça sayfa numarasını ekleyiniz.",
+      "status": "correction_requested",
+      "createdAt": "2026-11-13T23:20:33.509Z"
+    },
+    {
+      "id": "fb-1794612462117",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "teacherName": "Danışman Öğretmen",
+      "message": "Lütfen kaynakça sayfa numarasını ekleyiniz.",
+      "status": "correction_requested",
+      "createdAt": "2026-11-13T23:27:42.117Z"
+    },
+    {
+      "id": "fb-1794612541813",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-13T23:29:01.813Z"
     }
   ],
   "comparisons": {},
@@ -2106,13 +2801,12 @@
       "susamislar-konagi": {
         "itemId": "susamislar-konagi",
         "assignedStudentId": "stu-hazel",
-        "updatedAt": "2026-11-13T21:42:12.607Z",
+        "updatedAt": "2026-11-13T23:29:09.534Z",
         "assignedBy": "Fenci Öğretmen"
       }
     },
     "proje-siyer_events": {
       "siyer-571": [
-        "siyer-571__ev_2",
         "siyer-571__ev_3",
         "siyer-571__ev_4"
       ],
@@ -2128,14 +2822,17 @@
         "siyer-572__ev_10",
         "siyer-572__ev_11",
         "siyer-572__ev_12",
-        "siyer-572__ev_13"
+        "siyer-572__ev_13",
+        "siyer-572__ev_14",
+        "siyer-572__ev_15",
+        "siyer-572__ev_16"
       ]
     },
     "proje-siyer_year_flags": {
       "siyer-573": {
         "status": "no_event_found",
         "label": "Araştırıldı – Olay tespit edilemedi",
-        "updatedAt": "2026-11-13T21:42:22.512Z",
+        "updatedAt": "2026-11-13T23:29:23.460Z",
         "updatedBy": "Fenci Öğretmen"
       }
     },
@@ -2146,7 +2843,41 @@
       "3": "bilim-77-pisagor",
       "4": "bilim-91-batlamyus",
       "5": "bilim-93-apollonios-pergeli"
+    },
+    "proje-tarih_finalized": {
+      "divrigi-darussifasi": {
+        "itemId": "divrigi-darussifasi",
+        "studentId": "stu-busenur",
+        "studentName": "Busenur Esila ÖZDEMİR",
+        "status": "in_review",
+        "finalizedAt": "2026-11-13T23:27:45.209Z"
+      },
+      "cifte-minareli-medrese": {
+        "itemId": "cifte-minareli-medrese",
+        "status": "approved",
+        "reviewedAt": "2026-11-13T23:29:01.813Z"
+      }
     }
   },
-  "lastCloudSyncTime": "2026-11-13T21:42:24.450Z"
+  "studentState": {
+    "stu2-zumra": {
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "studentName": "Zümra DURAN",
+      "updatedAt": "2026-11-13T23:27:52.514Z"
+    },
+    "stu-busenur": {
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "updatedAt": "2026-11-13T23:27:50.549Z"
+    },
+    "stu3-humeyra": {
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "studentName": "Hümeyra BULUT",
+      "updatedAt": "2026-11-13T23:27:54.687Z"
+    }
+  },
+  "lastCloudSyncTime": "2026-11-13T23:29:25.452Z"
 }

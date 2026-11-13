@@ -49,6 +49,7 @@ function getEmptyStore() {
             'proje-siyer_events': {},
             'proje-siyer_year_flags': {}
         },
+        studentState: {},
         lastCloudSyncTime: null
     };
 }
@@ -104,6 +105,7 @@ function mergeStores(baseStore, incomingStore) {
         feedbacks: Array.isArray(baseStore.feedbacks) ? [...baseStore.feedbacks] : [],
         comparisons: { ...(baseStore.comparisons || {}) },
         itemsMeta: { ...(baseStore.itemsMeta || {}) },
+        studentState: { ...(baseStore.studentState || {}), ...(incomingStore.studentState || {}) },
         lastCloudSyncTime: incomingStore.lastCloudSyncTime || baseStore.lastCloudSyncTime || new Date().toISOString()
     };
 
