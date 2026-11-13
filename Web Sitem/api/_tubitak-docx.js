@@ -138,14 +138,21 @@ async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
 
 async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, recordsMap) {
     const orderedEvents = Array.isArray(eventIds) && eventIds.length > 0
-        ? eventIds
+        ? eventIds.slice(0, 3)
         : [yearItem.id];
 
     const allParagraphs = [];
     let nonEmptyEvents = 0;
 
+    // Siyer ek kriter alanları (2. ve 3. olay kök değer ve kaynakça anahtarları)
+    const expandedCriteriaList = [
+        ...(criteriaList || []),
+        { key: "c2_kok_deger_2" }, { key: "c3_kaynakca_2" },
+        { key: "c2_kok_deger_3" }, { key: "c3_kaynakca_3" }
+    ];
+
     for (const evId of orderedEvents) {
-        const evParagraphs = extractMonumentTextParagraphs({ id: evId, criteria: yearItem.criteria || {} }, criteriaList, recordsMap);
+        const evParagraphs = extractMonumentTextParagraphs({ id: evId, criteria: yearItem.criteria || {} }, expandedCriteriaList, recordsMap);
         if (evParagraphs.length === 0) continue;
         if (nonEmptyEvents > 0) {
             allParagraphs.push('');
@@ -221,7 +228,7 @@ async function generateAllSiyerYearsZipBuffer(items, siyerEventsMeta, criteriaLi
 
     for (const item of items || []) {
         const extraIds = Array.isArray(eventsMeta[item.id]) ? eventsMeta[item.id] : [];
-        const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)];
+        const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)].slice(0, 3);
         const result = await generateSiyerYearDocxBuffer(item, eventIds, criteriaList, recordsMap);
         if (!result) {
             skipped.push(String(item.year || item.title || item.id));

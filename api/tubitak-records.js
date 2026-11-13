@@ -191,7 +191,7 @@ module.exports = async function handler(req, res) {
                     let docxResult;
                     if (exportProjId === "proje-siyer") {
                         const extraIds = (store.itemsMeta && store.itemsMeta['proje-siyer_events'] && store.itemsMeta['proje-siyer_events'][item.id]) || [];
-                        const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)];
+                        const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)].slice(0, 3);
                         docxResult = await generateSiyerYearDocxBuffer(item, eventIds, projObj.criteriaList, mergedRecords);
                     } else {
                         docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords);
@@ -437,6 +437,14 @@ module.exports = async function handler(req, res) {
             // Güvenlik: Öğrenci sadece kendi projesine yazabilir
             if (userRole !== "teacher" && userProjectId !== "all" && projectId !== userProjectId) {
                 return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
+            }
+
+            // Siyer 3 Olay Sınırı: Öğrenciler ev_4 ve daha büyük olay oluşturamaz/yazamaz (mevcut arşiv korunur)
+            if (projectId === "proje-siyer" && String(itemId).includes('__ev_')) {
+                const evNum = parseInt(String(itemId).split('__ev_')[1], 10);
+                if (evNum > 3 && userRole !== "teacher") {
+                    return res.status(400).json({ ok: false, error: "Siyer projesinde her yıl için en fazla 3 olay düzenlenebilir." });
+                }
             }
 
             const recordKey = `${itemId}__${criterionKey}`;
@@ -702,7 +710,7 @@ module.exports = async function handler(req, res) {
                 });
             }
 
-            // D) Proje 3 (Siyer) Yıla Yeni Olay Ekleme
+            // D) Proje 3 (Siyer) Yıla Olay Ekleme / Slot Alma (En fazla 3 olay: 1 ana olay + 2 ek olay)
             if (action === "add_siyer_event") {
                 const yearId = String(req.body?.yearId || itemId || '').trim();
                 const { itemMap } = getProjectSeed('proje-siyer');
@@ -721,17 +729,24 @@ module.exports = async function handler(req, res) {
                 const list = Array.isArray(store.itemsMeta['proje-siyer_events'][yearId])
                     ? [...store.itemsMeta['proje-siyer_events'][yearId]]
                     : [];
-                let nextIdx = 2;
-                while (list.includes(`${yearId}__ev_${nextIdx}`)) {
-                    nextIdx++;
+
+                let targetEventId = null;
+                if (!list.includes(`${yearId}__ev_2`)) {
+                    targetEventId = `${yearId}__ev_2`;
+                    list.push(targetEventId);
+                } else if (!list.includes(`${yearId}__ev_3`)) {
+                    targetEventId = `${yearId}__ev_3`;
+                    list.push(targetEventId);
+                } else {
+                    // Zaten 3 olay mevcut (1 ana + ev_2 + ev_3); 4. olay eklenemez, mevcut slotu döner
+                    targetEventId = `${yearId}__ev_2`;
                 }
-                const newEventId = `${yearId}__ev_${nextIdx}`;
-                list.push(newEventId);
+
                 store.itemsMeta['proje-siyer_events'][yearId] = list;
                 await saveCloudStore(store);
                 return res.status(200).json({
                     ok: true,
-                    eventId: newEventId,
+                    eventId: targetEventId,
                     yearId,
                     siyerEvents: store.itemsMeta['proje-siyer_events']
                 });
