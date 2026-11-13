@@ -5012,5 +5012,33 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-11-13T10:53:56.154Z",
     "updatedAt": "2026-11-13T10:53:56.154Z"
+  },
+  {
+    "id": "mat-7e59c2aa-8400-4401-bd76-b633096aaf3c",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "Su tasarrufu",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Su tasarrufu",
+    "fileUrl": "https://youtu.be/ayNelVHqa4g?si=HwS-fIZFZzkkzOaI",
+    "imageUrl": "https://img.youtube.com/vi/ayNelVHqa4g/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/ayNelVHqa4g/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-13T11:35:19.326Z",
+    "updatedAt": "2026-11-13T11:35:19.326Z"
   }
 ]
