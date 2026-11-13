@@ -7,10 +7,10 @@
       "criterionKey": "c1_location",
       "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
       "studentId": "stu-tari-101",
-      "studentName": "Ali Veli (Geri Yükleme v22)",
-      "version": 23,
+      "studentName": "Ali Veli (Geri Yükleme v23)",
+      "version": 24,
       "status": "draft",
-      "updatedAt": "2026-11-13T20:30:29.217Z"
+      "updatedAt": "2026-11-13T20:36:55.112Z"
     },
     "susamislar-konagi__c1_yapi_adi": {
       "id": "susamislar-konagi__c1_yapi_adi",
@@ -34,7 +34,7 @@
       "studentName": "Fenci Öğretmen",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-13T20:30:29.214Z"
+      "updatedAt": "2026-11-13T20:36:55.110Z"
     },
     "cifte-minareli-medrese__c2_yapim_yili": {
       "id": "cifte-minareli-medrese__c2_yapim_yili",
@@ -46,7 +46,7 @@
       "studentName": "Fenci Öğretmen",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-13T20:30:29.214Z"
+      "updatedAt": "2026-11-13T20:36:55.110Z"
     },
     "bilim-01-bircendi__c9_yontemler_problemler": {
       "id": "bilim-01-bircendi__c9_yontemler_problemler",
@@ -203,6 +203,18 @@
       "version": 1,
       "status": "draft",
       "updatedAt": "2026-11-13T20:30:31.067Z"
+    },
+    "siyer-572__ev_9__c1_olay": {
+      "id": "siyer-572__ev_9__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_9",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-684",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T20:36:56.863Z"
     }
   },
   "revisions": [
@@ -712,6 +724,32 @@
       "studentName": "Hümeyra BULUT",
       "version": 1,
       "createdAt": "2026-11-13T20:30:31.061Z"
+    },
+    {
+      "id": "rev-1794602215113-162",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-101",
+      "studentName": "Ali Veli (v23 Geri Yüklendi)",
+      "version": 24,
+      "createdAt": "2026-11-13T20:36:55.112Z"
+    },
+    {
+      "id": "rev-1794602216859-170",
+      "recordKey": "siyer-571__ev_4__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571__ev_4",
+      "criterionKey": "c1_olay",
+      "prevContent": "",
+      "newContent": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-684",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "createdAt": "2026-11-13T20:36:56.859Z"
     }
   ],
   "sources": {},
@@ -913,6 +951,15 @@
       "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
       "status": "approved",
       "createdAt": "2026-11-13T20:30:29.214Z"
+    },
+    {
+      "id": "fb-1794602215110",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-13T20:36:55.110Z"
     }
   ],
   "itemsMeta": {
@@ -920,7 +967,7 @@
       "susamislar-konagi": {
         "itemId": "susamislar-konagi",
         "assignedStudentId": "stu-hazel",
-        "updatedAt": "2026-11-13T20:30:29.224Z",
+        "updatedAt": "2026-11-13T20:36:55.118Z",
         "assignedBy": "Fenci Öğretmen"
       }
     },
@@ -936,14 +983,15 @@
         "siyer-572__ev_5",
         "siyer-572__ev_6",
         "siyer-572__ev_7",
-        "siyer-572__ev_8"
+        "siyer-572__ev_8",
+        "siyer-572__ev_9"
       ]
     },
     "proje-siyer_year_flags": {
       "siyer-573": {
         "status": "no_event_found",
         "label": "Araştırıldı – Olay tespit edilemedi",
-        "updatedAt": "2026-11-13T20:30:31.255Z",
+        "updatedAt": "2026-11-13T20:36:57.066Z",
         "updatedBy": "Fenci Öğretmen"
       }
     },

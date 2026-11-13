@@ -52,7 +52,14 @@
       "kuvveti-taniyalim",
       "stem"
     ],
-    "imageUrl": "assets/dinamometre-laboratuvari-kapak.svg"
+    "imageUrl": "assets/dinamometre-laboratuvari-kapak.svg",
+    "desc": "",
+    "fileName": "Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!.pdf",
+    "hasBlob": false,
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "updatedAt": "2026-11-11T00:00:00.000Z",
+    "cover": "assets/dinamometre-laboratuvari-kapak.svg"
   },
   {
     "id": "mat-840c5044-4b84-4157-b37e-7bc1b99df179",
@@ -80,7 +87,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-04T08:37:22.025Z",
-    "updatedAt": "2026-11-04T08:37:22.025Z"
+    "updatedAt": "2026-11-04T08:37:22.025Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793781418844_mat-840c5044-4b84-4157-b37e-7bc1b99df179_cover.jpg"
   },
   {
     "id": "mat-0daf0b71-b420-4e88-9352-41c2334f5a7d",
@@ -137,7 +145,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-02T23:27:56.618Z",
-    "updatedAt": "2026-11-02T23:27:56.618Z"
+    "updatedAt": "2026-11-02T23:27:56.618Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793662045533_mat-e92bf2be-d134-43a0-bd3e-2106ab3ac003_cover.jpg"
   },
   {
     "id": "mat-99772910-9828-42ee-b630-31381cce5cc3",
@@ -4947,5 +4956,89 @@
     "questionCount": 1,
     "createdAt": "2026-11-11T00:03:38.399Z",
     "updatedAt": "2026-11-11T00:03:38.399Z"
+  },
+  {
+    "id": "mat-14a6e20c-06ac-4f32-9efc-e7a0fd37363d",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "Su Tasarrufu",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "46E05DAD-B363-4A45-9C02-ECCCD501672D.png",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552979270_nevim_46e05dad-b363-4a45-9c02-ecccd501672d.png",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552978138_mat-5ed59415-311f-4aa1-a461-0882354a0717_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552978138_mat-5ed59415-311f-4aa1-a461-0882354a0717_cover.jpg",
+    "format": "PNG",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-13T06:56:28.471Z",
+    "updatedAt": "2026-11-13T06:56:28.471Z"
+  },
+  {
+    "id": "mat-7ae7c4f6-3491-4b98-a266-195ef4459552",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "SunTasarrufu",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "890F3CEF-5875-4DED-AFE4-6C851E2CDD2B.png",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794567216322_jgmvn_890f3cef-5875-4ded-afe4-6c851e2cdd2b.png",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794567215101_mat-7ae7c4f6-3491-4b98-a266-195ef4459552_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794567215101_mat-7ae7c4f6-3491-4b98-a266-195ef4459552_cover.jpg",
+    "format": "PNG",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-13T10:53:56.154Z",
+    "updatedAt": "2026-11-13T10:53:56.154Z"
+  },
+  {
+    "id": "mat-7e59c2aa-8400-4401-bd76-b633096aaf3c",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "Su tasarrufu",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Su tasarrufu",
+    "fileUrl": "https://youtu.be/ayNelVHqa4g?si=HwS-fIZFZzkkzOaI",
+    "imageUrl": "https://img.youtube.com/vi/ayNelVHqa4g/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/ayNelVHqa4g/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-13T11:35:19.326Z",
+    "updatedAt": "2026-11-13T11:35:19.326Z"
   }
 ]
