@@ -41,6 +41,7 @@ function getEmptyStore() {
         revisions: [],
         sources: {},
         feedbacks: [],
+        comparisons: {},
         itemsMeta: {
             'proje-tarih_assignments': {},
             'proje-bilim_assignments': {},
@@ -101,6 +102,7 @@ function mergeStores(baseStore, incomingStore) {
         revisions: Array.isArray(baseStore.revisions) ? [...baseStore.revisions] : [],
         sources: { ...(baseStore.sources || {}) },
         feedbacks: Array.isArray(baseStore.feedbacks) ? [...baseStore.feedbacks] : [],
+        comparisons: { ...(baseStore.comparisons || {}) },
         itemsMeta: { ...(baseStore.itemsMeta || {}) },
         lastCloudSyncTime: incomingStore.lastCloudSyncTime || baseStore.lastCloudSyncTime || new Date().toISOString()
     };
@@ -161,6 +163,22 @@ function mergeStores(baseStore, incomingStore) {
                 ...merged.itemsMeta[metaCategory],
                 ...incMap
             };
+        }
+    }
+
+    // 6. Comparisons Merge
+    if (!merged.comparisons) merged.comparisons = {};
+    for (const [cId, comp] of Object.entries(incomingStore.comparisons || {})) {
+        if (!comp) continue;
+        const exist = merged.comparisons[cId];
+        if (!exist) {
+            merged.comparisons[cId] = comp;
+        } else {
+            const incTime = comp.updatedAt ? Date.parse(comp.updatedAt) : 0;
+            const existTime = exist.updatedAt ? Date.parse(exist.updatedAt) : 0;
+            if (incTime >= existTime) {
+                merged.comparisons[cId] = comp;
+            }
         }
     }
 
