@@ -556,7 +556,7 @@
                         ` : items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
-                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 14 : (activeProjectId === 'proje-siyer' ? 5 : 18));
+                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 13 : (activeProjectId === 'proje-siyer' ? 5 : 18));
                             const pct = totalCriteria > 0 ? Math.round((filledCount / totalCriteria) * 100) : 0;
                             const status = getItemStatus(it.id);
                             const permanentOrder = getItemPermanentOrder(it);
@@ -645,7 +645,7 @@
             <div>
                 <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Sıralama</label>
                 <select onchange="window.RotaliTubitak.setSortOrder(this.value)" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
-                    <option value="original" ${activeSort === 'original' ? 'selected' : ''}>Orijinal Sıra (1–98)</option>
+                    <option value="original" ${activeSort === 'original' ? 'selected' : ''}>Orijinal Sıra (1–92)</option>
                     <option value="alpha" ${activeSort === 'alpha' ? 'selected' : ''}>Alfabetik (A-Z)</option>
                 </select>
             </div>
@@ -878,7 +878,7 @@
     function isProjectDistributionValid(projectId = activeProjectId) {
         const items = seedData?.projects?.[projectId]?.items || [];
         if (projectId === "proje-tarih") return items.length === 40;
-        if (projectId === "proje-bilim") return items.length === 98;
+        if (projectId === "proje-bilim") return items.length === 92;
         if (projectId === "proje-siyer") return items.length === 62;
         return true;
     }
@@ -990,7 +990,7 @@
     function computeStudentStats(stuId, projectId = activeProjectId) {
         const projData = seedData?.projects?.[projectId] || {};
         const items = projData.items || [];
-        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 14 : (projectId === "proje-siyer" ? 5 : 18));
+        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 13 : (projectId === "proje-siyer" ? 5 : 18));
         const assignedItems = items.filter(it => getItemAssignedStudentId(it, projectId) === stuId);
         let startedCount = 0;
         let completedCount = 0;
@@ -1049,7 +1049,7 @@
         const isTeacher = currentSession?.role === "teacher";
         const distValid = isProjectDistributionValid(projectId);
         const myStuId = resolveCurrentUserStudentId(projectId);
-        const expectedTotal = projectId === "proje-bilim" ? 98 : (projectId === "proje-siyer" ? 62 : 40);
+        const expectedTotal = projectId === "proje-bilim" ? 92 : (projectId === "proje-siyer" ? 62 : 40);
         const unitLabel = projectId === "proje-bilim" ? "Bilim İnsanı" : (projectId === "proje-siyer" ? "Yıl" : "Eser");
         const panelHeading = projectId === "proje-siyer" ? "SİYER ARAŞTIRMA EKİBİ" : "ARAŞTIRMA EKİBİ – ÖĞRENCİ SEÇİMİ";
 
@@ -1505,7 +1505,7 @@
                     <span>Proje 2 – Matematik Tarihi Bilim İnsanları Takibi & Görev Atamaları</span>
                 </h4>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button type="button" onclick="window.RotaliTubitak.downloadAllProje1Word(this, 'proje-bilim')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="98 bilim insanının her biri için ayrı .docx oluşturup ZIP olarak indir">
+                    <button type="button" onclick="window.RotaliTubitak.downloadAllProje1Word(this, 'proje-bilim')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="92 bilim insanının her biri için ayrı .docx oluşturup ZIP olarak indir">
                         <i class="fa-solid fa-file-zipper"></i>
                         <span>Tüm Bilim İnsanlarını Word Olarak İndir</span>
                     </button>
@@ -1518,7 +1518,7 @@
             ${!distValid ? `
             <div class="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-xs font-bold text-red-800 flex items-center gap-2">
                 <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
-                <span>Dikkat: Proje 2 bilim insanı sayısı 98 olarak doğrulanamadı (mevcut: ${items.length}).</span>
+                <span>Dikkat: Proje 2 bilim insanı sayısı 92 olarak doğrulanamadı (mevcut: ${items.length}).</span>
             </div>
             ` : ''}
 

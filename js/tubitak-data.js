@@ -792,87 +792,81 @@ window.TUBITAK_SEED_DATA = {
       "color": "from-cyan-600 via-blue-600 to-indigo-700",
       "criteriaList": [
         {
-          "key": "c0_bilim_insani_adi",
-          "title": "1. Bilim İnsanının Adı",
-          "placeholder": "Bilim insanının tam adını, künyesini veya literatürdeki adını yazınız...",
-          "required": true
-        },
-        {
           "key": "c1_dogum_tarihi_yeri",
-          "title": "2. Doğum Tarihi ve Yeri",
+          "title": "1. Doğum Tarihi ve Yeri",
           "placeholder": "Doğum tarihi ve doğduğu yere ilişkin literatür bilgilerini yazınız (belirsizse belirtiniz)...",
           "required": true
         },
         {
           "key": "c2_milliyeti",
-          "title": "3. Milliyeti",
+          "title": "2. Milliyeti",
           "placeholder": "Kaynaklarda belirtilen milliyet, kültürel aidiyet veya tarihsel coğrafya bilgilerini yazınız...",
           "required": true
         },
         {
           "key": "c3_yasadigi_donem",
-          "title": "4. Yaşadığı Tarihsel Dönem",
+          "title": "3. Yaşadığı Tarihsel Dönem",
           "placeholder": "Yaşadığı yüzyıl ve tarihsel dönemi yazınız...",
           "required": true
         },
         {
           "key": "c4_hayat_hikayesi",
-          "title": "5. Hayat Hikâyesi",
+          "title": "4. Hayat Hikâyesi",
           "placeholder": "Bilim insanının yaşam öyküsüne ait araştırma bilgilerini yazınız...",
           "required": true
         },
         {
           "key": "c5_egitim_hayati",
-          "title": "6. Eğitim Hayatı",
+          "title": "5. Eğitim Hayatı",
           "placeholder": "Aldığı eğitimler, hocaları ve yetiştiği bilimsel çevreleri yazınız...",
           "required": true
         },
         {
           "key": "c6_bilim_dallari",
-          "title": "7. İlgilendiği Bilim Dalları",
+          "title": "6. İlgilendiği Bilim Dalları",
           "placeholder": "Çalıştığı bilim dallarını yazınız...",
           "required": true
         },
         {
           "key": "c7_katkilar_buluslar",
-          "title": "8. Matematiğe Katkıları ve Buluşları",
+          "title": "7. Matematiğe Katkıları ve Buluşları",
           "placeholder": "Matematik alanındaki çalışmaları, buluşları ve bilimsel katkıları yazınız...",
           "required": true
         },
         {
           "key": "c8_eserleri",
-          "title": "9. Eserleri",
+          "title": "8. Eserleri",
           "placeholder": "Yazdığı kitaplar, risaleler ve diğer bilimsel eserleri yazınız...",
           "required": true
         },
         {
           "key": "c9_yontemler_problemler",
-          "title": "10. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri",
+          "title": "9. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri",
           "placeholder": "Matematiksel yöntemler, çözümler, problem örnekleri ve LaTeX ($...$ / ...) gösterimleri ekleyebilirsiniz...",
           "required": true,
           "supportsLatex": true
         },
         {
           "key": "c10_tarihteki_yeri",
-          "title": "11. Matematik Tarihindeki Yeri ve Önemi",
+          "title": "10. Matematik Tarihindeki Yeri ve Önemi",
           "placeholder": "Matematik tarihindeki rolü ve önemini açıklayınız...",
           "required": true
         },
         {
           "key": "c11_gunumuze_etkileri",
-          "title": "12. Günümüz Matematiğine Etkileri",
+          "title": "11. Günümüz Matematiğine Etkileri",
           "placeholder": "Matematik tarihinden günümüze uzanan etkilerini kaynaklarla destekleyerek yazınız...",
           "required": true
         },
         {
           "key": "c12_olum_tarihi",
-          "title": "13. Ölüm Tarihi",
+          "title": "12. Ölüm Tarihi",
           "placeholder": "Ölüm tarihi hakkında kaynak bilgilerini yazınız (belirsizse belirtiniz)...",
           "required": true
         },
         {
           "key": "c13_kaynakca",
-          "title": "14. KAYNAKÇA",
+          "title": "13. KAYNAKÇA",
           "placeholder": "Yararlanılan güvenilir kaynakları (yazar, eser adı, yıl, yayınevi, sayfa, bağlantı) yazınız...",
           "required": true
         }
@@ -884,7 +878,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "BİRCENDÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-02-farisi-muhammed-b-ebu-bekir",
@@ -892,7 +887,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "FÂRİSÎ, Muhammed b. Ebû Bekir",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-03-hucendi-hamid-b-hidir",
@@ -900,7 +896,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "HUCENDÎ, Hâmid b. Hıdır",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-04-ibnu-l-havvam",
@@ -908,7 +905,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "İBNÜ’l-HAVVÂM",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-05-ibnu-s-salah-ebu-l-futuh",
@@ -916,7 +914,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "İBNÜ’s-SALÂH, Ebü’l-Fütûh",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-06-ibnu-s-semh",
@@ -924,7 +923,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "İBNÜ’s-SEMH",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-07-kabisi",
@@ -932,7 +932,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "KABÎSÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-08-kuhi",
@@ -940,7 +941,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "KÛHÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-09-mahani",
@@ -948,7 +950,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "MÂHÂNÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-10-mardini-ismail-b-ibrahim",
@@ -956,7 +959,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "MARDÎNÎ, İsmâil b. İbrâhim",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-11-muhammed-b-ebu-l-hayr",
@@ -964,7 +968,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "MUHAMMED b. EBÜ’l-HAYR",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-12-numan-efendi-eginli",
@@ -972,7 +977,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "NÛMAN EFENDİ, Eğinli",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-13-sabit-b-kurre",
@@ -980,7 +986,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "SÂBİT b. KURRE",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-14-semerkandi-muhammed-b-esref",
@@ -988,7 +995,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "SEMERKANDÎ, Muhammed b. Eşref",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-15-sibtu-l-mardini",
@@ -996,7 +1004,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "SIBTU’l-MARDÎNÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-16-tusi-serefeddin",
@@ -1004,7 +1013,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "TÛSÎ, Şerefeddin",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-17-ahdari",
@@ -1012,7 +1022,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "AHDARÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "el-biruni",
@@ -1020,7 +1031,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "BÎRÛNÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-19-fethullah-es-sirvani",
@@ -1028,15 +1040,17 @@ window.TUBITAK_SEED_DATA = {
           "title": "FETHULLAH eş-ŞİRVÂNÎ",
           "assignedStudentId": "stu2-zumra",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Zümra DURAN"
         },
         {
           "id": "bilim-20-mirim-celebi",
           "orderIndex": 20,
           "title": "MÎRİM ÇELEBİ",
-          "assignedStudentId": "stu2-zumra",
+          "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-21-mustafa-sidki",
@@ -1044,7 +1058,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "MUSTAFA SIDKI",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-22-saidan-ahmed-selim",
@@ -1052,7 +1067,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "SAÎDÂN, Ahmed Selîm",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-23-cagmini",
@@ -1060,7 +1076,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "ÇAĞMÎNÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-24-feyyumi-abdulkadir-b-muhammed",
@@ -1068,7 +1085,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "FEYYÛMÎ, Abdülkādir b. Muhammed",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-25-gelenbevi",
@@ -1076,7 +1094,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "GELENBEVÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-26-habes-el-hasib",
@@ -1084,7 +1103,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "HABEŞ el-HÂSİB",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-27-ibn-irak",
@@ -1092,7 +1112,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "İBN IRÂK",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-28-mehmed-atif-efendi-kuyucaklizade",
@@ -1100,7 +1121,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "MEHMED ÂTIF EFENDİ, Kuyucaklızâde",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-29-salih-zeki",
@@ -1108,7 +1130,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "SÂLİH ZEKİ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-30-haraki",
@@ -1116,7 +1139,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "HARAKĪ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-31-kemaleddin-el-farisi",
@@ -1124,7 +1148,8 @@ window.TUBITAK_SEED_DATA = {
           "title": "KEMÂLEDDİN el-FÂRİSÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-32-kutbuddin-i-sirazi",
@@ -1132,535 +1157,548 @@ window.TUBITAK_SEED_DATA = {
           "title": "KUTBÜDDÎN-i ŞÎRÂZÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
-        },
-        {
-          "id": "bilim-33-sedillot-louis-pierre-eugene-amelie",
-          "orderIndex": 33,
-          "title": "SÉDILLOT, Louis Pierre Eugene Amélie",
-          "assignedStudentId": "stu2-hira",
-          "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-34-sefti",
-          "orderIndex": 34,
+          "orderIndex": 33,
           "title": "SEFTÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-35-abdulkahir-el-bagdadi",
-          "orderIndex": 35,
+          "orderIndex": 34,
           "title": "ABDÜLKĀHİR el-BAĞDÂDÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-36-abdullah-b-hasan-el-bagdadi",
-          "orderIndex": 36,
+          "orderIndex": 35,
           "title": "ABDULLAH b. HASAN el-BAĞDÂDÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-37-ali-b-ahmed-el-imrani",
-          "orderIndex": 37,
+          "orderIndex": 36,
           "title": "ALİ b. AHMED el-İMRÂNÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-38-ebheri-eminuddin",
-          "orderIndex": 38,
+          "orderIndex": 37,
           "title": "EBHERÎ, Emînüddin",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-39-hububi",
-          "orderIndex": 39,
+          "orderIndex": 38,
           "title": "HUBÛBÎ",
           "assignedStudentId": "stu2-hira",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Hira BÜYÜKDEVECİ"
         },
         {
           "id": "bilim-40-ibnu-l-benna-el-merrakusi",
-          "orderIndex": 40,
+          "orderIndex": 39,
           "title": "İBNÜ’l-BENNÂ el-MERRÂKÜŞÎ",
-          "assignedStudentId": "stu2-hira",
+          "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-41-ibnu-l-haim",
-          "orderIndex": 41,
+          "orderIndex": 40,
           "title": "İBNÜ’l-HÂİM",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-42-ibnu-n-nakib-el-halebi",
-          "orderIndex": 42,
+          "orderIndex": 41,
           "title": "İBNÜ’n-NAKĪB el-HALEBÎ",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-43-ibrahim-b-sinan-b-sabit",
-          "orderIndex": 43,
+          "orderIndex": 42,
           "title": "İBRÂHİM b. SİNÂN b. SÂBİT",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-44-isfizari-ebu-hatim",
-          "orderIndex": 44,
+          "orderIndex": 43,
           "title": "İSFİZÂRÎ, Ebû Hâtim",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-45-kadizade-i-rumi",
-          "orderIndex": 45,
+          "orderIndex": 44,
           "title": "KADIZÂDE-i RÛMÎ",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-46-kalesadi",
-          "orderIndex": 46,
+          "orderIndex": 45,
           "title": "KALESÂDÎ",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-47-kusyar-b-lebban",
-          "orderIndex": 47,
+          "orderIndex": 46,
           "title": "KÛŞYÂR b. LEBBÂN",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-48-mardini-cemaleddin",
-          "orderIndex": 48,
+          "orderIndex": 47,
           "title": "MARDÎNÎ, Cemâleddin",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-49-mehmed-nadir",
-          "orderIndex": 49,
+          "orderIndex": 48,
           "title": "MEHMED NÂDİR",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-50-muhammed-bakir-yezdi",
-          "orderIndex": 50,
+          "orderIndex": 49,
           "title": "MUHAMMED BÂKIR YEZDÎ",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-51-nesevi-ali-b-ahmed",
-          "orderIndex": 51,
+          "orderIndex": 50,
           "title": "NESEVÎ, Ali b. Ahmed",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-52-neyrizi",
-          "orderIndex": 52,
+          "orderIndex": 51,
           "title": "NEYRÎZÎ",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-53-semev-el-el-magribi",
-          "orderIndex": 53,
+          "orderIndex": 52,
           "title": "SEMEV’EL el-MAĞRİBÎ",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-54-siczi-ebu-said",
-          "orderIndex": 54,
+          "orderIndex": 53,
           "title": "SİCZÎ, Ebû Saîd",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-55-sekerzade-feyzullah-sermed",
-          "orderIndex": 55,
+          "orderIndex": 54,
           "title": "ŞEKERZÂDE FEYZULLAH SERMED",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "ulug-bey",
-          "orderIndex": 56,
+          "orderIndex": 55,
           "title": "ULUĞ BEY",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-57-dilgan-ahmet-hamit",
-          "orderIndex": 57,
+          "orderIndex": 56,
           "title": "DİLGAN, Ahmet Hamit",
           "assignedStudentId": "stu2-reyyan",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Reyyan YILMAZ"
         },
         {
           "id": "bilim-58-abdulmelik-es-sirazi",
-          "orderIndex": 58,
+          "orderIndex": 57,
           "title": "ABDÜLMELİK eş-ŞÎRÂZÎ",
-          "assignedStudentId": "stu2-reyyan",
+          "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-59-bedi-el-usturlabi",
-          "orderIndex": 59,
+          "orderIndex": 58,
           "title": "BEDÎ‘ el-USTURLÂBÎ",
-          "assignedStudentId": "stu2-reyyan",
+          "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-60-ibn-ebu-s-sukr",
-          "orderIndex": 60,
+          "orderIndex": 59,
           "title": "İBN EBÜ’ş-ŞÜKR",
-          "assignedStudentId": "stu2-reyyan",
+          "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-61-mecriti",
-          "orderIndex": 61,
+          "orderIndex": 60,
           "title": "MECRÎTÎ",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-62-sinan-b-sabit",
-          "orderIndex": 62,
+          "orderIndex": 61,
           "title": "SİNÂN b. SÂBİT",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
-        },
-        {
-          "id": "bilim-63-woepcke-franz",
-          "orderIndex": 63,
-          "title": "WOEPCKE, Franz",
-          "assignedStudentId": "stu2-mustafa",
-          "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-64-yanyali-bedreddin-mehmed",
-          "orderIndex": 64,
+          "orderIndex": 62,
           "title": "YANYALI BEDREDDİN MEHMED",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-65-suveysi",
-          "orderIndex": 65,
+          "orderIndex": 63,
           "title": "SÜVEYSÎ",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-66-hazin-ebu-ca-fer",
-          "orderIndex": 66,
+          "orderIndex": 64,
           "title": "HÂZİN, Ebû Ca‘fer",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-67-ibnu-r-rakkam",
-          "orderIndex": 67,
+          "orderIndex": 65,
           "title": "İBNÜ’r-RAKKĀM",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-68-tamani-huseyin-rifki",
-          "orderIndex": 68,
+          "orderIndex": 66,
           "title": "TAMÂNÎ, Hüseyin Rıfkı",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-69-cevheri-abbas-b-said",
-          "orderIndex": 69,
+          "orderIndex": 67,
           "title": "CEVHERÎ, Abbas b. Saîd",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-70-ebheri-esiruddin",
-          "orderIndex": 70,
+          "orderIndex": 68,
           "title": "EBHERÎ, Esîrüddin",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-71-halili-semseddin",
-          "orderIndex": 71,
+          "orderIndex": 69,
           "title": "HALÎLÎ, Şemseddin",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-72-ibn-yunus-ebu-l-hasan",
-          "orderIndex": 72,
+          "orderIndex": 70,
           "title": "İBN YÛNUS, Ebü’l-Hasan",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-73-ibnu-s-saffar-ebu-l-kasim",
-          "orderIndex": 73,
+          "orderIndex": 71,
           "title": "İBNÜ’s-SAFFÂR, Ebü’l-Kāsım",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-74-matrakci-nasuh",
-          "orderIndex": 74,
+          "orderIndex": 72,
           "title": "MATRAKÇI NASUH",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-75-muhammed-b-ebu-l-feth-es-sufi",
-          "orderIndex": 75,
+          "orderIndex": 73,
           "title": "MUHAMMED b. EBÜ’l-FETH es-SÛFÎ",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
-        },
-        {
-          "id": "bilim-76-oklid",
-          "orderIndex": 76,
-          "title": "ÖKLİD",
-          "assignedStudentId": "stu2-mustafa",
-          "field": "Matematik Tarihi",
-          "criteria": {}
-        },
-        {
-          "id": "bilim-77-pisagor",
-          "orderIndex": 77,
-          "title": "PİSAGOR",
-          "assignedStudentId": "stu2-mustafa",
-          "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-78-sabit-b-sinan",
-          "orderIndex": 78,
+          "orderIndex": 74,
           "title": "SÂBİT b. SİNÂN",
           "assignedStudentId": "stu2-mustafa",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Mustafa Emin YERLİKAYA"
         },
         {
           "id": "bilim-79-said-el-endelusi",
-          "orderIndex": 79,
+          "orderIndex": 75,
           "title": "SÂİD el-ENDELÜSÎ",
-          "assignedStudentId": "stu2-mustafa",
+          "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-80-fergani",
-          "orderIndex": 80,
+          "orderIndex": 76,
           "title": "FERGĀNÎ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-81-huseyin-tevfik-pasa",
-          "orderIndex": 81,
+          "orderIndex": 77,
           "title": "HÜSEYİN TEVFİK PAŞA",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-82-ibn-bamsad",
-          "orderIndex": 82,
+          "orderIndex": 78,
           "title": "İBN BÂMŞÂD",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-83-sagani-ahmed-b-muhammed",
-          "orderIndex": 83,
+          "orderIndex": 79,
           "title": "SÂGĀNÎ, Ahmed b. Muhammed",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-84-ahvazi-ahmed-b-huseyin",
-          "orderIndex": 84,
+          "orderIndex": 80,
           "title": "AHVÂZÎ, Ahmed b. Hüseyin",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-85-kasi",
-          "orderIndex": 85,
+          "orderIndex": 81,
           "title": "KÂŞÎ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-86-oklidisi",
-          "orderIndex": 86,
+          "orderIndex": 82,
           "title": "ÖKLÎDİSÎ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-87-abdulvahid-el-cuzcani",
-          "orderIndex": 87,
+          "orderIndex": 83,
           "title": "ABDÜLVÂHİD el-CÛZCÂNÎ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-88-ebu-kamil",
-          "orderIndex": 88,
+          "orderIndex": 84,
           "title": "EBÛ KÂMİL",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-89-abdulhamid-b-vasi-b-turk",
-          "orderIndex": 89,
+          "orderIndex": 85,
           "title": "ABDÜLHAMÎD b. VÂSİ‘ b. TÜRK",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "el-harezmi",
-          "orderIndex": 90,
+          "orderIndex": 86,
           "title": "HÂRİZMÎ, Muhammed b. Mûsâ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
-        },
-        {
-          "id": "bilim-91-batlamyus",
-          "orderIndex": 91,
-          "title": "BATLAMYUS",
-          "assignedStudentId": "stu2-muhammed",
-          "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-92-kereci",
-          "orderIndex": 92,
+          "orderIndex": 87,
           "title": "KERECÎ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
-        },
-        {
-          "id": "bilim-93-apollonios-pergeli",
-          "orderIndex": 93,
-          "title": "APOLLONİOS, Pergeli",
-          "assignedStudentId": "stu2-muhammed",
-          "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-94-belhi-ali-b-ahmed",
-          "orderIndex": 94,
+          "orderIndex": 88,
           "title": "BELHÎ, Ali b. Ahmed",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-95-ali-b-suleyman",
-          "orderIndex": 95,
+          "orderIndex": 89,
           "title": "ALİ b. SÜLEYMAN",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "ibn-i-heysem",
-          "orderIndex": 96,
+          "orderIndex": 90,
           "title": "İBNÜ’l-HEYSEM",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "bilim-97-ahmed-b-muhammed-en-nihavendi",
-          "orderIndex": 97,
+          "orderIndex": 91,
           "title": "AHMED b. MUHAMMED en-NİHÂVENDÎ",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         },
         {
           "id": "ali-kuscu",
-          "orderIndex": 98,
+          "orderIndex": 92,
           "title": "ALİ KUŞÇU",
           "assignedStudentId": "stu2-muhammed",
           "field": "Matematik Tarihi",
-          "criteria": {}
+          "criteria": {},
+          "assignedStudentName": "Muhammed Enes YERLİKAYA"
         }
       ],
       "studentTeam": [
@@ -1670,7 +1708,7 @@ window.TUBITAK_SEED_DATA = {
           "groupLabel": "1. GRUP",
           "range": [
             1,
-            20
+            19
           ]
         },
         {
@@ -1678,8 +1716,8 @@ window.TUBITAK_SEED_DATA = {
           "name": "Hira BÜYÜKDEVECİ",
           "groupLabel": "2. GRUP",
           "range": [
-            21,
-            40
+            20,
+            38
           ]
         },
         {
@@ -1687,8 +1725,8 @@ window.TUBITAK_SEED_DATA = {
           "name": "Reyyan YILMAZ",
           "groupLabel": "3. GRUP",
           "range": [
-            41,
-            60
+            39,
+            56
           ]
         },
         {
@@ -1696,8 +1734,8 @@ window.TUBITAK_SEED_DATA = {
           "name": "Mustafa Emin YERLİKAYA",
           "groupLabel": "4. GRUP",
           "range": [
-            61,
-            79
+            57,
+            74
           ]
         },
         {
@@ -1705,9 +1743,71 @@ window.TUBITAK_SEED_DATA = {
           "name": "Muhammed Enes YERLİKAYA",
           "groupLabel": "5. GRUP",
           "range": [
-            80,
-            98
+            75,
+            92
           ]
+        }
+      ],
+      "archivedItems": [
+        {
+          "id": "bilim-33-sedillot-louis-pierre-eugene-amelie",
+          "orderIndex": 33,
+          "title": "SÉDILLOT, Louis Pierre Eugene Amélie",
+          "assignedStudentId": "stu2-hira",
+          "field": "Matematik Tarihi",
+          "criteria": {},
+          "archivedAt": "2026-11-13T20:20:17.953Z",
+          "archivedReason": "Türk/İslam bilim insanları kesin listesi revizyonu kapsamında aktif listeden arşive kaldırıldı"
+        },
+        {
+          "id": "bilim-63-woepcke-franz",
+          "orderIndex": 63,
+          "title": "WOEPCKE, Franz",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {},
+          "archivedAt": "2026-11-13T20:20:17.954Z",
+          "archivedReason": "Türk/İslam bilim insanları kesin listesi revizyonu kapsamında aktif listeden arşive kaldırıldı"
+        },
+        {
+          "id": "bilim-76-oklid",
+          "orderIndex": 76,
+          "title": "ÖKLİD",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {},
+          "archivedAt": "2026-11-13T20:20:17.954Z",
+          "archivedReason": "Türk/İslam bilim insanları kesin listesi revizyonu kapsamında aktif listeden arşive kaldırıldı"
+        },
+        {
+          "id": "bilim-77-pisagor",
+          "orderIndex": 77,
+          "title": "PİSAGOR",
+          "assignedStudentId": "stu2-mustafa",
+          "field": "Matematik Tarihi",
+          "criteria": {},
+          "archivedAt": "2026-11-13T20:20:17.954Z",
+          "archivedReason": "Türk/İslam bilim insanları kesin listesi revizyonu kapsamında aktif listeden arşive kaldırıldı"
+        },
+        {
+          "id": "bilim-91-batlamyus",
+          "orderIndex": 91,
+          "title": "BATLAMYUS",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {},
+          "archivedAt": "2026-11-13T20:20:17.954Z",
+          "archivedReason": "Türk/İslam bilim insanları kesin listesi revizyonu kapsamında aktif listeden arşive kaldırıldı"
+        },
+        {
+          "id": "bilim-93-apollonios-pergeli",
+          "orderIndex": 93,
+          "title": "APOLLONİOS, Pergeli",
+          "assignedStudentId": "stu2-muhammed",
+          "field": "Matematik Tarihi",
+          "criteria": {},
+          "archivedAt": "2026-11-13T20:20:17.954Z",
+          "archivedReason": "Türk/İslam bilim insanları kesin listesi revizyonu kapsamında aktif listeden arşive kaldırıldı"
         }
       ]
     },

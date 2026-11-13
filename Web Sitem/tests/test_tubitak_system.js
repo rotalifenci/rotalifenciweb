@@ -335,7 +335,7 @@ async function runTests() {
     console.log("   ✅ Başarılı! Gerçek .docx formatı, başlık/numara temizliği ve 40 eserin ayrı ZIP çıktısı doğrulandı.\n");
 
     // -------------------------------------------------------------
-    // TEST 14: Proje 2 (98 Bilim İnsanı, 5 Öğrenci, Yetki, Word & Toplu ZIP)
+    // TEST 14: Proje 2 (92 Bilim İnsanı, 5 Öğrenci, Yetki, Word & Toplu ZIP)
     // -------------------------------------------------------------
     console.log("14. Proje 2 (Matematik Tarihi Bilim İnsanları) Uçtan Uca Testi (bilim1453):");
     const bilimLogin = mockReqRes("POST", {
@@ -348,7 +348,7 @@ async function runTests() {
     const zumraToken = bilimLogin.getData().token;
 
     const p2All = seedParsed.projects["proje-bilim"];
-    const hiraFirstItem = p2All.items[20]; // #21 MUSTAFA SIDKI (Hira)
+    const hiraFirstItem = p2All.items[19]; // #20 MÎRİM ÇELEBİ (Hira)
     const zumraFirstItem = p2All.items[0]; // #1 BİRCENDÎ (Zümra)
 
     // Zümra, Hira'nın bilim insanını düzenleyememeli (403)
@@ -384,7 +384,7 @@ async function runTests() {
     assert.ok(p2Xml.includes("trigonometrik oranlar"), "Proje 2 öğrenci metni Word belgesinde yer almalı");
     assert.strictEqual(/Geliştirdiği Matematiksel Yöntemler|Doğum Tarihi ve Yeri|Zümra DURAN/.test(p2Xml), false);
 
-    // 98 bilim insanının tamamı için ayrı .docx -> ZIP üretimi
+    // 92 bilim insanının tamamı için ayrı .docx -> ZIP üretimi
     const p2Synth = {};
     p2All.items.forEach((it, idx) => {
         p2Synth[`${it.id}__c1_dogum_tarihi_yeri`] = { content: `Bilim insanı ${idx + 1} kaynak bilgisi: ${it.title}.` };
@@ -395,10 +395,10 @@ async function runTests() {
         p2Synth,
         "Matematik_Tarihinde_Bilim_Insanlari_Arastirma_Metinleri.zip"
     );
-    assert.strictEqual(p2ZipRes.included.length, 98, "98 bilim insanının tamamı ayrı .docx dosyası olarak üretilmeli");
+    assert.strictEqual(p2ZipRes.included.length, 92, "92 bilim insanının tamamı ayrı .docx dosyası olarak üretilmeli");
     const p2LoadedZip = await JSZip.loadAsync(p2ZipRes.buffer);
-    assert.strictEqual(Object.keys(p2LoadedZip.files).filter(n => n.endsWith(".docx")).length, 98);
-    console.log("   ✅ Başarılı! Proje 2 (98 bilim insanı, 5 öğrenci, yetki, .docx ve 98'li ZIP) doğrulandı.\n");
+    assert.strictEqual(Object.keys(p2LoadedZip.files).filter(n => n.endsWith(".docx")).length, 92);
+    console.log("   ✅ Başarılı! Proje 2 (92 bilim insanı, 5 öğrenci, yetki, .docx ve 92'li ZIP) doğrulandı.\n");
 
     // 15. TEST: Proje 3 (Siyer 571–632) Öğrenci Dağılımı, Çoklu Olay, Yetki & Word/ZIP Dışa Aktarma
     console.log("📌 Test 15: Proje 3 (62 yıl 571–632, 5 öğrenci, çoklu olay, taşıma, yetki & Word/ZIP) doğrulanıyor...");

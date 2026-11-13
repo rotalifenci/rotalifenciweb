@@ -235,14 +235,13 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.ok(tubitakRecJs.includes("reassign_item") && tubitakRecJs.includes("exportDocx"));
   assert.ok(fs.existsSync(path.join(webDir, "api", "_tubitak-docx.js")), "_tubitak-docx.js yardımcı modülü mevcut olmalı");
 
-  // Proje 2: 98 bilim insanı + 5 öğrenci (20+20+20+19+19) + 13 kriter kontrolü
+  // Proje 2: 92 bilim insanı + 5 öğrenci (19+19+18+18+18) + 13 kriter kontrolü
   const p2 = seedJson.projects["proje-bilim"];
-  assert.equal(p2.items.length, 98, "Proje 2 listesinde tam 98 bilim insanı bulunmalı");
-  assert.equal(p2.criteriaList.length, 14, "Proje 2 formunda tam 14 araştırma kriteri bulunmalı");
-  assert.equal(p2.criteriaList[0].title, "1. Bilim İnsanının Adı");
-  assert.equal(p2.criteriaList[1].title, "2. Doğum Tarihi ve Yeri");
-  assert.equal(p2.criteriaList[9].title, "10. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri");
-  assert.equal(p2.criteriaList[13].title, "14. KAYNAKÇA");
+  assert.equal(p2.items.length, 92, "Proje 2 listesinde tam 92 bilim insanı bulunmalı");
+  assert.equal(p2.criteriaList.length, 13, "Proje 2 formunda tam 13 araştırma kriteri bulunmalı");
+  assert.equal(p2.criteriaList[0].title, "1. Doğum Tarihi ve Yeri");
+  assert.equal(p2.criteriaList[8].title, "9. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri");
+  assert.equal(p2.criteriaList[12].title, "13. KAYNAKÇA");
   assert.equal(p2.studentTeam.length, 5, "Proje 2 ekibi 5 öğrenciden oluşmalı");
   assert.deepEqual(p2.studentTeam.map(s => s.name), [
     "Zümra DURAN",
@@ -251,23 +250,31 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
     "Mustafa Emin YERLİKAYA",
     "Muhammed Enes YERLİKAYA"
   ]);
-  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-zumra").length, 20);
-  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-hira").length, 20);
-  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-reyyan").length, 20);
-  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-mustafa").length, 19);
-  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-muhammed").length, 19);
+  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-zumra").length, 19);
+  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-hira").length, 19);
+  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-reyyan").length, 18);
+  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-mustafa").length, 18);
+  assert.equal(p2.items.filter(it => it.assignedStudentId === "stu2-muhammed").length, 18);
   assert.equal(p2.items.filter(it => !it.assignedStudentId).length, 0);
-  assert.equal(new Set(p2.items.map(it => it.id)).size, 98);
+  assert.equal(new Set(p2.items.map(it => it.id)).size, 92);
   assert.equal(p2.items[0].orderIndex, 1);
   assert.equal(p2.items[0].title, "BİRCENDÎ");
-  assert.equal(p2.items[19].assignedStudentId, "stu2-zumra");
-  assert.equal(p2.items[20].assignedStudentId, "stu2-hira");
-  assert.equal(p2.items[40].assignedStudentId, "stu2-reyyan");
-  assert.equal(p2.items[60].assignedStudentId, "stu2-mustafa");
-  assert.equal(p2.items[79].assignedStudentId, "stu2-muhammed");
-  assert.equal(p2.items[97].orderIndex, 98);
-  assert.equal(p2.items[97].title, "ALİ KUŞÇU");
-  assert.ok(tubitakJs.includes("BİLİM İNSANININ ADI") && tubitakJs.includes("Tüm Bilim İnsanlarını Word Olarak İndir"));
+  assert.equal(p2.items[18].assignedStudentId, "stu2-zumra");
+  assert.equal(p2.items[19].assignedStudentId, "stu2-hira");
+  assert.equal(p2.items[37].assignedStudentId, "stu2-hira");
+  assert.equal(p2.items[38].assignedStudentId, "stu2-reyyan");
+  assert.equal(p2.items[55].assignedStudentId, "stu2-reyyan");
+  assert.equal(p2.items[56].assignedStudentId, "stu2-mustafa");
+  assert.equal(p2.items[73].assignedStudentId, "stu2-mustafa");
+  assert.equal(p2.items[74].assignedStudentId, "stu2-muhammed");
+  assert.equal(p2.items[91].orderIndex, 92);
+  assert.equal(p2.items[91].title, "ALİ KUŞÇU");
+  assert.ok(p2.items.some(it => it.title === "ÖKLÎDİSÎ"), "ÖKLÎDİSÎ listede korunmuş olmalı");
+  const removedNames = ["SÉDILLOT", "WOEPCKE", "ÖKLİD", "PİSAGOR", "BATLAMYUS", "APOLLONİOS"];
+  for (const rName of removedNames) {
+    assert.equal(p2.items.some(it => it.title === rName || it.title.startsWith(rName + ",")), false, `${rName} aktif listeden çıkarılmış olmalı`);
+  }
+  assert.ok(tubitakJs.includes("Tüm Bilim İnsanlarını Word Olarak İndir"));
 
   // Proje 3 (Siyer ve Değerler Eğitimi 571–632) koruması
   const p3 = seedJson.projects["proje-siyer"];
