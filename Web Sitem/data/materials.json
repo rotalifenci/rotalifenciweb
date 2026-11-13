@@ -4984,33 +4984,5 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-11-13T06:56:28.471Z",
     "updatedAt": "2026-11-13T06:56:28.471Z"
-  },
-  {
-    "id": "mat-5ed59415-311f-4aa1-a461-0882354a0717",
-    "grade": "8",
-    "category": "projeler",
-    "targetSection": "projeler",
-    "title": "Su Tasarrufu",
-    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
-    "subtopicNum": null,
-    "subtopicCode": "",
-    "subtopic": "",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "46E05DAD-B363-4A45-9C02-ECCCD501672D.png",
-    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552979270_nevim_46e05dad-b363-4a45-9c02-ecccd501672d.png",
-    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552978138_mat-5ed59415-311f-4aa1-a461-0882354a0717_cover.jpg",
-    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552978138_mat-5ed59415-311f-4aa1-a461-0882354a0717_cover.jpg",
-    "format": "PNG",
-    "hasBlob": false,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-11-13T06:56:28.471Z",
-    "updatedAt": "2026-11-13T06:56:28.471Z"
   }
 ]
