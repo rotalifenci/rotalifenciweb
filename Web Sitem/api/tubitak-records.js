@@ -281,9 +281,146 @@ module.exports = async function handler(req, res) {
         }
     }
 
-    // 3. POST İsteği: Otomatik Kayıt (Autosave Criterion Record)
+    // 3. POST İsteği: Otomatik Kayıt & Karşılaştırma İşlemleri
     if (req.method === "POST") {
         try {
+            const bodyAction = req.body?.action;
+            const now = new Date().toISOString();
+
+            // Karşılaştırma Kaydet (Save Comparison)
+            if (bodyAction === "save_comparison") {
+                const store = await getCloudStore();
+                const compData = req.body?.comparison;
+                if (!compData || typeof compData !== 'object') {
+                    return res.status(400).json({ ok: false, error: "Geçersiz karşılaştırma verisi gönderildi." });
+                }
+                const compId = String(compData.id || `comp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`).trim();
+                if (!store.comparisons) store.comparisons = {};
+
+                const existing = store.comparisons[compId];
+                if (existing && userRole !== "teacher" && existing.studentId && existing.studentId !== userStudentId) {
+                    return res.status(403).json({ ok: false, error: "Yalnızca kendi karşılaştırma araştırmanızı düzenleyebilirsiniz." });
+                }
+
+                const monIds = Array.isArray(compData.monumentIds) ? compData.monumentIds.slice(0, 3) : [];
+                if (monIds.length < 2) {
+                    return res.status(400).json({ ok: false, error: "Karşılaştırma için en az 2 tarihî eser seçilmelidir." });
+                }
+
+                const comparison = {
+                    id: compId,
+                    projectId: "proje-tarih",
+                    groupId: String(compData.groupId || 'genel').trim(),
+                    groupTitle: String(compData.groupTitle || 'Tarihî Yapılar').trim(),
+                    monumentIds: monIds,
+                    studentId: existing?.studentId || userStudentId || 'ogrenci',
+                    studentName: existing?.studentName || session.studentName || 'Öğrenci',
+                    question: String(compData.question || '').trim(),
+                    similarities: String(compData.similarities || '').trim(),
+                    differences: String(compData.differences || '').trim(),
+                    continuity: String(compData.continuity || '').trim(),
+                    evidenceAnalysis: String(compData.evidenceAnalysis || '').trim(),
+                    conclusion: String(compData.conclusion || '').trim(),
+                    tableData: (compData.tableData && typeof compData.tableData === 'object') ? compData.tableData : {},
+                    evidences: Array.isArray(compData.evidences) ? compData.evidences : [],
+                    status: (compData.status === 'submitted' || compData.status === 'draft') ? compData.status : (existing?.status || 'draft'),
+                    rubric: existing?.rubric || null,
+                    createdAt: existing?.createdAt || now,
+                    updatedAt: now
+                };
+
+                store.comparisons[compId] = comparison;
+
+                if (!store.revisions) store.revisions = [];
+                store.revisions.push({
+                    id: `rev_comp_${Date.now()}`,
+                    recordKey: `comp_${compId}`,
+                    projectId: "proje-tarih",
+                    itemId: compId,
+                    criterionKey: "comparative_analysis",
+                    content: comparison.conclusion || comparison.question,
+                    studentId: comparison.studentId,
+                    studentName: comparison.studentName,
+                    version: ((existing?.version || 0) + 1),
+                    createdAt: now
+                });
+                if (store.revisions.length > 500) {
+                    store.revisions = store.revisions.slice(-500);
+                }
+
+                await saveCloudStore(store);
+                return res.status(200).json({
+                    ok: true,
+                    comparison,
+                    syncHealth: getCloudSyncHealth()
+                });
+            }
+
+            // Karşılaştırma Sil (Delete Comparison)
+            if (bodyAction === "delete_comparison") {
+                const store = await getCloudStore();
+                const compId = String(req.body?.comparisonId || '').trim();
+                if (!compId) {
+                    return res.status(400).json({ ok: false, error: "Silinecek karşılaştırma ID'si belirtilmedi." });
+                }
+                if (!store.comparisons || !store.comparisons[compId]) {
+                    return res.status(404).json({ ok: false, error: "Silinecek karşılaştırma bulunamadı." });
+                }
+                const targetComp = store.comparisons[compId];
+                if (userRole !== "teacher" && targetComp.studentId && targetComp.studentId !== userStudentId) {
+                    return res.status(403).json({ ok: false, error: "Yalnızca kendi karşılaştırma taslağınızı silebilirsiniz." });
+                }
+                delete store.comparisons[compId];
+                await saveCloudStore(store);
+                return res.status(200).json({ ok: true, deletedId: compId });
+            }
+
+            // Öğretmen Karşılaştırma İnceleme & Rubrik Değerlendirme
+            if (bodyAction === "review_comparison") {
+                if (userRole !== "teacher") {
+                    return res.status(403).json({ ok: false, error: "Bu işlemi yalnızca yetkili öğretmen gerçekleştirebilir." });
+                }
+                const store = await getCloudStore();
+                const compId = String(req.body?.comparisonId || '').trim();
+                if (!compId || !store.comparisons || !store.comparisons[compId]) {
+                    return res.status(404).json({ ok: false, error: "Değerlendirilecek karşılaştırma bulunamadı." });
+                }
+
+                const comp = store.comparisons[compId];
+                const newStatus = String(req.body?.status || '').trim();
+                if (['approved', 'revision_requested', 'submitted', 'draft'].includes(newStatus)) {
+                    comp.status = newStatus;
+                }
+
+                const rubricInput = req.body?.rubric || {};
+                const d1 = Math.max(1, Math.min(4, Number(rubricInput.dim1_accuracy) || 3));
+                const d2 = Math.max(1, Math.min(4, Number(rubricInput.dim2_evidence) || 3));
+                const d3 = Math.max(1, Math.min(4, Number(rubricInput.dim3_comparison) || 3));
+                const d4 = Math.max(1, Math.min(4, Number(rubricInput.dim4_continuity) || 3));
+                const d5 = Math.max(1, Math.min(4, Number(rubricInput.dim5_conclusion) || 3));
+                const totalScore = d1 + d2 + d3 + d4 + d5;
+
+                comp.rubric = {
+                    dim1_accuracy: d1,
+                    dim2_evidence: d2,
+                    dim3_comparison: d3,
+                    dim4_continuity: d4,
+                    dim5_conclusion: d5,
+                    total: totalScore,
+                    feedback: String(req.body?.feedback || rubricInput.feedback || '').trim(),
+                    reviewedAt: now,
+                    reviewedBy: session.studentName || 'Danışman Öğretmen'
+                };
+                comp.updatedAt = now;
+
+                await saveCloudStore(store);
+                return res.status(200).json({
+                    ok: true,
+                    comparison: comp,
+                    syncHealth: getCloudSyncHealth()
+                });
+            }
+
             const {
                 projectId,
                 itemId,
@@ -346,7 +483,6 @@ module.exports = async function handler(req, res) {
             }
 
             const newVersion = existing.version + 1;
-            const now = new Date().toISOString();
 
             // Kaydı güncelle
             const updatedRecord = {

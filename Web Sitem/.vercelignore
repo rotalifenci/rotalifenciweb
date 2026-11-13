@@ -1,0 +1,9 @@
+node_modules
+backups
+.git
+.agents
+.gemini
+scratch
+tests
+*.log
+*.tmp
