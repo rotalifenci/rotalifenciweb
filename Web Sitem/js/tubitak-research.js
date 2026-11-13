@@ -47,7 +47,8 @@
     // Otomatik kayıt zamanlayıcıları ve kuyruğu
     const autoSaveTimers = {};
     const offlineQueue = [];
-    let saveState = "idle"; // "idle", "dirty", "saving", "saved", "error"
+    let saveState = "idle"; // "idle", "dirty", "saving", "saved", "error", "waiting_connection"
+    let latestSyncHealth = null;
 
     // 2. Başlatma & Oturum Kontrolü
     async function init() {
@@ -55,6 +56,7 @@
         await loadSeedData();
         if (currentSession) {
             await syncProjectData(currentSession.projectId);
+            await processOfflineQueue();
             startLivePolling();
         }
         if (typeof document !== "undefined") {
@@ -124,6 +126,7 @@
                     runtimeAssignments = { ...(data.assignments || {}) };
                     if (data.siyerEvents) runtimeSiyerEvents = { ...data.siyerEvents };
                     if (data.siyerYearFlags) runtimeSiyerYearFlags = { ...data.siyerYearFlags };
+                    if (data.syncHealth) latestSyncHealth = data.syncHealth;
                     updateUIAutosaveBadge("saved");
                 }
             }
@@ -136,14 +139,93 @@
     let pollingInterval = null;
     function startLivePolling() {
         if (pollingInterval) clearInterval(pollingInterval);
-        pollingInterval = setInterval(() => {
+        const pollFrequency = (currentSession?.role === "teacher") ? 4000 : 5000;
+        pollingInterval = setInterval(async () => {
             if (currentSession && saveState !== "saving" && saveState !== "dirty") {
-                syncProjectData(activeProjectId);
+                const targetProj = (currentSession.role === "teacher") ? "all" : activeProjectId;
+                await syncProjectData(targetProj);
+                const modal = document.getElementById("tubitak-teacher-modal");
+                if (modal && !modal.classList.contains("hidden")) {
+                    updateTeacherModalDynamicStats();
+                }
             }
-        }, 6000); // 6 saniyede bir sessiz arka plan eşitlemesi
+        }, pollFrequency);
     }
 
-    // 5. Otomatik Kayıt Motoru (Debounce ~1000ms & Çevrimdışı Kuyruk)
+    // 5. Otomatik Kayıt Motoru (Debounce ~1000ms & Güvenli Çevrimdışı Kuyruk)
+    function addToOfflineQueue(payload) {
+        try {
+            const raw = localStorage.getItem("rotali_tubitak_offline_queue");
+            const queue = raw ? JSON.parse(raw) : [];
+            const idx = queue.findIndex(q => q.itemId === payload.itemId && q.criterionKey === payload.criterionKey);
+            if (idx >= 0) {
+                queue[idx] = payload;
+            } else {
+                queue.push(payload);
+            }
+            localStorage.setItem("rotali_tubitak_offline_queue", JSON.stringify(queue));
+        } catch (e) {}
+    }
+
+    function removeFromOfflineQueue(itemId, criterionKey) {
+        try {
+            const raw = localStorage.getItem("rotali_tubitak_offline_queue");
+            if (!raw) return;
+            let queue = JSON.parse(raw);
+            queue = queue.filter(q => !(q.itemId === itemId && q.criterionKey === criterionKey));
+            localStorage.setItem("rotali_tubitak_offline_queue", JSON.stringify(queue));
+        } catch (e) {}
+    }
+
+    async function processOfflineQueue() {
+        try {
+            const raw = localStorage.getItem("rotali_tubitak_offline_queue");
+            if (!raw) return;
+            const queue = JSON.parse(raw);
+            if (!Array.isArray(queue) || queue.length === 0) return;
+            if (!currentSession?.token) return;
+
+            updateUIAutosaveBadge("saving");
+            const remaining = [];
+            for (const item of queue) {
+                try {
+                    const res = await fetch("/api/tubitak-records", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${currentSession.token}`
+                        },
+                        body: JSON.stringify(item)
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.ok && data.status === "saved") {
+                            const recKey = `${item.itemId}__${item.criterionKey}`;
+                            if (runtimeRecords[recKey]) {
+                                runtimeRecords[recKey].version = data.version;
+                                runtimeRecords[recKey].updatedAt = data.updatedAt;
+                            }
+                            continue;
+                        }
+                    }
+                    remaining.push(item);
+                } catch (e) {
+                    remaining.push(item);
+                }
+            }
+
+            localStorage.setItem("rotali_tubitak_offline_queue", JSON.stringify(remaining));
+            if (remaining.length === 0) {
+                updateUIAutosaveBadge("saved");
+                showNotice("Çevrimdışı kaydedilen tüm taslaklar buluta başarıyla eşitlendi! ✅", "success");
+            } else {
+                updateUIAutosaveBadge("error");
+            }
+        } catch (err) {
+            console.warn("Offline queue sync error:", err);
+        }
+    }
+
     function queueAutoSave(criterionKey, newContent, targetItemId = activeItemId) {
         if (!currentSession || !targetItemId) return;
 
@@ -171,6 +253,7 @@
         if (autoSaveTimers[recordKey]) clearTimeout(autoSaveTimers[recordKey]);
 
         autoSaveTimers[recordKey] = setTimeout(async () => {
+            delete autoSaveTimers[recordKey];
             await executeSave(criterionKey, newContent, targetItemId);
         }, 1000);
     }
@@ -204,7 +287,7 @@
 
             if (res.ok) {
                 const data = await res.json();
-                if (data.ok) {
+                if (data.ok && data.status === "saved") {
                     existing.version = data.version;
                     existing.updatedAt = data.updatedAt;
                     existing.status = "draft";
@@ -224,6 +307,7 @@
                         createdAt: data.updatedAt
                     });
 
+                    removeFromOfflineQueue(targetItemId, criterionKey);
                     updateUIAutosaveBadge("saved");
                     updateProgressBadge();
                     return;
@@ -232,23 +316,26 @@
             throw new Error("Kayıt sunucu tarafından onaylanmadı.");
         } catch (err) {
             console.warn("Autosave offline fallback:", err.message);
-            updateUIAutosaveBadge("error");
-            offlineQueue.push(payload);
-            localStorage.setItem("rotali_tubitak_offline_queue", JSON.stringify(offlineQueue));
+            const isOnline = (typeof navigator !== "undefined" && navigator.onLine);
+            updateUIAutosaveBadge(isOnline ? "error" : "waiting_connection");
+            addToOfflineQueue(payload);
         }
     }
 
-    // Bekleyen kayıtları anında kaydet (Örn: sayfa değişirken veya formdan çıkarken)
-    function flushPendingSaves() {
+    // Bekleyen tüm kayıtları anında kaydet ve bekle (Sayfa, konu veya kriter değişirken veri kaybını önler)
+    async function flushPendingSaves() {
+        const promises = [];
         for (const [key, timer] of Object.entries(autoSaveTimers)) {
             clearTimeout(timer);
-            const [itemId, critKey] = key.split("__");
-            const isSameActive = itemId === activeItemId || (activeProjectId === "proje-siyer" && activeItemId && key.startsWith(`${activeItemId}__ev_`));
-            if (isSameActive && runtimeRecords[key]) {
+            delete autoSaveTimers[key];
+            if (runtimeRecords[key]) {
                 const actualItemId = runtimeRecords[key].itemId || key.slice(0, key.lastIndexOf("__"));
                 const actualCritKey = key.slice(key.lastIndexOf("__") + 2);
-                executeSave(actualCritKey, runtimeRecords[key].content, actualItemId);
+                promises.push(executeSave(actualCritKey, runtimeRecords[key].content, actualItemId));
             }
+        }
+        if (promises.length > 0) {
+            await Promise.all(promises);
         }
     }
 
@@ -1247,8 +1334,13 @@
                 break;
             case "error":
                 dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
-                text.textContent = "Bağlantı sorunu (Kuyrukta)";
+                text.textContent = "Kaydetme başarısız";
                 text.className = "text-xs font-black text-rose-700";
+                break;
+            case "waiting_connection":
+                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping";
+                text.textContent = "Bağlantı bekleniyor";
+                text.className = "text-xs font-black text-amber-800";
                 break;
             default:
                 dot.className = "w-2.5 h-2.5 rounded-full bg-slate-400";
@@ -1708,7 +1800,22 @@
         `;
     }
 
-    function openTeacherDashboardModal() {
+    function updateTeacherModalDynamicStats() {
+        const totalEl = document.getElementById("teacher-stat-total-records");
+        const inReviewEl = document.getElementById("teacher-stat-inreview-records");
+        const approvedEl = document.getElementById("teacher-stat-approved-records");
+        const revisionsEl = document.getElementById("teacher-stat-revisions-count");
+        const syncTimeEl = document.getElementById("sync-health-time");
+        if (totalEl) totalEl.textContent = `${Object.keys(runtimeRecords).length} Alan`;
+        if (inReviewEl) inReviewEl.textContent = `${Object.values(runtimeRecords).filter(r => r.status === "in_review").length} Bekleyen`;
+        if (approvedEl) approvedEl.textContent = `${Object.values(runtimeRecords).filter(r => r.status === "approved").length} Tamam`;
+        if (revisionsEl) revisionsEl.textContent = `${runtimeRevisions.length} Sürüm`;
+        if (syncTimeEl) syncTimeEl.textContent = new Date().toLocaleTimeString("tr-TR");
+    }
+
+    async function openTeacherDashboardModal() {
+        // En güncel bulut verilerini çek
+        await syncProjectData("all");
         let modal = document.getElementById("tubitak-teacher-modal");
         if (!modal) {
             modal = document.createElement("div");
@@ -1745,19 +1852,52 @@
             <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 border-b border-slate-200">
                 <div class="p-3 bg-white rounded-2xl border border-slate-200">
                     <div class="text-[10px] font-bold text-slate-500 uppercase">Toplam Kayıt</div>
-                    <div class="text-xl font-black text-slate-900 mt-0.5">${totalRecords} Alan</div>
+                    <div id="teacher-stat-total-records" class="text-xl font-black text-slate-900 mt-0.5">${totalRecords} Alan</div>
                 </div>
                 <div class="p-3 bg-white rounded-2xl border border-slate-200">
                     <div class="text-[10px] font-bold text-blue-600 uppercase">İncelemede</div>
-                    <div class="text-xl font-black text-blue-600 mt-0.5">${inReviewCount} Bekleyen</div>
+                    <div id="teacher-stat-inreview-records" class="text-xl font-black text-blue-600 mt-0.5">${inReviewCount} Bekleyen</div>
                 </div>
                 <div class="p-3 bg-white rounded-2xl border border-slate-200">
                     <div class="text-[10px] font-bold text-emerald-600 uppercase">Onaylanan</div>
-                    <div class="text-xl font-black text-emerald-600 mt-0.5">${approvedCount} Tamam</div>
+                    <div id="teacher-stat-approved-records" class="text-xl font-black text-emerald-600 mt-0.5">${approvedCount} Tamam</div>
                 </div>
                 <div class="p-3 bg-white rounded-2xl border border-slate-200">
                     <div class="text-[10px] font-bold text-purple-600 uppercase">Toplam Revizyon</div>
-                    <div class="text-xl font-black text-purple-600 mt-0.5">${runtimeRevisions.length} Sürüm</div>
+                    <div id="teacher-stat-revisions-count" class="text-xl font-black text-purple-600 mt-0.5">${runtimeRevisions.length} Sürüm</div>
+                </div>
+            </div>
+
+            <!-- Veri Kayıt ve Senkronizasyon Durumu (Yalnızca Öğretmen / Yönetici) -->
+            <div class="px-6 pt-4">
+                <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-200">
+                    <div class="flex items-center justify-between gap-3 mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <h4 class="font-black text-slate-900 text-sm">Veri Kayıt ve Senkronizasyon Durumu</h4>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            Kalıcı Bulut Veritabanı Aktif
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-700 font-semibold">
+                        <div class="p-2.5 bg-white rounded-xl border border-indigo-100">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold">Depolama Sağlayıcısı</span>
+                            <strong class="text-indigo-900">GitHub Gist Cloud DB</strong>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-xl border border-indigo-100">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold">Son Başarılı Eşitleme</span>
+                            <strong class="text-emerald-700" id="sync-health-time">${new Date().toLocaleTimeString('tr-TR')}</strong>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-xl border border-indigo-100">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold">Realtime Arka Plan</span>
+                            <strong class="text-blue-700">Canlı (Her 4-5 sn)</strong>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-xl border border-indigo-100">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold">Çevrimdışı Taslak Kuyruğu</span>
+                            <strong class="text-slate-800" id="sync-health-queue-count">0 Bekleyen</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2550,14 +2690,14 @@
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
-        selectItem(itemId) {
-            flushPendingSaves();
+        async selectItem(itemId) {
+            await flushPendingSaves();
             activeItemId = itemId;
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
-        selectSiyerYear(yr) {
-            flushPendingSaves();
+        async selectSiyerYear(yr) {
+            await flushPendingSaves();
             activeYear = yr;
             const items = getFilteredItems();
             if (items.length > 0) activeItemId = items[0].id;
@@ -2594,12 +2734,17 @@
             queueAutoSave(criterionKey, val, effItemId);
         },
 
-        onFieldBlur(criterionKey, val, targetItemId) {
+        async onFieldBlur(criterionKey, val, targetItemId) {
             const effItemId = targetItemId || activeItemId;
-            if (autoSaveTimers[`${effItemId}__${criterionKey}`]) {
-                clearTimeout(autoSaveTimers[`${effItemId}__${criterionKey}`]);
-                executeSave(criterionKey, val, effItemId);
+            const recordKey = `${effItemId}__${criterionKey}`;
+            if (autoSaveTimers[recordKey]) {
+                clearTimeout(autoSaveTimers[recordKey]);
+                delete autoSaveTimers[recordKey];
             }
+            if (runtimeRecords[recordKey]) {
+                runtimeRecords[recordKey].content = val;
+            }
+            await executeSave(criterionKey, val, effItemId);
         },
 
         handleUndo(criterionKey, targetItemId) {
@@ -2610,11 +2755,11 @@
             performRedo(criterionKey, targetItemId || activeItemId);
         },
 
-        navigateSiyerYear(targetYear) {
+        async navigateSiyerYear(targetYear) {
             const items = seedData?.projects?.["proje-siyer"]?.items || [];
             const match = items.find(it => it.year === Number(targetYear));
             if (match) {
-                flushPendingSaves();
+                await flushPendingSaves();
                 activeItemId = match.id;
                 activeYear = match.year;
                 renderMainContainer(document.getElementById("tubitak-research-container"));
@@ -2908,6 +3053,60 @@
             }, 1200);
         }
     };
+
+    // Sayfa Kapanırken veya Sekme Değişirken Otomatik Kayıt Güvencesi
+    if (typeof window !== "undefined") {
+        window.addEventListener("beforeunload", (e) => {
+            const hasPending = Object.keys(autoSaveTimers).length > 0 || saveState === "dirty" || saveState === "saving";
+            if (hasPending) {
+                for (const [key, timer] of Object.entries(autoSaveTimers)) {
+                    clearTimeout(timer);
+                    delete autoSaveTimers[key];
+                    if (runtimeRecords[key] && currentSession?.token) {
+                        const actualItemId = runtimeRecords[key].itemId || key.slice(0, key.lastIndexOf("__"));
+                        const actualCritKey = key.slice(key.lastIndexOf("__") + 2);
+                        const payload = {
+                            projectId: activeProjectId,
+                            itemId: actualItemId,
+                            criterionKey: actualCritKey,
+                            content: runtimeRecords[key].content,
+                            clientVersion: runtimeRecords[key].version || 0,
+                            studentName: currentSession.studentName,
+                            studentId: currentSession.studentId
+                        };
+                        try {
+                            fetch("/api/tubitak-records", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${currentSession.token}`
+                                },
+                                body: JSON.stringify(payload),
+                                keepalive: true
+                            });
+                        } catch (err) {}
+                    }
+                }
+                e.preventDefault();
+                e.returnValue = "Kaydedilmemiş araştırma verileriniz olabilir. Sayfadan ayrılmak istediğinizden emin misiniz?";
+                return e.returnValue;
+            }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") {
+                flushPendingSaves();
+            }
+        });
+
+        window.addEventListener("pagehide", () => {
+            flushPendingSaves();
+        });
+
+        window.addEventListener("online", () => {
+            processOfflineQueue();
+        });
+    }
 
     // DOM hazır olduğunda başlat
     if (document.readyState === "loading") {

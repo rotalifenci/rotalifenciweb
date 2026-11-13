@@ -2,6 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const { verifyToken } = require('./tubitak-auth.js');
 const {
+    getCloudStore,
+    saveCloudStore,
+    getCloudSyncHealth
+} = require('./_tubitak-cloud.js');
+const {
     buildAsciiFallbackFilename,
     generateMonumentDocxBuffer,
     generateAllMonumentsZipBuffer,
@@ -11,11 +16,10 @@ const {
 
 /**
  * 📊 ROTALI FENCİ - TÜBİTAK ARAŞTIRMA VERİLERİ & OTO-KAYIT API'Sİ
- * Supabase PostgreSQL entegrasyonu, sürüm geçmişi, çakışma önleme ve öğretmen onay motoru.
+ * GitHub Gist tabanlı kalıcı bulut veritabanı, Supabase köprüsü,
+ * sürüm geçmişi, çakışma önleme ve öğretmen onay motoru.
  */
 
-// Bellek içi / Yerel önbellek veritabanı (Supabase bağlantısı veya çevrimdışı yedekleme için)
-const localStorePath = path.join(__dirname, '../data/tubitak-runtime-store.json');
 const seedDataPath = path.join(__dirname, '../data/tubitak-seed-data.json');
 
 const _cachedProjectSeeds = {};
@@ -83,25 +87,7 @@ function getEffectiveAssignedStudentId(store, projectId, itemId) {
     return itemMap[baseId] || null;
 }
 
-function readLocalStore() {
-    try {
-        if (fs.existsSync(localStorePath)) {
-            return JSON.parse(fs.readFileSync(localStorePath, 'utf8'));
-        }
-    } catch (e) {}
-    return { records: {}, revisions: [], sources: {}, feedbacks: [], itemsMeta: {} };
-}
-
-function writeLocalStore(store) {
-    try {
-        fs.mkdirSync(path.dirname(localStorePath), { recursive: true });
-        fs.writeFileSync(localStorePath, JSON.stringify(store, null, 2), 'utf8');
-    } catch (e) {
-        console.warn('Local store write warning:', e.message);
-    }
-}
-
-// Supabase REST istemcisi (varsa doğrudan PostgreSQL'e yazar)
+// İsteğe bağlı Supabase REST istemcisi (Varsa ikincil yedek olarak PostgreSQL'e yazar)
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://dlzlpstheykhrfeijiri.supabase.co";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "sb_publishable_N5ejkDHwTvMiFZfUZnjXNw_j_uqjkZi";
 
@@ -124,9 +110,7 @@ async function supabaseFetch(table, options = {}) {
         if (res.ok) {
             return await res.json();
         }
-    } catch (err) {
-        // Fallback to local memory store
-    }
+    } catch (err) {}
     return null;
 }
 
@@ -152,8 +136,10 @@ module.exports = async function handler(req, res) {
     if (req.method === "GET") {
         try {
             const reqProj = req.query.projectId || userProjectId;
+            const forceFresh = req.query.fresh === "true" || userRole === "teacher";
+            const store = await getCloudStore({ forceFresh });
 
-            // Dışa Aktarma (Word .docx / Toplu ZIP) - Yalnızca Öğretmen Yetkili (Proje 1 & Proje 2)
+            // Dışa Aktarma (Word .docx / Toplu ZIP) - Yalnızca Öğretmen Yetkili (Proje 1 & Proje 2 & Proje 3)
             const exportDocxMode = req.query.exportDocx;
             if (exportDocxMode === "single" || exportDocxMode === "all") {
                 if (userRole !== "teacher") {
@@ -167,35 +153,10 @@ module.exports = async function handler(req, res) {
                     return res.status(500).json({ ok: false, error: "Proje veri şablonu okunamadı." });
                 }
 
-                const store = readLocalStore();
                 const mergedRecords = {};
                 for (const [k, v] of Object.entries(store.records || {})) {
                     if (v && v.projectId === exportProjId) {
                         mergedRecords[k] = v;
-                    }
-                }
-
-                // Supabase bulut veritabanındaki daha güncel kayıtları da birleştir
-                const supaRows = await supabaseFetch('tubitak_records', {
-                    query: `?project_id=eq.${encodeURIComponent(exportProjId)}&select=id,project_id,item_id,criterion_key,content,version,updated_at`
-                });
-                if (Array.isArray(supaRows)) {
-                    for (const row of supaRows) {
-                        const key = `${row.item_id}__${row.criterion_key}`;
-                        const existing = mergedRecords[key];
-                        const rowTime = row.updated_at ? Date.parse(row.updated_at) : 0;
-                        const existingTime = existing?.updatedAt ? Date.parse(existing.updatedAt) : 0;
-                        if (!existing || rowTime > existingTime || (row.version || 0) > (existing.version || 0)) {
-                            mergedRecords[key] = {
-                                id: key,
-                                projectId: exportProjId,
-                                itemId: row.item_id,
-                                criterionKey: row.criterion_key,
-                                content: row.content || '',
-                                version: row.version || 1,
-                                updatedAt: row.updated_at || new Date().toISOString()
-                            };
-                        }
                     }
                 }
 
@@ -255,22 +216,21 @@ module.exports = async function handler(req, res) {
                 return res.status(403).json({ ok: false, error: "Bu projenin kayıtlarına erişim yetkiniz bulunmuyor." });
             }
 
-            const store = readLocalStore();
             const projRecords = {};
-            for (const [k, v] of Object.entries(store.records)) {
+            for (const [k, v] of Object.entries(store.records || {})) {
                 if (reqProj === "all" || v.projectId === reqProj) {
                     projRecords[k] = v;
                 }
             }
 
-            const projRevisions = store.revisions.filter(r => reqProj === "all" || r.projectId === reqProj);
+            const projRevisions = (store.revisions || []).filter(r => reqProj === "all" || r.projectId === reqProj);
             const projSources = {};
-            for (const [k, v] of Object.entries(store.sources)) {
+            for (const [k, v] of Object.entries(store.sources || {})) {
                 if (reqProj === "all" || v.projectId === reqProj) {
                     projSources[k] = v;
                 }
             }
-            const projFeedbacks = store.feedbacks.filter(f => reqProj === "all" || f.projectId === reqProj);
+            const projFeedbacks = (store.feedbacks || []).filter(f => reqProj === "all" || f.projectId === reqProj);
 
             const projAssignments = reqProj === "all"
                 ? {
@@ -290,7 +250,8 @@ module.exports = async function handler(req, res) {
                 feedbacks: projFeedbacks,
                 assignments: projAssignments,
                 siyerEvents: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_events']) || {}) : {},
-                siyerYearFlags: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_year_flags']) || {}) : {}
+                siyerYearFlags: includeSiyerMeta ? ((store.itemsMeta && store.itemsMeta['proje-siyer_year_flags']) || {}) : {},
+                syncHealth: getCloudSyncHealth()
             });
         } catch (err) {
             return res.status(500).json({ ok: false, error: "Kayıtlar yüklenemedi: " + err.message });
@@ -319,7 +280,7 @@ module.exports = async function handler(req, res) {
             }
 
             const recordKey = `${itemId}__${criterionKey}`;
-            const store = readLocalStore();
+            const store = await getCloudStore();
 
             // Güvenlik: Proje 1, Proje 2 ve Proje 3'te tanımlı öğrenci yalnızca kendi atanmış kayıtlarını düzenleyebilir
             if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
@@ -329,6 +290,7 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi atanmış kayıtlarınızı düzenleyebilirsiniz." });
                 }
             }
+
             const existing = store.records[recordKey] || {
                 projectId,
                 itemId,
@@ -358,7 +320,6 @@ module.exports = async function handler(req, res) {
             let isConflict = false;
             if (clientVersion < existing.version && prevContent.trim() !== "") {
                 isConflict = true;
-                // Çakışma olsa bile veriyi kaybetmemek için yeni sürüm olarak kaydeder ancak uyarı bayrağı döner
             }
 
             const newVersion = existing.version + 1;
@@ -381,6 +342,7 @@ module.exports = async function handler(req, res) {
             store.records[recordKey] = updatedRecord;
 
             // Değişiklik geçmişine (Revizyon) ekle
+            if (!store.revisions) store.revisions = [];
             store.revisions.push({
                 id: `rev-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                 recordKey,
@@ -395,14 +357,15 @@ module.exports = async function handler(req, res) {
                 createdAt: now
             });
 
-            // En fazla 500 revizyon tut
             if (store.revisions.length > 500) {
                 store.revisions = store.revisions.slice(-500);
             }
 
-            writeLocalStore(store);
+            // KALICI BULUT VERİTABANINA YAZ (GitHub Gist)
+            // Başarılı teyit alınmadan kullanıcıya "Kaydedildi" dönülmez!
+            await saveCloudStore(store);
 
-            // Supabase bulut PostgreSQL eşitlemesi (Arka planda)
+            // Supabase bulut PostgreSQL eşitlemesi (İkincil yedek - arkaplanda)
             supabaseFetch('tubitak_records', {
                 method: 'POST',
                 headers: { 'Prefer': 'resolution=merge-duplicates' },
@@ -423,7 +386,7 @@ module.exports = async function handler(req, res) {
             return res.status(200).json({
                 ok: true,
                 status: "saved",
-                message: "Kayıt başarıyla doğrulandı ve veritabanına işlendi.",
+                message: "Kayıt başarıyla doğrulandı ve kalıcı veritabanına işlendi.",
                 version: newVersion,
                 updatedAt: now,
                 recordKey,
@@ -432,7 +395,7 @@ module.exports = async function handler(req, res) {
             });
         } catch (err) {
             console.error("Save Record Error:", err);
-            return res.status(500).json({ ok: false, error: "Kaydetme başarısız: " + err.message });
+            return res.status(500).json({ ok: false, status: "error", error: "Kayıt bulut veritabanına yazılamadı: " + err.message });
         }
     }
 
@@ -440,12 +403,12 @@ module.exports = async function handler(req, res) {
     if (req.method === "PUT") {
         try {
             const { action, revisionId, recordKey, itemId, projectId, status, feedbackMessage } = req.body || {};
-            const store = readLocalStore();
+            const store = await getCloudStore();
             const now = new Date().toISOString();
 
             // A) Eski Sürümü Geri Yükle
             if (action === "restore_revision") {
-                const targetRev = store.revisions.find(r => r.id === revisionId);
+                const targetRev = (store.revisions || []).find(r => r.id === revisionId);
                 if (!targetRev) {
                     return res.status(404).json({ ok: false, error: "Geri yüklenecek sürüm bulunamadı." });
                 }
@@ -481,7 +444,7 @@ module.exports = async function handler(req, res) {
                     createdAt: now
                 });
 
-                writeLocalStore(store);
+                await saveCloudStore(store);
 
                 return res.status(200).json({
                     ok: true,
@@ -499,14 +462,14 @@ module.exports = async function handler(req, res) {
                         return res.status(403).json({ ok: false, error: "Başka bir öğrenciye ait kaydı incelemeye gönderemezsiniz." });
                     }
                 }
-                for (const [k, rec] of Object.entries(store.records)) {
+                for (const [k, rec] of Object.entries(store.records || {})) {
                     const isMatchingItem = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
                     if (isMatchingItem && rec.projectId === projectId) {
                         rec.status = "in_review";
                         rec.updatedAt = now;
                     }
                 }
-                writeLocalStore(store);
+                await saveCloudStore(store);
                 return res.status(200).json({ ok: true, message: "Araştırma inceleme için öğretmene iletildi." });
             }
 
@@ -533,7 +496,7 @@ module.exports = async function handler(req, res) {
                     updatedAt: now,
                     assignedBy: session.studentName || "Öğretmen"
                 };
-                writeLocalStore(store);
+                await saveCloudStore(store);
                 return res.status(200).json({
                     ok: true,
                     message: "Görev ataması güncellendi.",
@@ -550,7 +513,7 @@ module.exports = async function handler(req, res) {
                 const validStatuses = ["approved", "correction_requested", "draft", "in_review"];
                 const targetStatus = validStatuses.includes(status) ? status : "approved";
 
-                for (const [k, rec] of Object.entries(store.records)) {
+                for (const [k, rec] of Object.entries(store.records || {})) {
                     const isMatchingItem = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
                     if (isMatchingItem && (projectId === "all" || rec.projectId === projectId)) {
                         rec.status = targetStatus;
@@ -559,6 +522,7 @@ module.exports = async function handler(req, res) {
                 }
 
                 if (feedbackMessage) {
+                    if (!store.feedbacks) store.feedbacks = [];
                     store.feedbacks.push({
                         id: `fb-${Date.now()}`,
                         projectId,
@@ -570,7 +534,7 @@ module.exports = async function handler(req, res) {
                     });
                 }
 
-                writeLocalStore(store);
+                await saveCloudStore(store);
 
                 return res.status(200).json({
                     ok: true,
@@ -605,7 +569,7 @@ module.exports = async function handler(req, res) {
                 const newEventId = `${yearId}__ev_${nextIdx}`;
                 list.push(newEventId);
                 store.itemsMeta['proje-siyer_events'][yearId] = list;
-                writeLocalStore(store);
+                await saveCloudStore(store);
                 return res.status(200).json({
                     ok: true,
                     eventId: newEventId,
@@ -684,7 +648,7 @@ module.exports = async function handler(req, res) {
                     eventsMeta[fromYearId] = eventsMeta[fromYearId].filter((id) => id !== eventId);
                 }
 
-                writeLocalStore(store);
+                await saveCloudStore(store);
 
                 const projRecords = {};
                 for (const [k, v] of Object.entries(store.records || {})) {
@@ -730,7 +694,7 @@ module.exports = async function handler(req, res) {
                 } else {
                     delete store.itemsMeta['proje-siyer_year_flags'][yearId];
                 }
-                writeLocalStore(store);
+                await saveCloudStore(store);
                 return res.status(200).json({
                     ok: true,
                     siyerYearFlags: store.itemsMeta['proje-siyer_year_flags']
@@ -748,10 +712,13 @@ module.exports = async function handler(req, res) {
         try {
             const { sourceId } = req.query;
             if (sourceId) {
-                const store = readLocalStore();
-                delete store.sources[sourceId];
-                writeLocalStore(store);
-                return res.status(200).json({ ok: true, message: "Kaynak başarıyla silindi." });
+                const store = await getCloudStore();
+                if (store.sources && store.sources[sourceId]) {
+                    delete store.sources[sourceId];
+                    await saveCloudStore(store);
+                    return res.status(200).json({ ok: true, message: "Kaynak başarıyla silindi." });
+                }
+                return res.status(404).json({ ok: false, error: "Silinecek kaynak bulunamadı." });
             }
             return res.status(400).json({ ok: false, error: "Silinecek kaynak ID belirtilmedi." });
         } catch (err) {
