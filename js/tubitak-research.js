@@ -372,6 +372,23 @@
         redoStacks[recordKey].push(currentVal);
 
         const previousVal = stack.pop();
+        if (!runtimeRecords[recordKey]) {
+            runtimeRecords[recordKey] = {
+                id: recordKey,
+                projectId: activeProjectId || "proje-siyer",
+                itemId: targetItemId,
+                criterionKey: criterionKey,
+                content: previousVal,
+                version: 1,
+                status: "draft",
+                studentName: currentSession?.studentName || "Öğrenci",
+                updatedAt: new Date().toISOString()
+            };
+        } else {
+            runtimeRecords[recordKey].content = previousVal;
+            runtimeRecords[recordKey].updatedAt = new Date().toISOString();
+        }
+
         const textarea = document.getElementById(`input-${targetItemId}__${criterionKey}`) || document.getElementById(`input-${criterionKey}`);
         if (textarea) {
             textarea.value = previousVal;
@@ -379,6 +396,10 @@
         }
         const countEl = document.getElementById(`char-count-${targetItemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
         if (countEl) countEl.textContent = formatFieldStats(previousVal);
+
+        if (activeProjectId === "proje-siyer" || criterionKey.includes("kok_deger")) {
+            updateSiyerRootValueChipsUI(targetItemId, criterionKey, previousVal);
+        }
 
         queueAutoSave(criterionKey, previousVal, targetItemId);
         showNotice("Değişiklik geri alındı ↶", "success");
@@ -398,6 +419,23 @@
         undoStacks[recordKey].push(currentVal);
 
         const nextVal = stack.pop();
+        if (!runtimeRecords[recordKey]) {
+            runtimeRecords[recordKey] = {
+                id: recordKey,
+                projectId: activeProjectId || "proje-siyer",
+                itemId: targetItemId,
+                criterionKey: criterionKey,
+                content: nextVal,
+                version: 1,
+                status: "draft",
+                studentName: currentSession?.studentName || "Öğrenci",
+                updatedAt: new Date().toISOString()
+            };
+        } else {
+            runtimeRecords[recordKey].content = nextVal;
+            runtimeRecords[recordKey].updatedAt = new Date().toISOString();
+        }
+
         const textarea = document.getElementById(`input-${targetItemId}__${criterionKey}`) || document.getElementById(`input-${criterionKey}`);
         if (textarea) {
             textarea.value = nextVal;
@@ -405,6 +443,10 @@
         }
         const countEl = document.getElementById(`char-count-${targetItemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
         if (countEl) countEl.textContent = formatFieldStats(nextVal);
+
+        if (activeProjectId === "proje-siyer" || criterionKey.includes("kok_deger")) {
+            updateSiyerRootValueChipsUI(targetItemId, criterionKey, nextVal);
+        }
 
         queueAutoSave(criterionKey, nextVal, targetItemId);
         showNotice("Değişiklik yinelendi ↷", "success");
@@ -793,12 +835,63 @@
         "Yardımseverlik"
     ];
 
+    function normalizeRootValueName(name) {
+        if (!name || typeof name !== 'string') return null;
+        const clean = name.trim().toLocaleLowerCase('tr-TR').replace(/[\s\-_]+/g, '');
+        const match = SIYER_ROOT_VALUES.find(val => val.toLocaleLowerCase('tr-TR').replace(/[\s\-_]+/g, '') === clean);
+        return match || null;
+    }
+
     function parseSelectedRootValues(contentStr) {
         if (!contentStr || typeof contentStr !== 'string') return [];
-        return SIYER_ROOT_VALUES.filter(val => {
-            const regex = new RegExp('(^|[\\s,;•\\n])' + val.replace(' ', '\\s*') + '([\\s,;•\\n]|$)', 'i');
-            return regex.test(contentStr);
-        });
+        const lines = contentStr.split('\n');
+        const firstLine = lines[0].trim();
+        if (!firstLine) return [];
+
+        const tokens = firstLine.split(/[,;•]+/).map(t => t.trim()).filter(Boolean);
+        const selected = [];
+        for (const tok of tokens) {
+            const canonical = normalizeRootValueName(tok);
+            if (canonical && !selected.includes(canonical)) {
+                selected.push(canonical);
+            }
+        }
+
+        if (selected.length === 0 && lines.length > 1) {
+            for (const line of lines) {
+                const trimmed = line.trim();
+                const canonical = normalizeRootValueName(trimmed);
+                if (canonical && !selected.includes(canonical)) {
+                    selected.push(canonical);
+                } else if (trimmed.length > 0) {
+                    break;
+                }
+            }
+        }
+        return selected;
+    }
+
+    function extractSiyerRootValueNotes(contentStr) {
+        if (!contentStr || typeof contentStr !== 'string') return '';
+        const lines = contentStr.split('\n');
+        const firstLine = lines[0].trim();
+        const selectedInFirstLine = parseSelectedRootValues(firstLine);
+        if (selectedInFirstLine.length > 0 || firstLine === '') {
+            return lines.slice(1).join('\n').trim();
+        }
+        return contentStr.trim();
+    }
+
+    function updateSiyerRootValueChipsUI(itemId, criterionKey, content) {
+        const container = document.getElementById(`chips-container-${itemId}__${criterionKey}`);
+        if (!container) return;
+        const selected = parseSelectedRootValues(content);
+        const pId = activeProjectId || "proje-siyer";
+        const items = seedData?.projects?.[pId]?.items || [];
+        const baseId = String(itemId).split('__')[0];
+        const targetItem = items.find(it => it.id === baseId || it.id === itemId) || null;
+        const canEdit = targetItem ? isItemEditableByCurrentUser(targetItem) : (currentSession?.role === 'teacher' || currentSession?.role === 'student');
+        container.innerHTML = renderSiyerRootValueChipsHtml(itemId, criterionKey, selected, canEdit);
     }
 
     function renderSiyerRootValueChipsHtml(itemId, criterionKey, selectedValues, canEdit) {
@@ -937,8 +1030,8 @@
                             </label>
                             <!-- Geri Al / İleri Al -->
                             <div class="flex items-center gap-1">
-                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${ev.olayKey}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı Geri Al ↶">↶</button>
-                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${ev.olayKey}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı İleri Al ↷">↷</button>
+                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${ev.olayKey}', '${yearId}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı Geri Al ↶">↶</button>
+                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${ev.olayKey}', '${yearId}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı İleri Al ↷">↷</button>
                             </div>
                         </div>
                         <textarea
@@ -947,8 +1040,8 @@
                             ${!canEditItem ? 'readonly disabled' : ''}
                             style="resize: vertical; min-height: 84px;"
                             placeholder="${escapeHtml(ev.olayPlaceholder)}"
-                            oninput="window.RotaliTubitak.onFieldChange('${ev.olayKey}', this.value, this)"
-                            onblur="window.RotaliTubitak.onFieldBlur('${ev.olayKey}', this.value)"
+                            oninput="window.RotaliTubitak.onFieldChange('${ev.olayKey}', this.value, this, '${yearId}')"
+                            onblur="window.RotaliTubitak.onFieldBlur('${ev.olayKey}', this.value, '${yearId}')"
                             class="tubitak-criterion-textarea resize-y w-full px-3.5 py-2.5 ${canEditItem ? 'bg-white text-slate-800' : 'bg-slate-100 text-slate-500 cursor-not-allowed'} border border-slate-200 rounded-xl text-xs sm:text-sm font-medium placeholder-slate-400 focus:outline-none transition-colors leading-relaxed custom-scrollbar"
                         >${escapeHtml(olayMeta.content)}</textarea>
                         <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-0.5">
@@ -970,8 +1063,8 @@
                             </div>
                             <!-- Kök Değer Geri Al / İleri Al -->
                             <div class="flex items-center gap-1">
-                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${ev.kokKey}')" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kök Değerleri Geri Al ↶">↶</button>
-                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${ev.kokKey}')" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kök Değerleri İleri Al ↷">↷</button>
+                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${ev.kokKey}', '${yearId}')" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kök Değerleri Geri Al ↶">↶</button>
+                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${ev.kokKey}', '${yearId}')" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kök Değerleri İleri Al ↷">↷</button>
                             </div>
                         </div>
 
@@ -991,8 +1084,8 @@
                                 ${!canEditItem ? 'readonly disabled' : ''}
                                 style="resize: vertical; min-height: 52px;"
                                 placeholder="Olayla kök değer arasındaki bağlantıyı açıklayınız (isteğe bağlı)..."
-                                oninput="window.RotaliTubitak.onFieldChange('${ev.kokKey}', this.value, this)"
-                                onblur="window.RotaliTubitak.onFieldBlur('${ev.kokKey}', this.value)"
+                                oninput="window.RotaliTubitak.onFieldChange('${ev.kokKey}', this.value, this, '${yearId}')"
+                                onblur="window.RotaliTubitak.onFieldBlur('${ev.kokKey}', this.value, '${yearId}')"
                                 class="tubitak-criterion-textarea resize-y w-full px-3 py-2 ${canEditItem ? 'bg-white text-slate-800' : 'bg-slate-100 text-slate-500 cursor-not-allowed'} border border-slate-200 rounded-xl text-xs font-medium placeholder-slate-400 focus:outline-none transition-colors leading-relaxed"
                             >${escapeHtml(kokMeta.content)}</textarea>
                             <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-0.5">
@@ -1011,8 +1104,8 @@
                                 <span class="text-[10px] font-semibold text-slate-400">(İsteğe bağlı)</span>
                             </label>
                             <div class="flex items-center gap-1">
-                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${ev.kaynakKey}')" class="w-6 h-6 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kaynakçayı Geri Al ↶">↶</button>
-                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${ev.kaynakKey}')" class="w-6 h-6 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kaynakçayı İleri Al ↷">↷</button>
+                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${ev.kaynakKey}', '${yearId}')" class="w-6 h-6 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kaynakçayı Geri Al ↶">↶</button>
+                                <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${ev.kaynakKey}', '${yearId}')" class="w-6 h-6 rounded-lg bg-slate-50 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-[11px] transition-colors cursor-pointer" title="Kaynakçayı İleri Al ↷">↷</button>
                             </div>
                         </div>
                         <input
@@ -1021,8 +1114,8 @@
                             value="${escapeHtml(kaynakMeta.content)}"
                             ${!canEditItem ? 'readonly disabled' : ''}
                             placeholder="${escapeHtml(ev.kaynakPlaceholder)}"
-                            oninput="window.RotaliTubitak.onFieldChange('${ev.kaynakKey}', this.value, this)"
-                            onblur="window.RotaliTubitak.onFieldBlur('${ev.kaynakKey}', this.value)"
+                            oninput="window.RotaliTubitak.onFieldChange('${ev.kaynakKey}', this.value, this, '${yearId}')"
+                            onblur="window.RotaliTubitak.onFieldBlur('${ev.kaynakKey}', this.value, '${yearId}')"
                             class="tubitak-criterion-textarea w-full px-3.5 py-2 ${canEditItem ? 'bg-white text-slate-800' : 'bg-slate-100 text-slate-500 cursor-not-allowed'} border border-slate-200 rounded-xl text-xs font-medium placeholder-slate-400 focus:outline-none transition-colors"
                         />
                         <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold">
@@ -4801,11 +4894,7 @@ function renderActiveItemForm(item, projData) {
             const latexPreviewEl = document.getElementById(`latex-preview-${criterionKey}`);
             if (latexPreviewEl) latexPreviewEl.innerHTML = renderLatexHtmlString(val);
             if (activeProjectId === "proje-siyer" && criterionKey.includes("kok_deger")) {
-                const chipsEl = document.getElementById(`chips-container-${effItemId}__${criterionKey}`);
-                if (chipsEl) {
-                    const parsed = parseSelectedRootValues(val);
-                    chipsEl.innerHTML = renderSiyerRootValueChipsHtml(effItemId, criterionKey, parsed, isItemEditableByCurrentUser(activeItem));
-                }
+                updateSiyerRootValueChipsUI(effItemId, criterionKey, val);
             }
             queueAutoSave(criterionKey, val, effItemId);
         },
@@ -4819,6 +4908,9 @@ function renderActiveItemForm(item, projData) {
             }
             if (runtimeRecords[recordKey]) {
                 runtimeRecords[recordKey].content = val;
+            }
+            if (activeProjectId === "proje-siyer" && criterionKey.includes("kok_deger")) {
+                updateSiyerRootValueChipsUI(effItemId, criterionKey, val);
             }
             await executeSave(criterionKey, val, effItemId);
         },
@@ -5012,37 +5104,45 @@ function renderActiveItemForm(item, projData) {
         toggleSiyerRootValue(itemId, criterionKey, valName) {
             const recordKey = `${itemId}__${criterionKey}`;
             const existing = runtimeRecords[recordKey];
-            const currentVal = existing ? existing.content : "";
+            
+            const inputEl = document.getElementById(`input-${itemId}__${criterionKey}`) || document.getElementById(`input-${criterionKey}`);
+            const currentVal = inputEl ? inputEl.value : (existing ? existing.content : "");
+
+            // 1. Geri al yığınına mevcut durumu ekle
+            if (!undoStacks[recordKey]) undoStacks[recordKey] = [];
+            undoStacks[recordKey].push(currentVal);
+            redoStacks[recordKey] = [];
+
+            // 2. Kök değerleri ve isteğe bağlı notları ayrıştır
             let selected = parseSelectedRootValues(currentVal);
+            const extraNotes = extractSiyerRootValueNotes(currentVal);
 
-            if (selected.includes(valName)) {
-                selected = selected.filter(v => v !== valName);
+            // 3. Seçim durumunu tersine çevir
+            const canonicalVal = normalizeRootValueName(valName) || valName;
+            if (selected.includes(canonicalVal)) {
+                selected = selected.filter(v => v !== canonicalVal);
             } else {
-                selected.push(valName);
+                selected.push(canonicalVal);
             }
 
-            let lines = currentVal.split('\n');
-            let extraNotes = '';
-            if (lines.length > 1) {
-                extraNotes = lines.slice(1).join('\n').trim();
-            } else if (currentVal) {
-                const cleaned = currentVal
-                    .replace(/Adalet|Dostluk|Dürüstlük|Öz denetim|Sabır|Saygı|Sevgi|Sorumluluk|Vatanseverlik|Yardımseverlik/gi, '')
-                    .replace(/[,;\s•]/g, '').trim();
-                if (cleaned.length > 0) {
-                    extraNotes = currentVal.trim();
-                }
+            // 4. Yeni içeriği tek doğruluk kaynağı olarak oluştur
+            const valuesLine = selected.join(', ');
+            let newContent = '';
+            if (valuesLine && extraNotes) {
+                newContent = `${valuesLine}\n${extraNotes}`;
+            } else if (valuesLine) {
+                newContent = valuesLine;
+            } else if (extraNotes) {
+                newContent = `\n${extraNotes}`;
+            } else {
+                newContent = '';
             }
 
-            let newContent = selected.join(', ');
-            if (extraNotes && !newContent.includes(extraNotes)) {
-                newContent = newContent ? `${newContent}\n${extraNotes}` : extraNotes;
-            }
-
+            // 5. Yerel kayıt durumunu (runtimeRecords) anında güncelle
             if (!runtimeRecords[recordKey]) {
                 runtimeRecords[recordKey] = {
                     id: recordKey,
-                    projectId: "proje-siyer",
+                    projectId: activeProjectId || "proje-siyer",
                     itemId: itemId,
                     criterionKey: criterionKey,
                     content: newContent,
@@ -5053,27 +5153,21 @@ function renderActiveItemForm(item, projData) {
                 };
             } else {
                 runtimeRecords[recordKey].content = newContent;
+                runtimeRecords[recordKey].updatedAt = new Date().toISOString();
             }
 
-            const inputEl = document.getElementById(`input-${itemId}__${criterionKey}`) || document.getElementById(`input-${criterionKey}`);
+            // 6. DOM Textarea ve karakter sayısını güncelle
             if (inputEl) {
                 inputEl.value = newContent;
                 autoGrowTextarea(inputEl);
             }
-
             const countEl = document.getElementById(`char-count-${itemId}__${criterionKey}`) || document.getElementById(`char-count-${criterionKey}`);
             if (countEl) countEl.textContent = formatFieldStats(newContent);
 
-            const baseItemId = String(itemId).split('__')[0];
-            const p = projectData?.projects?.[activeProjectId] || projectData?.projects?.['proje-siyer'];
-            const targetItem = p?.items?.find(it => it.id === baseItemId) || null;
-            const canEdit = targetItem ? isItemEditableByCurrentUser(targetItem) : (currentSession?.role === 'teacher' || currentSession?.role === 'student');
+            // 7. Butonların görsel durumunu (yeşil ✓ / beyaz +) anında senkronize et
+            updateSiyerRootValueChipsUI(itemId, criterionKey, newContent);
 
-            const container = document.getElementById(`chips-container-${itemId}__${criterionKey}`);
-            if (container) {
-                container.innerHTML = renderSiyerRootValueChipsHtml(itemId, criterionKey, selected, canEdit);
-            }
-
+            // 8. Otomatik kaydı kuyruğa al (Debounced AutoSave)
             queueAutoSave(criterionKey, newContent, itemId);
         },
 
