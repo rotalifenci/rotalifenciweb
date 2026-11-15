@@ -203,7 +203,24 @@ async function fetchGistDirect() {
 
     const data = await res.json();
     const fileObj = data?.files?.[GIST_FILENAME];
-    if (!fileObj || !fileObj.content) {
+    if (!fileObj) {
+        return null;
+    }
+
+    // GitHub Gist API büyük dosyalarda (örn. > 500 KB) content alanını kırpar (truncated: true).
+    // Kırpılmış veriyi JSON.parse etmek Unterminated string hatası vereceği için raw_url kullanılır.
+    if (fileObj.truncated && fileObj.raw_url) {
+        const rawRes = await fetch(fileObj.raw_url, {
+            headers: getGitHubHeaders(false),
+            cache: 'no-store'
+        });
+        if (rawRes.ok) {
+            const rawText = await rawRes.text();
+            return JSON.parse(rawText);
+        }
+    }
+
+    if (!fileObj.content) {
         return null;
     }
 

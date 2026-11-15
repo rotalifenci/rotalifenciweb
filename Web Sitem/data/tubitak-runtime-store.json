@@ -7,10 +7,10 @@
       "criterionKey": "c1_location",
       "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
       "studentId": "stu-tari-aliveli",
-      "studentName": "Ali Veli (Geri Yükleme v38)",
-      "version": 39,
+      "studentName": "Ali Veli (Geri Yükleme v39)",
+      "version": 40,
       "status": "draft",
-      "updatedAt": "2026-11-15T09:31:18.686Z"
+      "updatedAt": "2026-11-15T09:57:30.242Z"
     },
     "susamislar-konagi__c1_yapi_adi": {
       "id": "susamislar-konagi__c1_yapi_adi",
@@ -34,7 +34,7 @@
       "studentName": "Fenci Öğretmen",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "cifte-minareli-medrese__c2_yapim_yili": {
       "id": "cifte-minareli-medrese__c2_yapim_yili",
@@ -46,7 +46,7 @@
       "studentName": "Araştırmacı",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "bilim-01-bircendi__c9_yontemler_problemler": {
       "id": "bilim-01-bircendi__c9_yontemler_problemler",
@@ -68,9 +68,9 @@
       "content": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
       "studentId": "stu3-humeyra",
       "studentName": "Hümeyra BULUT",
-      "version": 14,
+      "version": 16,
       "status": "draft",
-      "updatedAt": "2026-11-15T09:31:31.856Z"
+      "updatedAt": "2026-11-15T09:57:44.252Z"
     },
     "siyer-572__c1_olay": {
       "id": "siyer-572__c1_olay",
@@ -104,9 +104,9 @@
       "content": "571 yılında ikinci önemli olay açıklaması.",
       "studentId": "stu3-humeyra",
       "studentName": "Hümeyra BULUT",
-      "version": 5,
+      "version": 7,
       "status": "draft",
-      "updatedAt": "2026-11-15T09:31:34.435Z"
+      "updatedAt": "2026-11-15T09:57:47.428Z"
     },
     "siyer-571__c1_olay_3": {
       "id": "siyer-571__c1_olay_3",
@@ -610,7 +610,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "divrigi-ulu-camii__c1_yapi_adi": {
       "id": "divrigi-ulu-camii__c1_yapi_adi",
@@ -2698,7 +2698,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 1,
       "status": "draft",
-      "updatedAt": "2026-11-14T23:32:40.216Z"
+      "updatedAt": "2026-11-15T09:57:57.356Z"
     },
     "siyer-572__ev_13__c1_olay": {
       "id": "siyer-572__ev_13__c1_olay",
@@ -2722,7 +2722,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "cifte-minareli-medrese__c3_medeniyet": {
       "id": "cifte-minareli-medrese__c3_medeniyet",
@@ -2734,7 +2734,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "cifte-minareli-medrese__c5_yaptiran": {
       "id": "cifte-minareli-medrese__c5_yaptiran",
@@ -2746,7 +2746,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "cifte-minareli-medrese__c6_mimar": {
       "id": "cifte-minareli-medrese__c6_mimar",
@@ -2758,7 +2758,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "cifte-minareli-medrese__c7_mimari_tarz": {
       "id": "cifte-minareli-medrese__c7_mimari_tarz",
@@ -2770,7 +2770,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "siyer-572__ev_14__c1_olay": {
       "id": "siyer-572__ev_14__c1_olay",
@@ -2806,7 +2806,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "bircendi__c1_eserler": {
       "id": "bircendi__c1_eserler",
@@ -2854,7 +2854,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-15T09:31:16.211Z"
+      "updatedAt": "2026-11-15T09:57:25.900Z"
     },
     "bircendi__c2_matematik": {
       "id": "bircendi__c2_matematik",
@@ -2963,87 +2963,489 @@
       "version": 1,
       "status": "draft",
       "updatedAt": "2026-11-14T23:20:46.251Z"
+    },
+    "siyer-571__ev_2__c1_olay": {
+      "id": "siyer-571__ev_2__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571__ev_2",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-12T09:10:58.969Z"
+    },
+    "divrigi-ulu-camii__c4_konumu": {
+      "id": "divrigi-ulu-camii__c4_konumu",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c4_konumu",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c5_yaptiran": {
+      "id": "divrigi-ulu-camii__c5_yaptiran",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c5_yaptiran",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c6_mimar": {
+      "id": "divrigi-ulu-camii__c6_mimar",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c6_mimar",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c7_mimari_tarz": {
+      "id": "divrigi-ulu-camii__c7_mimari_tarz",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c7_mimari_tarz",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c8_yapilis_amaci": {
+      "id": "divrigi-ulu-camii__c8_yapilis_amaci",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c8_yapilis_amaci",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c9_toplumsal_kulturel_onemi": {
+      "id": "divrigi-ulu-camii__c9_toplumsal_kulturel_onemi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c9_toplumsal_kulturel_onemi",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c10_yapim_malzemesi": {
+      "id": "divrigi-ulu-camii__c10_yapim_malzemesi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c10_yapim_malzemesi",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c11_plan": {
+      "id": "divrigi-ulu-camii__c11_plan",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c11_plan",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c12_kulturel_miras_statusu": {
+      "id": "divrigi-ulu-camii__c12_kulturel_miras_statusu",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c12_kulturel_miras_statusu",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c13_tarihsel_degisiklikler": {
+      "id": "divrigi-ulu-camii__c13_tarihsel_degisiklikler",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c13_tarihsel_degisiklikler",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c14_restorasyon": {
+      "id": "divrigi-ulu-camii__c14_restorasyon",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c14_restorasyon",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c15_kulturel_miras_tescil": {
+      "id": "divrigi-ulu-camii__c15_kulturel_miras_tescil",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c15_kulturel_miras_tescil",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c16_benzer_ortak_ozellikler": {
+      "id": "divrigi-ulu-camii__c16_benzer_ortak_ozellikler",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c16_benzer_ortak_ozellikler",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c17_benzer_farkli_ozellikler": {
+      "id": "divrigi-ulu-camii__c17_benzer_farkli_ozellikler",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c17_benzer_farkli_ozellikler",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c18_kaynak": {
+      "id": "divrigi-ulu-camii__c18_kaynak",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c18_kaynak",
+      "content": "",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-15T09:38:20.107Z"
+    },
+    "divrigi-ulu-camii__c3_banisi": {
+      "id": "divrigi-ulu-camii-darussifasi__c3_banisi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c3_banisi",
+      "content": "Divriği Ulu Camii Kriter #3 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:30.286Z"
+    },
+    "divrigi-ulu-camii__c4_mimari": {
+      "id": "divrigi-ulu-camii-darussifasi__c4_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c4_mimari",
+      "content": "Divriği Ulu Camii Kriter #4 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:32.539Z"
+    },
+    "divrigi-ulu-camii__c5_konum_ada_parsel": {
+      "id": "divrigi-ulu-camii-darussifasi__c5_konum_ada_parsel",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c5_konum_ada_parsel",
+      "content": "Divriği Ulu Camii Kriter #5 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:35.011Z"
+    },
+    "divrigi-ulu-camii__c6_kullanilan_malzeme": {
+      "id": "divrigi-ulu-camii-darussifasi__c6_kullanilan_malzeme",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c6_kullanilan_malzeme",
+      "content": "Divriği Ulu Camii Kriter #6 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:37.424Z"
+    },
+    "divrigi-ulu-camii__c7_plan_tipi": {
+      "id": "divrigi-ulu-camii-darussifasi__c7_plan_tipi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c7_plan_tipi",
+      "content": "Öğrenci 1: Eşzamanlı kaydedilen plan tipi analizi.",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 2,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:46.919Z"
+    },
+    "divrigi-ulu-camii__c8_susleme_sanat": {
+      "id": "divrigi-ulu-camii-darussifasi__c8_susleme_sanat",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c8_susleme_sanat",
+      "content": "Mengücek Beyliği döneminde Ahmet Şah ve Melike Turan Melek tarafından 1228-1229 yıllarında yaptırılan Divriği Ulu Camii ve Darüşşifası, mimari özellikleri ve taş işçiliği bakımından Anadolu Selçuklu sanatının şaheseridir.\n\nYapının taç kapılarında yer alan üç boyutlu asimetrik ve eşsiz bezemeler, ışık-gölge oyunlarıyla günün farklı saatlerinde namaz kılan insan silüeti oluşturmaktadır.\n\nKaynaklar:\n1. Necdet Sakaoğlu, Divriği Tarihi, 1999.\n2. Doğan Kuban, Divriği Mucizesi, YKY, 2001.",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 2,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:52.135Z"
+    },
+    "divrigi-ulu-camii__c9_kitabeler": {
+      "id": "divrigi-ulu-camii-darussifasi__c9_kitabeler",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c9_kitabeler",
+      "content": "Divriği Ulu Camii Kriter #9 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:43.872Z"
+    },
+    "divrigi-ulu-camii__c10_islev_tarihcesi": {
+      "id": "divrigi-ulu-camii-darussifasi__c10_islev_tarihcesi",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c10_islev_tarihcesi",
+      "content": "Divriği Ulu Camii Kriter #10 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:46.153Z"
+    },
+    "divrigi-ulu-camii__c11_donem_olaylari": {
+      "id": "divrigi-ulu-camii-darussifasi__c11_donem_olaylari",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c11_donem_olaylari",
+      "content": "Divriği Ulu Camii Kriter #11 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:48.155Z"
+    },
+    "divrigi-ulu-camii__c12_vakfiye_vakiflar": {
+      "id": "divrigi-ulu-camii-darussifasi__c12_vakfiye_vakiflar",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c12_vakfiye_vakiflar",
+      "content": "Divriği Ulu Camii Kriter #12 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:50.207Z"
+    },
+    "divrigi-ulu-camii__c13_onarimlar": {
+      "id": "divrigi-ulu-camii-darussifasi__c13_onarimlar",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c13_onarimlar",
+      "content": "Divriği Ulu Camii Kriter #13 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:52.043Z"
+    },
+    "divrigi-ulu-camii__c14_gunumuz_durumu": {
+      "id": "divrigi-ulu-camii-darussifasi__c14_gunumuz_durumu",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c14_gunumuz_durumu",
+      "content": "Divriği Ulu Camii Kriter #14 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:54.455Z"
+    },
+    "divrigi-ulu-camii__c15_kultur_turizm": {
+      "id": "divrigi-ulu-camii-darussifasi__c15_kultur_turizm",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c15_kultur_turizm",
+      "content": "Divriği Ulu Camii Kriter #15 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:56.670Z"
+    },
+    "divrigi-ulu-camii__c16_kaynakca": {
+      "id": "divrigi-ulu-camii-darussifasi__c16_kaynakca",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c16_kaynakca",
+      "content": "Divriği Ulu Camii Kriter #16 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:02:58.967Z"
+    },
+    "divrigi-ulu-camii__c17_saha_gozlemleri": {
+      "id": "divrigi-ulu-camii-darussifasi__c17_saha_gozlemleri",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c17_saha_gozlemleri",
+      "content": "Divriği Ulu Camii Kriter #17 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:00.963Z"
+    },
+    "divrigi-ulu-camii__c18_degerlendirme": {
+      "id": "divrigi-ulu-camii-darussifasi__c18_degerlendirme",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-ulu-camii",
+      "criterionKey": "c18_degerlendirme",
+      "content": "Divriği Ulu Camii Kriter #18 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
+      "studentId": "stu-tari-101",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:03.236Z"
+    },
+    "bilim-01-bircendi__c3_yasadigi_donem": {
+      "id": "bilim-01-bircendi__c2_donem_yuzyil",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c3_yasadigi_donem",
+      "content": "Bircendî Kriter #2 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:08.153Z"
+    },
+    "bilim-01-bircendi__c2_milliyeti": {
+      "id": "bilim-01-bircendi__c3_yasadigi_cografya",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c2_milliyeti",
+      "content": "Bircendî Kriter #3 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:10.563Z"
+    },
+    "bilim-01-bircendi__c6_bilim_dallari": {
+      "id": "bilim-01-bircendi__c4_uzmanlik_alanlari",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c6_bilim_dallari",
+      "content": "Öğrenci 2: Eşzamanlı kaydedilen uzmanlık alanları araştırması.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 2,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:46.922Z"
+    },
+    "bilim-01-bircendi__c5_egitim_hayati": {
+      "id": "bilim-01-bircendi__c5_hocaları_etkilendigi",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c5_egitim_hayati",
+      "content": "Bircendî Kriter #5 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:15.064Z"
+    },
+    "bilim-01-bircendi__c10_tarihteki_yeri": {
+      "id": "bilim-01-bircendi__c6_ogrencileri_ekol",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c10_tarihteki_yeri",
+      "content": "Bircendî Kriter #6 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:17.426Z"
+    },
+    "bilim-01-bircendi__c7_katkilar_buluslar": {
+      "id": "bilim-01-bircendi__c7_matematik_katkilari",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c7_katkilar_buluslar",
+      "content": "Bircendî Kriter #7 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:19.470Z"
+    },
+    "bilim-01-bircendi__c8_eserleri": {
+      "id": "bilim-01-bircendi__c8_astronomi_katkilari",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c8_eserleri",
+      "content": "Bircendî Kriter #8 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:21.600Z"
+    },
+    "bilim-01-bircendi__c11_gunumuze_etkileri": {
+      "id": "bilim-01-bircendi__c12_etkiledigi_sonraki",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-01-bircendi",
+      "criterionKey": "c11_gunumuze_etkileri",
+      "content": "Bircendî Kriter #12 araştırması: Tahrîrü'l-Mecistî şerhi, trigonometrik hesaplamalar ve 16. yüzyıl Timur/Safevî dönemi astronomi katkıları.",
+      "studentId": "stu-bili-201",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "draft",
+      "updatedAt": "2026-11-13T21:03:30.637Z"
     }
   },
   "revisions": [
-    {
-      "id": "rev-1794603770207-801",
-      "recordKey": "divrigi-ulu-camii-darussifasi__c12_vakfiye_vakiflar",
-      "projectId": "proje-tarih",
-      "itemId": "divrigi-ulu-camii-darussifasi",
-      "criterionKey": "c12_vakfiye_vakiflar",
-      "prevContent": "",
-      "newContent": "Divriği Ulu Camii Kriter #12 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
-      "studentId": "stu-tari-101",
-      "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 1,
-      "createdAt": "2026-11-13T21:02:50.207Z"
-    },
-    {
-      "id": "rev-1794603772043-254",
-      "recordKey": "divrigi-ulu-camii-darussifasi__c13_onarimlar",
-      "projectId": "proje-tarih",
-      "itemId": "divrigi-ulu-camii-darussifasi",
-      "criterionKey": "c13_onarimlar",
-      "prevContent": "",
-      "newContent": "Divriği Ulu Camii Kriter #13 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
-      "studentId": "stu-tari-101",
-      "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 1,
-      "createdAt": "2026-11-13T21:02:52.043Z"
-    },
-    {
-      "id": "rev-1794603774455-817",
-      "recordKey": "divrigi-ulu-camii-darussifasi__c14_gunumuz_durumu",
-      "projectId": "proje-tarih",
-      "itemId": "divrigi-ulu-camii-darussifasi",
-      "criterionKey": "c14_gunumuz_durumu",
-      "prevContent": "",
-      "newContent": "Divriği Ulu Camii Kriter #14 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
-      "studentId": "stu-tari-101",
-      "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 1,
-      "createdAt": "2026-11-13T21:02:54.455Z"
-    },
-    {
-      "id": "rev-1794603776670-278",
-      "recordKey": "divrigi-ulu-camii-darussifasi__c15_kultur_turizm",
-      "projectId": "proje-tarih",
-      "itemId": "divrigi-ulu-camii-darussifasi",
-      "criterionKey": "c15_kultur_turizm",
-      "prevContent": "",
-      "newContent": "Divriği Ulu Camii Kriter #15 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
-      "studentId": "stu-tari-101",
-      "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 1,
-      "createdAt": "2026-11-13T21:02:56.670Z"
-    },
-    {
-      "id": "rev-1794603778967-554",
-      "recordKey": "divrigi-ulu-camii-darussifasi__c16_kaynakca",
-      "projectId": "proje-tarih",
-      "itemId": "divrigi-ulu-camii-darussifasi",
-      "criterionKey": "c16_kaynakca",
-      "prevContent": "",
-      "newContent": "Divriği Ulu Camii Kriter #16 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
-      "studentId": "stu-tari-101",
-      "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 1,
-      "createdAt": "2026-11-13T21:02:58.967Z"
-    },
-    {
-      "id": "rev-1794603780963-915",
-      "recordKey": "divrigi-ulu-camii-darussifasi__c17_saha_gozlemleri",
-      "projectId": "proje-tarih",
-      "itemId": "divrigi-ulu-camii-darussifasi",
-      "criterionKey": "c17_saha_gozlemleri",
-      "prevContent": "",
-      "newContent": "Divriği Ulu Camii Kriter #17 detaylı araştırma metni. UNESCO Dünya Mirası özellikleri ve Mengücekli dönemi mimari analizi (Uzun akademik paragraf).",
-      "studentId": "stu-tari-101",
-      "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 1,
-      "createdAt": "2026-11-13T21:03:00.963Z"
-    },
     {
       "id": "rev-1794603783236-516",
       "recordKey": "divrigi-ulu-camii-darussifasi__c18_degerlendirme",
@@ -9487,6 +9889,85 @@
       "studentName": "Hümeyra BULUT",
       "version": 5,
       "createdAt": "2026-11-15T09:31:34.435Z"
+    },
+    {
+      "id": "rev-1794736541763-389",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+      "newContent": "Peygamber Efendimiz (s.a.v.) 571 yılında Mekke'de dünyaya teşrif etmiştir.",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 15,
+      "createdAt": "2026-11-15T09:55:41.761Z"
+    },
+    {
+      "id": "rev-1794736541763-669",
+      "recordKey": "siyer-571__c1_olay_2",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay_2",
+      "prevContent": "571 yılında ikinci önemli olay açıklaması.",
+      "newContent": "Fil Vakası meydana gelmiş, Ebrehe'nin ordusu helak edilmiştir.",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 6,
+      "createdAt": "2026-11-15T09:55:41.761Z"
+    },
+    {
+      "id": "rev-review-1794736645900-335",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-15T09:57:25.900Z"
+    },
+    {
+      "id": "rev-1794736650242-164",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v39 Geri Yüklendi)",
+      "version": 40,
+      "createdAt": "2026-11-15T09:57:30.242Z"
+    },
+    {
+      "id": "rev-1794736664253-701",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "Peygamber Efendimiz (s.a.v.) 571 yılında Mekke'de dünyaya teşrif etmiştir.",
+      "newContent": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 16,
+      "createdAt": "2026-11-15T09:57:44.252Z"
+    },
+    {
+      "id": "rev-1794736668529-248",
+      "recordKey": "siyer-571__c1_olay_2",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay_2",
+      "prevContent": "Fil Vakası meydana gelmiş, Ebrehe'nin ordusu helak edilmiştir.",
+      "newContent": "571 yılında ikinci önemli olay açıklaması.",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 7,
+      "createdAt": "2026-11-15T09:57:47.428Z"
     }
   ],
   "sources": {},
@@ -9877,6 +10358,15 @@
       "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
       "status": "approved",
       "createdAt": "2026-11-15T09:31:16.211Z"
+    },
+    {
+      "id": "fb-1794736645900",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-15T09:57:25.900Z"
     }
   ],
   "comparisons": {},
@@ -9885,7 +10375,7 @@
       "susamislar-konagi": {
         "itemId": "susamislar-konagi",
         "assignedStudentId": "stu-hazel",
-        "updatedAt": "2026-11-15T09:31:25.945Z",
+        "updatedAt": "2026-11-15T09:57:36.830Z",
         "assignedBy": "Fenci Öğretmen"
       }
     },
@@ -9904,14 +10394,15 @@
         "siyer-572__ev_8",
         "siyer-572__ev_9",
         "siyer-572__ev_10",
-        "siyer-572__ev_11"
+        "siyer-572__ev_11",
+        "siyer-572__ev_12"
       ]
     },
     "proje-siyer_year_flags": {
       "siyer-573": {
         "status": "no_event_found",
         "label": "Araştırıldı – Olay tespit edilemedi",
-        "updatedAt": "2026-11-15T09:31:45.838Z",
+        "updatedAt": "2026-11-15T09:58:00.772Z",
         "updatedBy": "Fenci Öğretmen"
       }
     },
@@ -9934,7 +10425,7 @@
       "cifte-minareli-medrese": {
         "itemId": "cifte-minareli-medrese",
         "status": "approved",
-        "reviewedAt": "2026-11-15T09:31:16.211Z"
+        "reviewedAt": "2026-11-15T09:57:25.900Z"
       }
     }
   },
@@ -9949,19 +10440,19 @@
       "projectId": "proje-bilim",
       "itemId": "bilim-01-bircendi",
       "studentName": "Zümra DURAN",
-      "updatedAt": "2026-11-15T09:30:39.829Z"
+      "updatedAt": "2026-11-15T09:55:37.974Z"
     },
     "stu-busenur": {
       "projectId": "proje-tarih",
       "itemId": "divrigi-ulu-camii",
       "studentName": "Busenur Esila ÖZDEMİR",
-      "updatedAt": "2026-11-15T09:30:35.103Z"
+      "updatedAt": "2026-11-15T09:55:32.526Z"
     },
     "stu3-humeyra": {
       "projectId": "proje-siyer",
       "itemId": "siyer-571",
       "studentName": "Hümeyra BULUT",
-      "updatedAt": "2026-11-15T09:30:43.665Z"
+      "updatedAt": "2026-11-15T09:55:41.761Z"
     },
     "stu-bili-fatmazehra": {
       "projectId": "proje-bilim",
@@ -9976,5 +10467,5 @@
       "updatedAt": "2026-11-14T23:43:16.702Z"
     }
   },
-  "lastCloudSyncTime": "2026-11-15T09:31:48.575Z"
+  "lastCloudSyncTime": "2026-11-15T09:58:03.694Z"
 }

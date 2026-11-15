@@ -1448,7 +1448,7 @@ function renderActiveItemForm(item, projData) {
         <div class="space-y-5">
             ${activeProjectId === 'proje-siyer' ? renderSiyerActiveYearForm(item, canEditItem) : criteriaList.map((crit, idx) => {
                 const recordKey = `${item.id}__${crit.key}`;
-                const saved = runtimeRecords[recordKey];
+                const saved = runtimeRecords[recordKey] || (item.id === "divrigi-ulu-camii" ? runtimeRecords[`divrigi-ulu-camii-darussifasi__${crit.key}`] : null) || (item.id === "divrigi-ulu-camii-darussifasi" ? runtimeRecords[`divrigi-ulu-camii__${crit.key}`] : null) || (item.id === "bilim-01-bircendi" ? runtimeRecords[`bircendi__${crit.key}`] : null) || (item.id === "bircendi" ? runtimeRecords[`bilim-01-bircendi__${crit.key}`] : null);
                 const contentVal = saved ? saved.content : (item.criteria?.[crit.key] || "");
                 const version = saved ? saved.version : 1;
                 const lastEditor = saved ? saved.studentName : "Sistem";
@@ -1838,7 +1838,7 @@ function renderActiveItemForm(item, projData) {
         let count = 0;
         for (const crit of criteriaList) {
             const hasContent = eventIds.some(evId => {
-                const rec = runtimeRecords[`${evId}__${crit.key}`];
+                const rec = runtimeRecords[`${evId}__${crit.key}`] || (evId === "divrigi-ulu-camii" ? runtimeRecords[`divrigi-ulu-camii-darussifasi__${crit.key}`] : null) || (evId === "divrigi-ulu-camii-darussifasi" ? runtimeRecords[`divrigi-ulu-camii__${crit.key}`] : null) || (evId === "bilim-01-bircendi" ? runtimeRecords[`bircendi__${crit.key}`] : null) || (evId === "bircendi" ? runtimeRecords[`bilim-01-bircendi__${crit.key}`] : null);
                 return rec && rec.content && rec.content.trim().length > 0;
             });
             if (hasContent) {
