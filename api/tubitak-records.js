@@ -164,11 +164,17 @@ module.exports = async function handler(req, res) {
             }
 
             if (exportDocxMode === "single" || exportDocxMode === "all") {
-                if (userRole !== "teacher") {
-                    return res.status(403).json({ ok: false, error: "Word belgesi indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir." });
+                if (exportDocxMode === "all" && userRole !== "teacher") {
+                    return res.status(403).json({ ok: false, error: "Toplu Word indirme işlemi yalnızca yetkili öğretmen hesabından yapılabilir." });
                 }
 
                 const exportProjId = (reqProj === "proje-bilim" || reqProj === "proje-tarih" || reqProj === "proje-siyer") ? reqProj : "proje-tarih";
+                
+                // Öğrenci Yetki Kontrolü: Öğrenci yalnızca kendi projesindeki araştırmaları indirebilir
+                if (userRole !== "teacher" && userProjectId !== "all" && exportProjId !== userProjectId) {
+                    return res.status(403).json({ ok: false, error: "Bu projenin kayıtlarına erişim yetkiniz bulunmuyor." });
+                }
+
                 const parsedSeed = fs.existsSync(seedDataPath) ? JSON.parse(fs.readFileSync(seedDataPath, 'utf8')) : null;
                 const projObj = parsedSeed?.projects?.[exportProjId];
                 if (!projObj || !Array.isArray(projObj.items) || !Array.isArray(projObj.criteriaList)) {
@@ -188,6 +194,16 @@ module.exports = async function handler(req, res) {
                     if (!item) {
                         return res.status(404).json({ ok: false, error: "İstenen araştırma kaydı bulunamadı." });
                     }
+
+                    // Öğrenci Görev Kontrolü: Öğrenci yalnızca erişim yetkisi olan / atanmış konusunu indirebilir
+                    if (userRole !== "teacher") {
+                        const sessionStuId = resolveSessionStudentId(session, exportProjId);
+                        const assignedStuId = getEffectiveAssignedStudentId(store, exportProjId, item.id);
+                        if (assignedStuId && sessionStuId !== assignedStuId) {
+                            return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi araştırmanızı indirebilirsiniz." });
+                        }
+                    }
+
                     let docxResult;
                     if (exportProjId === "proje-siyer") {
                         const extraIds = (store.itemsMeta && store.itemsMeta['proje-siyer_events'] && store.itemsMeta['proje-siyer_events'][item.id]) || [];
@@ -196,8 +212,8 @@ module.exports = async function handler(req, res) {
                     } else {
                         docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords);
                     }
-                    if (!docxResult) {
-                        return res.status(404).json({ ok: false, error: "Bu kayıt için veritabanında kaydedilmiş araştırma metni bulunamadı." });
+                    if (!docxResult || docxResult.paragraphCount === 0) {
+                        return res.status(404).json({ ok: false, error: "Bu araştırma için henüz indirilebilecek veri bulunamadı." });
                     }
                     const asciiName = buildAsciiFallbackFilename(docxResult.filename);
                     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");

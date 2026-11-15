@@ -136,30 +136,106 @@ async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
     };
 }
 
-async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, recordsMap) {
-    const orderedEvents = Array.isArray(eventIds) && eventIds.length > 0
-        ? eventIds.slice(0, 3)
-        : [yearItem.id];
-
+function extractSiyerYearTextParagraphs(yearItem, recordsMap) {
+    if (!yearItem) return { allParagraphs: [], eventCount: 0 };
+    const yearId = yearItem.id;
     const allParagraphs = [];
     let nonEmptyEvents = 0;
 
-    // Siyer ek kriter alanları (2. ve 3. olay kök değer ve kaynakça anahtarları)
-    const expandedCriteriaList = [
-        ...(criteriaList || []),
-        { key: "c2_kok_deger_2" }, { key: "c3_kaynakca_2" },
-        { key: "c2_kok_deger_3" }, { key: "c3_kaynakca_3" }
+    const eventsConfig = [
+        {
+            olayKey: "c1_olay",
+            olayLegacy: null,
+            kokKey: "c2_kok_deger",
+            kokLegacy: null,
+            kaynakKey: "c3_kaynakca",
+            kaynakLegacy: null
+        },
+        {
+            olayKey: "c1_olay_2",
+            olayLegacy: `${yearId}__ev_2__c1_olay`,
+            kokKey: "c2_kok_deger_2",
+            kokLegacy: `${yearId}__ev_2__c2_kok_deger`,
+            kaynakKey: "c3_kaynakca_2",
+            kaynakLegacy: `${yearId}__ev_2__c3_kaynakca`
+        },
+        {
+            olayKey: "c1_olay_3",
+            olayLegacy: `${yearId}__ev_3__c1_olay`,
+            kokKey: "c2_kok_deger_3",
+            kokLegacy: `${yearId}__ev_3__c2_kok_deger`,
+            kaynakKey: "c3_kaynakca_3",
+            kaynakLegacy: `${yearId}__ev_3__c3_kaynakca`
+        }
     ];
 
-    for (const evId of orderedEvents) {
-        const evParagraphs = extractMonumentTextParagraphs({ id: evId, criteria: yearItem.criteria || {} }, expandedCriteriaList, recordsMap);
-        if (evParagraphs.length === 0) continue;
-        if (nonEmptyEvents > 0) {
-            allParagraphs.push('');
+    function getVal(key, legacyKey) {
+        const fullKey = `${yearId}__${key}`;
+        let rec = recordsMap && recordsMap[fullKey];
+        if ((!rec || !rec.content) && legacyKey && recordsMap && recordsMap[legacyKey]) {
+            rec = recordsMap[legacyKey];
         }
-        allParagraphs.push(...evParagraphs);
-        nonEmptyEvents++;
+        if (rec && typeof rec.content === 'string' && rec.content.trim()) {
+            return rec.content.trim();
+        }
+        if (yearItem.criteria && typeof yearItem.criteria[key] === 'string' && yearItem.criteria[key].trim()) {
+            return yearItem.criteria[key].trim();
+        }
+        return '';
     }
+
+    for (const ev of eventsConfig) {
+        const olayText = getVal(ev.olayKey, ev.olayLegacy);
+        const kokText = getVal(ev.kokKey, ev.kokLegacy);
+        const kaynakText = getVal(ev.kaynakKey, ev.kaynakLegacy);
+
+        if (!olayText && !kokText && !kaynakText) {
+            continue;
+        }
+
+        const evParas = [];
+
+        // 1. Olay araştırma metni
+        if (olayText) {
+            const lines = olayText.replace(/\r\n/g, '\n').split('\n');
+            for (const line of lines) {
+                const tr = line.trim();
+                if (tr) evParas.push(tr);
+            }
+        }
+
+        // 2. Seçilen kök değerler & açıklama
+        if (kokText) {
+            const lines = kokText.replace(/\r\n/g, '\n').split('\n');
+            for (const line of lines) {
+                const tr = line.trim();
+                if (tr) evParas.push(tr);
+            }
+        }
+
+        // 3. Kaynakça
+        if (kaynakText) {
+            const lines = kaynakText.replace(/\r\n/g, '\n').split('\n');
+            for (const line of lines) {
+                const tr = line.trim();
+                if (tr) evParas.push(tr);
+            }
+        }
+
+        if (evParas.length > 0) {
+            if (nonEmptyEvents > 0) {
+                allParagraphs.push('');
+            }
+            allParagraphs.push(...evParas);
+            nonEmptyEvents++;
+        }
+    }
+
+    return { allParagraphs, eventCount: nonEmptyEvents };
+}
+
+async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, recordsMap) {
+    const { allParagraphs, eventCount } = extractSiyerYearTextParagraphs(yearItem, recordsMap);
 
     if (allParagraphs.length === 0) {
         return null;
@@ -171,7 +247,7 @@ async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, rec
         buffer,
         filename: sanitizeDocxFilename(yearLabel),
         paragraphCount: allParagraphs.length,
-        eventCount: nonEmptyEvents
+        eventCount
     };
 }
 
@@ -689,6 +765,7 @@ module.exports = {
     extractMonumentTextParagraphs,
     generateMonumentDocxBuffer,
     generateAllMonumentsZipBuffer,
+    extractSiyerYearTextParagraphs,
     generateSiyerYearDocxBuffer,
     generateAllSiyerYearsZipBuffer,
     generateComparisonDocxBuffer
