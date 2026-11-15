@@ -252,14 +252,13 @@ async function runTests() {
     const path = require('path');
     const { generateAllMonumentsZipBuffer } = require('../api/_tubitak-docx.js');
 
-    // Öğrenci Word indirmeye çalışırsa 403 almalı
+    // Öğrenci Toplu Word (ZIP) indirmeye çalışırsa 403 almalı (Toplu indirme yalnızca öğretmene aittir)
     const stuDocxAttempt = mockReqRes("GET", {}, {
         projectId: "proje-tarih",
-        exportDocx: "single",
-        itemId: "cifte-minareli-medrese"
+        exportDocx: "all"
     }, { authorization: `Bearer ${studentToken}` });
     await tubitakRecordsHandler(stuDocxAttempt.req, stuDocxAttempt.res);
-    assert.strictEqual(stuDocxAttempt.getStatus(), 403, "Öğrenci Word indirme isteği 403 ile engellenmeli");
+    assert.strictEqual(stuDocxAttempt.getStatus(), 403, "Öğrenci toplu Word ZIP indirme isteği 403 ile engellenmeli");
 
     // Kayıtlı metin yoksa boş .docx üretmemeli (404 açıklayıcı uyarı)
     const emptyDocxReq = mockReqRes("GET", {}, {

@@ -123,12 +123,13 @@ module.exports = async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Expose-Headers", "Content-Disposition, X-Export-Paragraph-Count, X-Export-Included-Count, X-Export-Skipped-Count");
 
     if (req.method === "OPTIONS") return res.status(200).end();
 
     // 1. Yetki Kontrolü
     const authHeader = req.headers.authorization || "";
-    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const token = (authHeader.replace(/^Bearer\s+/i, "") || req.query.token || "").trim();
     const session = verifyToken(token);
 
     if (!session) {
@@ -195,13 +196,9 @@ module.exports = async function handler(req, res) {
                         return res.status(404).json({ ok: false, error: "İstenen araştırma kaydı bulunamadı." });
                     }
 
-                    // Öğrenci Görev Kontrolü: Öğrenci yalnızca erişim yetkisi olan / atanmış konusunu indirebilir
-                    if (userRole !== "teacher") {
-                        const sessionStuId = resolveSessionStudentId(session, exportProjId);
-                        const assignedStuId = getEffectiveAssignedStudentId(store, exportProjId, item.id);
-                        if (assignedStuId && sessionStuId !== assignedStuId) {
-                            return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi araştırmanızı indirebilirsiniz." });
-                        }
+                    // Öğrenci Yetki Kontrolü: Öğrenci kendi projesindeki (veya yetkili olduğu) araştırmaları indirebilir
+                    if (userRole !== "teacher" && userProjectId !== "all" && exportProjId !== userProjectId) {
+                        return res.status(403).json({ ok: false, error: "Bu projenin kayıtlarına erişim yetkiniz bulunmuyor." });
                     }
 
                     let docxResult;

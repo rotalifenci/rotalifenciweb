@@ -4521,73 +4521,44 @@ function renderActiveItemForm(item, projData) {
             const targetItemId = itemId || activeItemId;
             if (!targetItemId) return;
 
-            // 1. Yetki Kontrolü: Öğrenci yalnızca erişim yetkisi olan araştırmayı indirebilir
+            // 1. Proje Düzeyi Yetki Kontrolü: Öğrenci kendi projesindeki tüm araştırmaları indirebilir
             const isTeacher = currentSession.role === "teacher";
             if (!isTeacher) {
                 if (currentSession.projectId && currentSession.projectId !== "all" && currentSession.projectId !== targetProjId) {
                     showNotice("Yalnızca kendi projenizdeki araştırmaları indirebilirsiniz.", "error");
                     return;
                 }
-                const projItems = seedData?.projects?.[targetProjId]?.items || [];
-                const item = projItems.find(it => it.id === targetItemId || (targetProjId === "proje-siyer" && String(it.year) === targetItemId));
-                if (!item) {
-                    showNotice("Araştırma kaydı bulunamadı.", "error");
-                    return;
-                }
-                const sessionStuId = resolveCurrentUserStudentId(targetProjId);
-                const assignedStuId = getItemAssignedStudentId(item, targetProjId);
-                if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
-                    showNotice("Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi araştırmanızı indirebilirsiniz.", "warning");
-                    return;
-                }
             }
 
-            // 2. Kaydedilmemiş değişiklik kontrolü & bekleyen kayıtları sunucuya gönderme
-            let hasUnsavedChanges = false;
-            const textareas = document.querySelectorAll(".tubitak-criterion-textarea");
-            textareas.forEach(ta => {
-                const critKey = ta.id ? ta.id.replace("input-", "") : "";
-                if (critKey) {
-                    const recKey = `${targetItemId}__${critKey}`;
-                    const savedVal = runtimeRecords[recKey]?.content || "";
-                    if (ta.value !== savedVal) {
-                        hasUnsavedChanges = true;
-                    }
-                }
-            });
+            const projItems = seedData?.projects?.[targetProjId]?.items || [];
+            const item = projItems.find(it => it.id === targetItemId || (targetProjId === "proje-siyer" && String(it.year) === targetItemId));
+            if (!item) {
+                showNotice("Araştırma kaydı bulunamadı.", "error");
+                return;
+            }
 
-            const hasActiveTimers = Object.keys(autoSaveTimers).some(k => k.startsWith(targetItemId));
-            if (hasUnsavedChanges || hasActiveTimers) {
-                updateUIAutosaveBadge("saving", "Son değişiklikler kaydediliyor...");
+            // 2. Eğer düzenleme yetkisi olan öğrenciyse bekleyen yerel kayıtları sessizce kaydetmeyi dene (indirmeyi asla engellemez)
+            if (isItemEditableByCurrentUser(item)) {
                 try {
                     await flushPendingSaves();
-                    const saveRes = await saveCurrentItemDraft(targetItemId, true);
-                    if (saveRes && saveRes.ok === false) {
-                        showNotice("Son değişiklikler sunucuya kaydedilemediği için Word indirme durduruldu. Lütfen tekrar deneyiniz.", "error");
-                        return;
-                    }
-                } catch (e) {
-                    showNotice("Son değişiklikler sunucuya kaydedilemediği için Word indirme durduruldu. Lütfen tekrar deneyiniz.", "error");
-                    return;
-                }
+                } catch (e) {}
             }
 
             // 3. Buton göstergesi ve indirme hazırlığı
             const origHtml = btnEl ? btnEl.innerHTML : "";
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-blue-200"></i> <span>Hazırlanıyor...</span>`;
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-blue-200"></i> <span>İndiriliyor...</span>';
             }
-            showNotice("Word dosyası hazırlanıyor...", "info");
+            showNotice("Word belgesi hazırlanıyor ve indiriliyor... 📄", "info");
 
-            const projItems = seedData?.projects?.[targetProjId]?.items || [];
-            const item = projItems.find(it => it.id === targetItemId || (targetProjId === "proje-siyer" && String(it.year) === targetItemId));
             const rawDocName = targetProjId === "proje-siyer" && item?.year ? String(item.year) : (item?.title || targetItemId || "Arastirma_Metni");
-            const fallbackName = `${rawDocName.replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim()}.docx`;
+            const fallbackName = (rawDocName.replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim() || "Arastirma_Metni") + ".docx";
+            const directUrl = "/api/tubitak-records?projectId=" + encodeURIComponent(targetProjId) + "&exportDocx=single&itemId=" + encodeURIComponent(targetItemId) + "&token=" + encodeURIComponent(currentSession.token || "") + "&fresh=true";
 
             try {
-                const res = await fetch(`/api/tubitak-records?projectId=${encodeURIComponent(targetProjId)}&exportDocx=single&itemId=${encodeURIComponent(targetItemId)}&fresh=true`, {
-                    headers: { "Authorization": `Bearer ${currentSession.token}` }
+                const res = await fetch(directUrl, {
+                    headers: { "Authorization": "Bearer " + currentSession.token }
                 });
 
                 if (!res.ok) {
@@ -4598,7 +4569,7 @@ function renderActiveItemForm(item, projData) {
                     } catch (e) {}
 
                     if (res.status === 404 || errMsg.includes("bulunamadı") || errMsg.includes("henüz")) {
-                        showNotice("Bu araştırma için henüz indirilebilecek veri bulunmuyor.", "warning");
+                        showNotice("Bu araştırma için henüz kaydedilmiş veri bulunmuyor.", "warning");
                     } else if (res.status === 403) {
                         showNotice("Bu araştırmayı indirme yetkiniz bulunmuyor.", "error");
                     } else {
@@ -4609,25 +4580,51 @@ function renderActiveItemForm(item, projData) {
 
                 let downloadFilename = fallbackName;
                 const disposition = res.headers.get("Content-Disposition");
-                if (disposition && disposition.includes("filename*=UTF-8''")) {
-                    try {
-                        const parts = disposition.split("filename*=UTF-8''");
-                        if (parts[1]) downloadFilename = decodeURIComponent(parts[1].split(';')[0].trim().replace(/^["']|["']$/g, ''));
-                    } catch (e) {}
+                if (disposition) {
+                    if (disposition.includes("filename*=UTF-8''")) {
+                        try {
+                            const parts = disposition.split("filename*=UTF-8''");
+                            if (parts[1]) downloadFilename = decodeURIComponent(parts[1].split(";")[0].trim().replace(/^["']|["']$/g, ""));
+                        } catch (e) {}
+                    } else if (disposition.includes("filename=")) {
+                        try {
+                            const match = disposition.match(/filename="?([^";]+)"?/);
+                            if (match && match[1]) downloadFilename = match[1].trim();
+                        } catch (e) {}
+                    }
                 }
 
                 const blob = await res.blob();
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
+                a.style.display = "none";
                 a.href = url;
-                a.download = downloadFilename;
+                a.setAttribute("download", downloadFilename);
                 document.body.appendChild(a);
                 a.click();
-                a.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-                showNotice(`"${downloadFilename}" Word belgesi başarıyla indirildi.`, "success");
+
+                setTimeout(() => {
+                    try {
+                        if (a.parentNode) a.parentNode.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    } catch (e) {}
+                }, 4000);
+
+                showNotice('"' + downloadFilename + '" Word belgesi başarıyla indirildi. ✅', "success");
             } catch (err) {
-                showNotice("Word indirme bağlantı hatası: " + err.message, "error");
+                // Blob veya fetch hatası olursa doğrudan iframe fallback'i çalıştır
+                try {
+                    const hiddenIframe = document.createElement("iframe");
+                    hiddenIframe.style.display = "none";
+                    hiddenIframe.src = directUrl;
+                    document.body.appendChild(hiddenIframe);
+                    setTimeout(() => {
+                        try { if (hiddenIframe.parentNode) hiddenIframe.parentNode.removeChild(hiddenIframe); } catch (e) {}
+                    }, 6000);
+                    showNotice('"' + fallbackName + '" indirme bağlantısı başlatıldı.', "success");
+                } catch (fallbackErr) {
+                    showNotice("Word indirme bağlantı hatası: " + err.message, "error");
+                }
             } finally {
                 if (btnEl) {
                     btnEl.disabled = false;
