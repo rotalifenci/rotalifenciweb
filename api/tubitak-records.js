@@ -655,7 +655,76 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({
                     ok: true,
                     status: "in_review",
-                    message: "Çalışmanız başarıyla kesinleştirildi ve öğretmen incelemesine sunuldu.",
+                    finalizedStatus: "finalized",
+                    message: "Çalışmanız başarıyla kesinleştirildi! 🎓",
+                    updatedCount,
+                    updatedAt: now
+                });
+            }
+
+            // ✏️ KESİNLEŞTİRME SONRASI YENİDEN DÜZENLEMEYE AÇMA (Öğrenci & Öğretmen)
+            if (bodyAction === "reopen_item_edit" || bodyAction === "reopen_item_for_edit" || bodyAction === "edit_item") {
+                const { projectId, itemId } = req.body || {};
+                if (!projectId || !itemId) {
+                    return res.status(400).json({ ok: false, error: "Eksik parametreler (projectId, itemId zorunludur)." });
+                }
+                if (userRole !== "teacher" && userProjectId !== "all" && projectId !== userProjectId) {
+                    return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
+                }
+                const store = await getCloudStore();
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                    const sessionStuId = resolveSessionStudentId(session, projectId);
+                    const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                        return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır." });
+                    }
+                }
+                if (!store.records) store.records = {};
+                if (!store.revisions) store.revisions = [];
+                if (!store.itemsMeta) store.itemsMeta = {};
+                const finalMetaKey = `${projectId}_finalized`;
+                if (!store.itemsMeta[finalMetaKey]) store.itemsMeta[finalMetaKey] = {};
+
+                let updatedCount = 0;
+                for (const [k, rec] of Object.entries(store.records)) {
+                    const isMatching = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
+                    if (isMatching && (projectId === "all" || rec.projectId === projectId)) {
+                        rec.status = "editing";
+                        rec.updatedAt = now;
+                        updatedCount++;
+                    }
+                }
+
+                store.itemsMeta[finalMetaKey][itemId] = {
+                    ...(store.itemsMeta[finalMetaKey][itemId] || {}),
+                    itemId,
+                    studentId: session.studentId,
+                    studentName: session.studentName,
+                    status: "editing",
+                    reopenedAt: now
+                };
+
+                store.revisions.push({
+                    id: `rev-edit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    recordKey: `${itemId}__editing`,
+                    projectId,
+                    itemId,
+                    criterionKey: "editing",
+                    prevContent: "finalized",
+                    newContent: "[Yeniden Düzenlemeye Açıldı]",
+                    studentId: session.studentId,
+                    studentName: session.studentName,
+                    version: 1,
+                    status: "editing",
+                    createdAt: now
+                });
+
+                await saveCloudStore(store);
+
+                return res.status(200).json({
+                    ok: true,
+                    status: "editing",
+                    message: "Araştırma yeniden düzenlemeye açıldı.",
                     updatedCount,
                     updatedAt: now
                 });
@@ -872,6 +941,66 @@ module.exports = async function handler(req, res) {
                     ok: true,
                     message: `Sürüm v${targetRev.version} başarıyla yeni sürüm v${restoredVersion} olarak geri yüklendi!`,
                     record: store.records[recKey]
+                });
+            }
+
+            // B0) Yeniden Düzenlemeye Açma (Öğrenci & Öğretmen)
+            if (action === "reopen_item_edit" || action === "reopen_item_for_edit" || action === "edit_item") {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                    const sessionStuId = resolveSessionStudentId(session, projectId);
+                    const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                        return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır." });
+                    }
+                }
+                if (!store.records) store.records = {};
+                if (!store.revisions) store.revisions = [];
+                if (!store.itemsMeta) store.itemsMeta = {};
+                const finalMetaKey = `${projectId}_finalized`;
+                if (!store.itemsMeta[finalMetaKey]) store.itemsMeta[finalMetaKey] = {};
+
+                let updatedCount = 0;
+                for (const [k, rec] of Object.entries(store.records)) {
+                    const isMatching = rec.itemId === itemId || (projectId === "proje-siyer" && String(rec.itemId || '').startsWith(`${itemId}__ev_`));
+                    if (isMatching && (projectId === "all" || rec.projectId === projectId)) {
+                        rec.status = "editing";
+                        rec.updatedAt = now;
+                        updatedCount++;
+                    }
+                }
+
+                store.itemsMeta[finalMetaKey][itemId] = {
+                    ...(store.itemsMeta[finalMetaKey][itemId] || {}),
+                    itemId,
+                    studentId: session.studentId,
+                    studentName: session.studentName,
+                    status: "editing",
+                    reopenedAt: now
+                };
+
+                store.revisions.push({
+                    id: `rev-edit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    recordKey: `${itemId}__editing`,
+                    projectId,
+                    itemId,
+                    criterionKey: "editing",
+                    prevContent: "finalized",
+                    newContent: "[Yeniden Düzenlemeye Açıldı]",
+                    studentId: session.studentId,
+                    studentName: session.studentName,
+                    version: 1,
+                    status: "editing",
+                    createdAt: now
+                });
+
+                await saveCloudStore(store);
+
+                return res.status(200).json({
+                    ok: true,
+                    status: "editing",
+                    message: "Araştırma yeniden düzenlemeye açıldı.",
+                    updatedCount,
+                    updatedAt: now
                 });
             }
 

@@ -1162,20 +1162,20 @@
         const feedbacks = (runtimeFeedbacks || []).filter(f => f.itemId === item.id);
         const latestFeedback = feedbacks.length > 0 ? feedbacks[feedbacks.length - 1] : null;
 
-        if (itemStatus === "in_review") {
+        if (itemStatus === "finalized" || itemStatus === "in_review") {
             return `
-            <div class="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xs">
+            <div class="p-3.5 rounded-2xl bg-teal-50 border border-teal-200 text-teal-950 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xs">
                 <div class="flex items-center gap-2.5">
-                    <span class="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                        <i class="fa-solid fa-hourglass-half"></i>
+                    <span class="w-7 h-7 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                        <i class="fa-solid fa-check-double"></i>
                     </span>
                     <div>
-                        <strong class="font-black text-purple-950">Çalışma İncelemede:</strong>
-                        <span>Bu araştırma kesinleştirilerek danışman öğretmen incelemesine sunulmuştur.${isTeacher ? ' Öğretmen olarak inceleyip onaylayabilir veya düzeltme isteyebilirsiniz.' : ' İnceleme süresince doğrudan düzenlenemez.'}</span>
+                        <strong class="font-black text-teal-950">Araştırma Kesinleştirildi:</strong>
+                        <span>Bu çalışma başarıyla kesinleştirilmiştir. Yeniden değişiklik yapmak istediğinizde yukarıdaki <strong class="text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">DÜZENLE</strong> butonuna basarak dilediğiniz zaman düzenleyebilirsiniz.</span>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-xl bg-purple-200 text-purple-950 font-black text-[10px] uppercase shrink-0">
-                    İnceleme Bekliyor ⏳
+                <span class="px-2.5 py-1 rounded-xl bg-teal-200/90 text-teal-950 font-black text-[10px] uppercase shrink-0">
+                    Kesinleştirildi 🎓
                 </span>
             </div>
             `;
@@ -1300,19 +1300,86 @@
         }
     }
 
+    async function reopenItemForEdit(targetItemId = activeItemId) {
+        if (!currentSession || !targetItemId) return;
+        const projData = seedData?.projects?.[activeProjectId] || {};
+        const items = projData.items || [];
+        const currentItem = items.find(it => it.id === targetItemId) || { id: targetItemId };
+
+        if (!isUserAssignedToItem(currentItem)) {
+            showNotice("Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca kendi kayıtlarınızı düzenleyebilirsiniz.", "error");
+            return;
+        }
+
+        const curStatus = getItemStatus(targetItemId);
+        if (curStatus === "editing" || curStatus === "draft") {
+            showNotice("Araştırma şu anda zaten düzenleme modundadır. Dilediğiniz değişiklikleri yapabilirsiniz. ✏️", "info");
+            const firstInput = document.querySelector(".tubitak-criterion-textarea");
+            if (firstInput) firstInput.focus();
+            return;
+        }
+
+        // Yerel durumu anında Düzenleniyor moduna al (sıfır gecikmeli UI)
+        if (!runtimeFinalized) runtimeFinalized = {};
+        runtimeFinalized[targetItemId] = {
+            ...(runtimeFinalized[targetItemId] || {}),
+            itemId: targetItemId,
+            status: "editing",
+            reopenedAt: new Date().toISOString()
+        };
+
+        for (const [k, v] of Object.entries(runtimeRecords)) {
+            if (k.startsWith(`${targetItemId}__`)) {
+                v.status = "editing";
+            }
+        }
+
+        updateUIAutosaveBadge("saved", "Düzenleniyor");
+
+        // Sunucuya asenkron bildir
+        try {
+            await fetch("/api/tubitak-records", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${currentSession.token}`
+                },
+                body: JSON.stringify({
+                    action: "reopen_item_edit",
+                    projectId: activeProjectId,
+                    itemId: targetItemId
+                })
+            });
+        } catch (err) {
+            console.warn("reopen_item_edit network warning:", err);
+        }
+
+        showNotice("Araştırma yeniden düzenlemeye açıldı. Değişikliklerinizi yapıp tekrar KAYDET veya KESİNLEŞTİR butonunu kullanabilirsiniz. ✏️", "info");
+
+        // Formu anında aktif düzenleme görünümüne geçir
+        const container = document.getElementById("tubitak-research-container");
+        if (container) {
+            renderMainContainer(container);
+        }
+
+        setTimeout(() => {
+            const firstInput = document.querySelector(".tubitak-criterion-textarea");
+            if (firstInput) firstInput.focus();
+        }, 100);
+    }
+
     async function finalizeCurrentItem(targetItemId = activeItemId) {
         if (!currentSession || !targetItemId) return;
         const projData = seedData?.projects?.[activeProjectId] || {};
         const items = projData.items || [];
         const currentItem = items.find(it => it.id === targetItemId) || { id: targetItemId };
 
-        const canEdit = isItemEditableByCurrentUser(currentItem);
-        if (!canEdit) {
-            showNotice("Bu kayıt üzerinde kesinleştirme yetkiniz bulunmuyor (İncelemede veya Onaylandı durumunda kilitlidir).", "error");
+        if (!isUserAssignedToItem(currentItem)) {
+            showNotice("Bu kayıt başka bir öğrenciye atanmıştır.", "error");
             return;
         }
 
-        const confirmMsg = "Çalışmanızı kesinleştirip danışman öğretmene göndermek istiyor musunuz?\n\nKesinleştirilen çalışma öğretmen onayına sunulacak ve inceleme süresince doğrudan düzenlenemeyecektir.";
+        const confirmMsg = "Çalışmanızın güncel halini kesinleştirmek istiyor musunuz?\n\n(Kesinleştirme sonrasında dilediğiniz zaman DÜZENLE butonuna basarak araştırmanızı tekrar düzenleyebilirsiniz.)";
         if (typeof confirm === "function" && !confirm(confirmMsg)) {
             return;
         }
@@ -1366,7 +1433,18 @@
 
             const data = await res.json();
             if (res.ok && data.ok) {
-                showNotice("Çalışmanız başarıyla kesinleştirildi ve öğretmen incelemesine sunuldu! 🎓", "success");
+                if (!runtimeFinalized) runtimeFinalized = {};
+                runtimeFinalized[targetItemId] = {
+                    itemId: targetItemId,
+                    status: "in_review",
+                    finalizedAt: new Date().toISOString()
+                };
+                for (const [k, v] of Object.entries(runtimeRecords)) {
+                    if (k.startsWith(`${targetItemId}__`)) {
+                        v.status = "in_review";
+                    }
+                }
+                showNotice("Çalışmanız başarıyla kesinleştirildi! 🎓 (İstediğiniz zaman DÜZENLE butonuna basarak tekrar düzenleyebilirsiniz)", "success");
                 await syncProjectData(activeProjectId);
                 renderMainContainer(document.getElementById("tubitak-research-container"));
             } else {
@@ -1420,43 +1498,56 @@ function renderActiveItemForm(item, projData) {
                     <p class="text-xs text-slate-500 font-medium mt-0.5">${escapeHtml(item.summary || item.location || '')}</p>
                 </div>
 
-                <!-- 🔄 3 AŞAMALI KAYIT SİSTEMİ ÇUBUĞU (OTOMATİK + KAYDET + KESİNLEŞTİR) -->
+                <!-- 🔄 4 BUTONLU KAYDETME, KESİNLEŞTİRME VE DÜZENLEME ÇUBUĞU (KAYDET | KESİNLEŞTİR | DÜZENLE | WORD İNDİR) -->
                 <div class="flex items-center gap-2 flex-wrap">
                     <div id="tubitak-autosave-indicator" class="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs">
-                        <span id="autosave-dot" class="w-2.5 h-2.5 rounded-full ${canEditItem ? 'bg-emerald-500' : (itemStatus === 'in_review' ? 'bg-purple-500' : (itemStatus === 'approved' ? 'bg-emerald-600' : 'bg-slate-400'))}"></span>
-                        <span id="autosave-text" class="text-xs font-black text-slate-700">${canEditItem ? (lastSavedTimeString ? 'Tüm değişiklikler kaydedildi' : 'Kayıt Hazır') : (itemStatus === 'in_review' ? 'İncelemede (Kilitli)' : (itemStatus === 'approved' ? 'Onaylandı' : (itemStatus === 'correction_requested' ? 'Düzeltme İstendi' : 'Salt Okunur')))}</span>
+                        <span id="autosave-dot" class="w-2.5 h-2.5 rounded-full ${(itemStatus === 'finalized' || itemStatus === 'in_review') ? 'bg-teal-500' : (itemStatus === 'approved' ? 'bg-emerald-600' : 'bg-emerald-500')}"></span>
+                        <span id="autosave-text" class="text-xs font-black text-slate-700">${(itemStatus === 'finalized' || itemStatus === 'in_review') ? 'Kesinleştirildi' : (itemStatus === 'approved' ? 'Onaylandı' : (lastSavedTimeString ? 'Tüm değişiklikler kaydedildi' : 'Düzenleniyor'))}</span>
                         <span id="autosave-time" class="text-[10px] text-slate-400 font-bold ml-1">${lastSavedTimeString ? `(${lastSavedTimeString})` : ''}</span>
                     </div>
 
-                    <!-- 📄 WORD İNDİR BUTONU (Öğrenci & Öğretmen) -->
-                    <button type="button" id="btn-student-word-download" onclick="window.RotaliTubitak.downloadStudentWord('${item.id}', this)" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Bu araştırmanın kaydedilmiş metinlerini Word (.docx) olarak indir">
-                        <i class="fa-solid fa-file-word text-blue-200"></i>
-                        <span>WORD İNDİR</span>
-                    </button>
-
-                    ${canEditItem ? `
-                    <!-- 💾 2. AŞAMA: KAYDET BUTONU (Taslak Kaydet) -->
-                    <button type="button" onclick="window.RotaliTubitak.saveCurrentItemDraft('${item.id}')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Tüm alanları taslak olarak kaydeder">
+                    ${isUserAssignedToItem(item) ? `
+                    <!-- 💾 1. BUTON: KAYDET -->
+                    <button type="button" 
+                            id="btn-tubitak-save"
+                            onclick="window.RotaliTubitak.saveCurrentItemDraft('${item.id}')" 
+                            class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" 
+                            title="Öğrencinin mevcut verilerini kaydeder">
                         <i class="fa-solid fa-floppy-disk text-amber-400"></i>
                         <span>KAYDET</span>
                     </button>
 
-                    <!-- 🎓 3. AŞAMA: KESİNLEŞTİR BUTONU (Öğretmene Gönder) -->
-                    <button type="button" onclick="window.RotaliTubitak.finalizeCurrentItem('${item.id}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-md" title="Son halini kesinleştirerek öğretmen incelemesine sunar">
+                    <!-- 🎓 2. BUTON: KESİNLEŞTİR -->
+                    <button type="button" 
+                            id="btn-tubitak-finalize"
+                            onclick="window.RotaliTubitak.finalizeCurrentItem('${item.id}')" 
+                            class="px-4 py-2 rounded-xl ${(itemStatus === 'finalized' || itemStatus === 'in_review') ? 'bg-teal-700 hover:bg-teal-800 text-white shadow-sm ring-2 ring-teal-400/30' : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md'} active:scale-95 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer" 
+                            title="Araştırmanın mevcut sürümünü kesinleştirir">
                         <i class="fa-solid fa-check-double text-white"></i>
                         <span>KESİNLEŞTİR</span>
                     </button>
-                    ` : (itemStatus === 'in_review' && !isTeacher ? `
-                    <span class="px-3.5 py-2 rounded-xl bg-purple-100 border border-purple-200 text-purple-800 text-xs font-black flex items-center gap-1.5 shadow-2xs">
-                        <i class="fa-solid fa-lock text-purple-600"></i>
-                        <span>İncelemede</span>
-                    </span>
-                    ` : (itemStatus === 'approved' && !isTeacher ? `
-                    <span class="px-3.5 py-2 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-black flex items-center gap-1.5 shadow-2xs">
-                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                        <span>Onaylandı</span>
-                    </span>
-                    ` : ''))}
+
+                    <!-- ✏️ 3. BUTON: DÜZENLE -->
+                    <button type="button" 
+                            id="btn-tubitak-edit"
+                            onclick="window.RotaliTubitak.reopenItemForEdit('${item.id}')" 
+                            class="px-3.5 py-2 rounded-xl ${(itemStatus === 'finalized' || itemStatus === 'in_review') ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 font-black shadow-md ring-2 ring-amber-300' : 'bg-amber-100 hover:bg-amber-200 text-amber-900 font-black border border-amber-300'} active:scale-95 text-xs transition-all flex items-center gap-1.5 cursor-pointer" 
+                            title="Kesinleştirilmiş araştırmayı yeniden düzenlemeye açar">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>DÜZENLE</span>
+                    </button>
+                    ` : ''}
+
+                    <!-- 📄 4. BUTON: WORD İNDİR -->
+                    <button type="button" 
+                            id="btn-student-word-download" 
+                            onclick="window.RotaliTubitak.downloadStudentWord('${item.id}', this)" 
+                            class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" 
+                            title="Araştırmanın güncel içeriğini Word (.docx) olarak indir">
+                        <i class="fa-solid fa-file-word text-blue-200"></i>
+                        <span>WORD İNDİR</span>
+                    </button>
+                </div>
                 </div>
             </div>
 
@@ -1503,12 +1594,7 @@ function renderActiveItemForm(item, projData) {
                         </button>
                     </div>
                     ` : ''}
-                    ${!isTeacher ? `
-                    <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.submitForReview('${item.id}')" class="px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span>İncelemeye Gönder</span>
-                    </button>
-                    ` : `
+                    ${!isTeacher ? '' : `
                     <div class="flex items-center gap-1.5 flex-wrap">
                         ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? `
                         <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Yalnızca kaydedilmiş araştırma metinlerini .docx olarak indir">
@@ -1708,6 +1794,19 @@ function renderActiveItemForm(item, projData) {
         return null;
     }
 
+    function isUserAssignedToItem(item) {
+        if (!currentSession || !item) return false;
+        if (currentSession.role === "teacher") return true;
+        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim" && activeProjectId !== "proje-siyer") return true;
+
+        const myStuId = resolveCurrentUserStudentId(activeProjectId);
+        const assignedStuId = getItemAssignedStudentId(item, activeProjectId);
+        if (myStuId && assignedStuId && myStuId !== assignedStuId) {
+            return false;
+        }
+        return true;
+    }
+
     function isItemEditableByCurrentUser(item) {
         if (!currentSession || !item) return false;
         if (currentSession.role === "teacher") return true;
@@ -1719,10 +1818,11 @@ function renderActiveItemForm(item, projData) {
             return false;
         }
 
-        // KESİNLEŞTİRME KİLİDİ: İncelemede veya onaylanmışsa öğrenci doğrudan düzenleyemez
-        // Öğretmen 'Düzeltme İstendi' verirse kilit açılır ve öğrenci tekrar düzenleyebilir!
+        // KESİNLEŞTİRİLMİŞ DURUM KONTROLÜ:
+        // Eğer araştırma kesinleştirilmişse form read-only modda korunur.
+        // Öğrenci DÜZENLE butonuna bastığında durum "editing" olur ve form hemen açılır.
         const status = getItemStatus(item.id);
-        if (status === "in_review" || status === "approved") {
+        if (status === "finalized" || status === "in_review" || status === "approved") {
             return false;
         }
 
@@ -1945,45 +2045,64 @@ function renderActiveItemForm(item, projData) {
         if (runtimeSiyerYearFlags?.[itemId]?.status === "no_event_found") {
             return "no_event_found";
         }
+        const finalMeta = runtimeFinalized?.[itemId];
+        if (finalMeta?.status === "editing") {
+            return "editing";
+        }
+        if (finalMeta?.status === "correction_requested") {
+            return "correction_requested";
+        }
+        if (finalMeta?.status === "finalized" || finalMeta?.status === "in_review") {
+            return "finalized";
+        }
+        if (finalMeta?.status === "approved") {
+            return "approved";
+        }
+
         let hasInReview = false;
         let hasApproved = false;
         let hasCorrection = false;
-        const finalMeta = runtimeFinalized?.[itemId];
-        if (finalMeta?.status === "in_review") hasInReview = true;
-        if (finalMeta?.status === "approved") hasApproved = true;
-        if (finalMeta?.status === "correction_requested") hasCorrection = true;
+        let hasEditing = false;
 
         for (const [k, v] of Object.entries(runtimeRecords)) {
             if (k.startsWith(`${itemId}__`)) {
                 if (v.status === "approved") hasApproved = true;
-                if (v.status === "in_review") hasInReview = true;
+                if (v.status === "in_review" || v.status === "finalized") hasInReview = true;
                 if (v.status === "correction_requested") hasCorrection = true;
+                if (v.status === "editing") hasEditing = true;
             }
         }
 
+        if (hasEditing) return "editing";
         if (hasCorrection) return "correction_requested";
         if (hasApproved && !hasInReview) return "approved";
-        if (hasInReview) return "in_review";
-        return "draft";
+        if (hasInReview) return "finalized";
+        return "editing";
     }
 
     function getStatusBadgeClass(status) {
         switch (status) {
             case "approved": return "bg-emerald-100 text-emerald-800 border border-emerald-300";
-            case "in_review": return "bg-blue-100 text-blue-800 border border-blue-300";
-            case "correction_requested": return "bg-amber-100 text-amber-900 border border-amber-300";
+            case "finalized":
+            case "in_review": return "bg-teal-100 text-teal-800 border border-teal-300";
+            case "editing":
+            case "draft": return "bg-amber-100 text-amber-900 border border-amber-300";
+            case "correction_requested": return "bg-rose-100 text-rose-800 border border-rose-300";
             case "no_event_found": return "bg-slate-200 text-slate-700 border border-slate-300";
-            default: return "bg-slate-100 text-slate-700 border border-slate-200";
+            default: return "bg-amber-100 text-amber-900 border border-amber-300";
         }
     }
 
     function getStatusLabel(status) {
         switch (status) {
             case "approved": return "✅ Onaylandı";
-            case "in_review": return "📤 İncelemede";
+            case "finalized":
+            case "in_review": return "🎓 Kesinleştirildi";
+            case "editing":
+            case "draft": return "📝 Düzenleniyor";
             case "correction_requested": return "⚠️ Düzeltme İstendi";
             case "no_event_found": return "🔍 Araştırıldı – Olay tespit edilemedi";
-            default: return "📝 Taslak";
+            default: return "📝 Düzenleniyor";
         }
     }
 
@@ -5062,6 +5181,7 @@ function renderActiveItemForm(item, projData) {
         },
         saveCurrentItemDraft,
         finalizeCurrentItem,
+        reopenItemForEdit,
 
         onLoginPasswordInput(val) {
             const selectEl = document.getElementById("login-student-select");
