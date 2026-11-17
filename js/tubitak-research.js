@@ -508,50 +508,27 @@
                 </div>
 
                 <!-- Giriş Formu -->
-                <form id="tubitak-login-form" class="space-y-4 relative z-10" onsubmit="event.preventDefault(); window.RotaliTubitak.handleLogin();">
+                <form id="tubitak-login-form" class="space-y-5 relative z-10" onsubmit="event.preventDefault(); window.RotaliTubitak.handleLogin();">
                     <div>
-                        <label class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5 flex items-center justify-between">
+                        <label for="login-password" class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
                             <span>🔑 Proje Şifresi</span>
                             <span class="text-[10px] text-amber-400 lowercase font-medium">takım veya öğretmen parolası</span>
                         </label>
-                        <div class="relative">
-                            <input type="password" id="login-password" oninput="window.RotaliTubitak.onLoginPasswordInput(this.value)" placeholder="Takım proje şifrenizi veya öğretmen parolanızı giriniz" required class="w-full px-4 py-3 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
-                            <i class="fa-solid fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <div class="relative flex items-center">
+                            <input type="password" id="login-password" placeholder="Takım proje şifrenizi veya öğretmen parolanızı giriniz" required class="w-full pl-4 pr-12 py-3.5 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
+                            <button type="button" id="btn-toggle-login-password" onclick="window.RotaliTubitak.toggleLoginPasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-amber-400 transition-all flex items-center justify-center cursor-pointer focus:outline-none" title="Şifreyi Göster / Gizle">
+                                <i id="login-password-eye-icon" class="fa-solid fa-eye text-sm"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="login-student-selector-container" class="hidden">
-                        <label class="block text-xs font-black uppercase tracking-wider text-amber-300 mb-1.5 flex items-center justify-between">
-                            <span>👤 Takım Üyesi Seçiniz</span>
-                            <span class="text-[10px] text-slate-400 lowercase">otomatik eşleştirme</span>
-                        </label>
-                        <select id="login-student-select" onchange="window.RotaliTubitak.onLoginStudentSelect(this.value)" class="w-full px-4 py-2.5 bg-slate-800/95 border border-amber-400/50 rounded-2xl text-xs font-bold text-white focus:outline-none transition-all">
-                            <option value="">-- Takımınızdaki Adınızı Seçiniz --</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
-                                👤 Adınız / Takım İsminiz
-                            </label>
-                            <input type="text" id="login-student-name" placeholder="Örn: Ahmet Y. (Grup 1)" class="w-full px-4 py-2.5 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-xs font-semibold text-white placeholder-slate-500 focus:outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
-                                🔢 Öğrenci Kodu / PIN
-                            </label>
-                            <input type="text" id="login-student-pin" placeholder="Örn: 104 veya 4 haneli PIN" class="w-full px-4 py-2.5 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-xs font-semibold text-white placeholder-slate-500 focus:outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <div id="login-error-msg" class="hidden p-3 rounded-2xl bg-red-900/40 border border-red-500/50 text-red-200 text-xs font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-triangle-exclamation text-red-400 shrink-0"></i>
+                    <div id="login-error-msg" class="hidden p-3.5 rounded-2xl bg-red-900/40 border border-red-500/50 text-red-200 text-xs font-semibold flex items-center gap-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-red-400 shrink-0 text-sm"></i>
                         <span id="login-error-text">Hatalı şifre.</span>
                     </div>
 
-                    <button type="submit" id="login-submit-btn" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-right-to-bracket"></i>
+                    <button type="submit" id="login-submit-btn" class="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket text-base"></i>
                         <span>Araştırma Alanına Giriş Yap</span>
                     </button>
                 </form>
@@ -4633,23 +4610,46 @@ function renderActiveItemForm(item, projData) {
         init,
         renderMainContainer,
 
+        toggleLoginPasswordVisibility() {
+            const passEl = document.getElementById("login-password");
+            const eyeIcon = document.getElementById("login-password-eye-icon");
+            if (!passEl) return;
+            if (passEl.type === "password") {
+                passEl.type = "text";
+                if (eyeIcon) {
+                    eyeIcon.classList.remove("fa-eye");
+                    eyeIcon.classList.add("fa-eye-slash");
+                }
+            } else {
+                passEl.type = "password";
+                if (eyeIcon) {
+                    eyeIcon.classList.remove("fa-eye-slash");
+                    eyeIcon.classList.add("fa-eye");
+                }
+            }
+        },
+
         async handleLogin() {
             const passEl = document.getElementById("login-password");
-            const nameEl = document.getElementById("login-student-name");
-            const pinEl = document.getElementById("login-student-pin");
             const errEl = document.getElementById("login-error-msg");
             const errText = document.getElementById("login-error-text");
 
             if (!passEl) return;
             const password = passEl.value.trim();
-            const studentName = nameEl ? nameEl.value.trim() : "";
-            const studentPin = pinEl ? pinEl.value.trim() : "";
+
+            if (!password) {
+                if (errEl) {
+                    errEl.classList.remove("hidden");
+                    errText.textContent = "Lütfen proje şifrenizi giriniz.";
+                }
+                return;
+            }
 
             try {
                 const res = await fetch("/api/tubitak-auth", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ password, studentName, studentPin })
+                    body: JSON.stringify({ password })
                 });
 
                 const data = await res.json();
@@ -4665,7 +4665,7 @@ function renderActiveItemForm(item, projData) {
                     await syncProjectData(activeProjectId);
                     startLivePolling();
                     renderMainContainer(document.getElementById("tubitak-research-container"));
-                    showNotice(`Hoş geldiniz, ${data.studentName}!`, "success");
+                    showNotice(`Giriş başarılı! Hoş geldiniz.`, "success");
                 } else {
                     if (errEl) {
                         errEl.classList.remove("hidden");
@@ -4715,6 +4715,16 @@ function renderActiveItemForm(item, projData) {
         selectStudentFilter(stuId) {
             flushPendingSaves();
             activeStudentFilterId = (activeStudentFilterId === stuId && stuId !== "all") ? "all" : (stuId || "all");
+            if (stuId && stuId !== "all") {
+                const stu = getStudentById(stuId, activeProjectId);
+                if (stu && currentSession && currentSession.role === "student") {
+                    currentSession.studentId = stu.id;
+                    currentSession.studentName = stu.name;
+                    try {
+                        localStorage.setItem("rotali_tubitak_session", JSON.stringify(currentSession));
+                    } catch(e) {}
+                }
+            }
             const filtered = getFilteredItems();
             if (filtered.length > 0 && !filtered.some(x => x.id === activeItemId)) {
                 activeItemId = filtered[0].id;
@@ -5182,42 +5192,8 @@ function renderActiveItemForm(item, projData) {
         finalizeCurrentItem,
         reopenItemForEdit,
 
-        onLoginPasswordInput(val) {
-            const selectEl = document.getElementById("login-student-select");
-            const selectContainer = document.getElementById("login-student-selector-container");
-            if (!selectEl) return;
-            const clean = String(val || "").trim().toLowerCase();
-            let projKey = null;
-            if (clean === "tarih1071" || clean.startsWith("tarih") || clean.startsWith("sivas") || clean === "tubitak-eser") projKey = "proje-tarih";
-            else if (clean === "bilim1453" || clean.startsWith("bilim") || clean.startsWith("islam") || clean === "tubitak-bilim") projKey = "proje-bilim";
-            else if (clean === "siyer571" || clean.startsWith("siyer") || clean.startsWith("kronoloji") || clean === "tubitak-siyer") projKey = "proje-siyer";
-
-            if (projKey && seedData?.projects?.[projKey]?.studentTeam) {
-                const team = seedData.projects[projKey].studentTeam;
-                selectEl.innerHTML = '<option value="">-- Takımınızdaki Adınızı Seçiniz --</option>' +
-                    team.map(s => `<option value="${s.id}" data-name="${escapeHtml(s.name)}">${escapeHtml(s.name)} (${s.groupLabel || 'Araştırmacı'})</option>`).join("") +
-                    '<option value="custom">👤 Listede Yokum (Manuel Ad Gir)</option>';
-                if (selectContainer) selectContainer.classList.remove("hidden");
-            } else {
-                if (selectContainer) selectContainer.classList.add("hidden");
-            }
-        },
-
-        onLoginStudentSelect(val) {
-            const selectEl = document.getElementById("login-student-select");
-            const nameEl = document.getElementById("login-student-name");
-            const pinEl = document.getElementById("login-student-pin");
-            if (!selectEl || !nameEl) return;
-            if (val && val !== "custom") {
-                const selectedOpt = selectEl.options[selectEl.selectedIndex];
-                const studentName = selectedOpt.getAttribute("data-name") || selectedOpt.textContent;
-                nameEl.value = studentName.split(' (')[0].trim();
-                if (pinEl) pinEl.value = val;
-            } else if (val === "custom") {
-                nameEl.value = "";
-                nameEl.focus();
-            }
-        },
+        onLoginPasswordInput(val) {},
+        onLoginStudentSelect(val) {},
 
         finalizeCurrentItem,
         toggleSiyerRootValue(itemId, criterionKey, valName) {

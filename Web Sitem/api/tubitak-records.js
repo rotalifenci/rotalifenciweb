@@ -505,14 +505,24 @@ module.exports = async function handler(req, res) {
                     const prevContent = existing.content || "";
                     if (prevContent.trim() !== newContent.trim() || existing.version === 0) {
                         const newVersion = (existing.version || 0) + 1;
+                        const assignedStuId = getEffectiveAssignedStudentId(store, projectId, recItemId);
+                        const { students: pStudents } = getProjectSeed(projectId);
+                        const assignedStu = (pStudents || []).find(s => s.id === assignedStuId);
+                        const finalAuthorName = (session.studentName && session.studentName !== "Öğrenci Araştırmacı")
+                            ? session.studentName
+                            : (assignedStu?.name || session.studentName || "Öğrenci");
+                        const finalAuthorId = (session.studentId && !String(session.studentId).startsWith("stu-tari-") && !String(session.studentId).startsWith("stu-bili-") && !String(session.studentId).startsWith("stu-siye-"))
+                            ? session.studentId
+                            : (assignedStu?.id || session.studentId);
+
                         const updatedRec = {
                             id: recKey,
                             projectId,
                             itemId: recItemId,
                             criterionKey: critKey,
                             content: newContent,
-                            studentId: session.studentId,
-                            studentName: session.studentName,
+                            studentId: finalAuthorId,
+                            studentName: finalAuthorName,
                             version: newVersion,
                             status: existing.status === "approved" ? "in_review" : (existing.status || "draft"),
                             updatedAt: now
@@ -529,8 +539,8 @@ module.exports = async function handler(req, res) {
                             criterionKey: critKey,
                             prevContent,
                             newContent,
-                            studentId: session.studentId,
-                            studentName: session.studentName,
+                            studentId: finalAuthorId,
+                            studentName: finalAuthorName,
                             version: newVersion,
                             createdAt: now
                         });
@@ -815,6 +825,15 @@ module.exports = async function handler(req, res) {
             }
 
             const newVersion = Math.max(existing.version || 0, clientVersion || 0) + 1;
+            const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
+            const { students: pStudents } = getProjectSeed(projectId);
+            const assignedStu = (pStudents || []).find(s => s.id === assignedStuId);
+            const finalAuthorName = (session.studentName && session.studentName !== "Öğrenci Araştırmacı")
+                ? session.studentName
+                : (assignedStu?.name || session.studentName || "Öğrenci");
+            const finalAuthorId = (session.studentId && !String(session.studentId).startsWith("stu-tari-") && !String(session.studentId).startsWith("stu-bili-") && !String(session.studentId).startsWith("stu-siye-"))
+                ? session.studentId
+                : (assignedStu?.id || session.studentId);
 
             // Kaydı güncelle
             const updatedRecord = {
@@ -823,8 +842,8 @@ module.exports = async function handler(req, res) {
                 itemId,
                 criterionKey,
                 content: newContent,
-                studentId: session.studentId,
-                studentName: session.studentName,
+                studentId: finalAuthorId,
+                studentName: finalAuthorName,
                 version: newVersion,
                 status: existing.status === "approved" ? "in_review" : existing.status,
                 updatedAt: now
@@ -842,8 +861,8 @@ module.exports = async function handler(req, res) {
                 criterionKey,
                 prevContent: prevContent,
                 newContent: newContent,
-                studentId: session.studentId,
-                studentName: session.studentName,
+                studentId: finalAuthorId,
+                studentName: finalAuthorName,
                 version: newVersion,
                 createdAt: now
             });

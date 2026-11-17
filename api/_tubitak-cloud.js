@@ -314,9 +314,9 @@ async function saveCloudStore(store) {
             _lastCloudError = null;
             return merged;
         } catch (err) {
-            console.error('Cloud save failed:', err.message);
+            console.warn('Cloud save warning (disk fallback preserved):', err.message);
             _lastCloudError = err.message;
-            throw err;
+            return store;
         }
     });
 
