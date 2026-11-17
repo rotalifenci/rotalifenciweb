@@ -745,7 +745,7 @@ module.exports = async function handler(req, res) {
                 itemId,
                 criterionKey,
                 content = "",
-                clientVersion = 1,
+                clientVersion = null,
                 action = "save_record"
             } = req.body || {};
 
@@ -806,9 +806,10 @@ module.exports = async function handler(req, res) {
             // Çakışma ve Sıra Kontrolü (Stale Request & Optimistic Concurrency)
             const clientTimestamp = req.body?.clientTimestamp;
             const isStaleTimestamp = clientTimestamp && existing.updatedAt && (new Date(clientTimestamp) < new Date(existing.updatedAt));
-            const isStaleVersion = clientVersion && existing.version && (clientVersion < existing.version);
+            const isStaleVersion = typeof clientVersion === "number" && clientVersion > 0 && existing.version && (clientVersion < existing.version);
 
-            if ((isStaleTimestamp || isStaleVersion) && existing.version > 0 && prevContent.trim() !== newContent.trim()) {
+            // Öğretmen istekleri veya sürüm belirtilmemiş genel güncellemeler sürüm çakışmasıyla engellenmez
+            if (userRole !== "teacher" && (isStaleTimestamp || isStaleVersion) && existing.version > 0 && prevContent.trim() !== newContent.trim()) {
                 return res.status(409).json({
                     ok: false,
                     status: "conflict",
