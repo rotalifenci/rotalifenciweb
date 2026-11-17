@@ -235,13 +235,15 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.ok(tubitakRecJs.includes("reassign_item") && tubitakRecJs.includes("exportDocx"));
   assert.ok(fs.existsSync(path.join(webDir, "api", "_tubitak-docx.js")), "_tubitak-docx.js yardımcı modülü mevcut olmalı");
 
-  // Proje 2: 92 bilim insanı + 5 öğrenci (19+19+18+18+18) + 13 kriter kontrolü
+  // Proje 2: 92 bilim insanı + 5 öğrenci (19+19+18+18+18) + 14 kriter kontrolü (1. Bilim İnsanının Adı eklendi)
   const p2 = seedJson.projects["proje-bilim"];
   assert.equal(p2.items.length, 92, "Proje 2 listesinde tam 92 bilim insanı bulunmalı");
-  assert.equal(p2.criteriaList.length, 13, "Proje 2 formunda tam 13 araştırma kriteri bulunmalı");
-  assert.equal(p2.criteriaList[0].title, "1. Doğum Tarihi ve Yeri");
-  assert.equal(p2.criteriaList[8].title, "9. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri");
-  assert.equal(p2.criteriaList[12].title, "13. KAYNAKÇA");
+  assert.equal(p2.criteriaList.length, 14, "Proje 2 formunda tam 14 araştırma kriteri bulunmalı");
+  assert.equal(p2.criteriaList[0].key, "c1_bilim_insani_adi");
+  assert.equal(p2.criteriaList[0].title, "1. Bilim İnsanının Adı");
+  assert.equal(p2.criteriaList[1].title, "2. Doğum Tarihi ve Yeri");
+  assert.equal(p2.criteriaList[9].title, "10. Geliştirdiği Matematiksel Yöntemler ve Problem Örnekleri");
+  assert.equal(p2.criteriaList[13].title, "14. KAYNAKÇA");
   assert.equal(p2.studentTeam.length, 5, "Proje 2 ekibi 5 öğrenciden oluşmalı");
   assert.deepEqual(p2.studentTeam.map(s => s.name), [
     "Zümra DURAN",

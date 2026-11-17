@@ -49,7 +49,7 @@ function extractMonumentTextParagraphs(item, criteriaList, recordsMap) {
         const saved = recordsMap && recordsMap[recordKey];
         const rawText = saved && typeof saved.content === 'string'
             ? saved.content
-            : (item.criteria && typeof item.criteria[crit.key] === 'string' ? item.criteria[crit.key] : '');
+            : (item.criteria && typeof item.criteria[crit.key] === 'string' ? item.criteria[crit.key] : (crit.key === 'c1_bilim_insani_adi' ? (item.title || '') : ''));
 
         if (!rawText || !rawText.trim()) continue;
 

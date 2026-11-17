@@ -7,10 +7,10 @@
       "criterionKey": "c1_location",
       "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
       "studentId": "stu-tari-aliveli",
-      "studentName": "Ali Veli (Geri Yükleme v44)",
-      "version": 45,
+      "studentName": "Ali Veli (Geri Yükleme v46)",
+      "version": 47,
       "status": "draft",
-      "updatedAt": "2026-11-16T21:49:25.279Z"
+      "updatedAt": "2026-11-17T08:33:01.643Z"
     },
     "susamislar-konagi__c1_yapi_adi": {
       "id": "susamislar-konagi__c1_yapi_adi",
@@ -34,7 +34,7 @@
       "studentName": "Fenci Öğretmen",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "cifte-minareli-medrese__c2_yapim_yili": {
       "id": "cifte-minareli-medrese__c2_yapim_yili",
@@ -46,7 +46,7 @@
       "studentName": "Araştırmacı",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "bilim-01-bircendi__c9_yontemler_problemler": {
       "id": "bilim-01-bircendi__c9_yontemler_problemler",
@@ -68,9 +68,9 @@
       "content": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
       "studentId": "stu3-humeyra",
       "studentName": "Hümeyra BULUT",
-      "version": 20,
+      "version": 24,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:49:44.604Z"
+      "updatedAt": "2026-11-17T08:33:20.715Z"
     },
     "siyer-572__c1_olay": {
       "id": "siyer-572__c1_olay",
@@ -106,7 +106,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 11,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:49:48.580Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "siyer-571__c1_olay_3": {
       "id": "siyer-571__c1_olay_3",
@@ -118,7 +118,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 6,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:49:53.922Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "siyer-572__ev_3__c1_olay": {
       "id": "siyer-572__ev_3__c1_olay",
@@ -226,7 +226,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 2,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "divrigi-ulu-camii-darussifasi__c1_yapi_adi": {
       "id": "divrigi-ulu-camii-darussifasi__c1_yapi_adi",
@@ -598,7 +598,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 16,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:47:26.026Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "cifte-minareli-medrese__c18_degerlendirme": {
       "id": "cifte-minareli-medrese__c18_degerlendirme",
@@ -610,7 +610,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "divrigi-ulu-camii__c1_yapi_adi": {
       "id": "divrigi-ulu-camii__c1_yapi_adi",
@@ -1042,7 +1042,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 10,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:47:26.026Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "bilim-58-abdulmelik-es-sirazi__c1_dogum_tarihi_yeri": {
       "id": "bilim-58-abdulmelik-es-sirazi__c1_dogum_tarihi_yeri",
@@ -2674,7 +2674,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 1,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "siyer-572__ev_11__c1_olay": {
       "id": "siyer-572__ev_11__c1_olay",
@@ -2722,7 +2722,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "cifte-minareli-medrese__c3_medeniyet": {
       "id": "cifte-minareli-medrese__c3_medeniyet",
@@ -2734,7 +2734,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "cifte-minareli-medrese__c5_yaptiran": {
       "id": "cifte-minareli-medrese__c5_yaptiran",
@@ -2746,7 +2746,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "cifte-minareli-medrese__c6_mimar": {
       "id": "cifte-minareli-medrese__c6_mimar",
@@ -2758,7 +2758,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "cifte-minareli-medrese__c7_mimari_tarz": {
       "id": "cifte-minareli-medrese__c7_mimari_tarz",
@@ -2770,7 +2770,7 @@
       "studentName": "Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "siyer-572__ev_14__c1_olay": {
       "id": "siyer-572__ev_14__c1_olay",
@@ -2801,36 +2801,36 @@
       "projectId": "proje-tarih",
       "itemId": "cifte-minareli-medrese",
       "criterionKey": "c1_mimari",
-      "content": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794865607719)",
+      "content": "P1 Başlangıç Metni: 1794904087539 [Düzenlendi: Taç kapı bezeme detayları zenginleştirildi]",
       "studentId": "stu-busenur",
       "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 108,
+      "version": 111,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "bircendi__c1_eserler": {
       "id": "bircendi__c1_eserler",
       "projectId": "proje-bilim",
       "itemId": "bircendi",
       "criterionKey": "c1_eserler",
-      "content": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794865613933)",
+      "content": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794904011202)",
       "studentId": "stu2-zumra",
       "studentName": "Zümra DURAN",
-      "version": 6,
+      "version": 7,
       "status": "draft",
-      "updatedAt": "2026-11-16T21:46:53.934Z"
+      "updatedAt": "2026-11-17T08:26:51.202Z"
     },
     "divrigi-darussifasi__c1_tarihce": {
       "id": "divrigi-darussifasi__c1_tarihce",
       "projectId": "proje-tarih",
       "itemId": "divrigi-darussifasi",
       "criterionKey": "c1_tarihce",
-      "content": "Test 4 Kesinleştirilen Metin: Divriği Ulu Camii kapı bezemeleri (1794865623990) [Düzenleme: Kaynakça eklendi]",
+      "content": "Test 4 Kesinleştirilen Metin: Divriği Ulu Camii kapı bezemeleri (1794904022559) [Düzenleme: Kaynakça eklendi]",
       "studentId": "stu-busenur",
       "studentName": "Busenur Esila ÖZDEMİR",
-      "version": 12,
+      "version": 14,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:47:13.380Z"
+      "updatedAt": "2026-11-17T08:27:13.920Z"
     },
     "gok-medrese__c1_mimari": {
       "id": "gok-medrese__c1_mimari",
@@ -2854,7 +2854,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-16T21:49:20.783Z"
+      "updatedAt": "2026-11-17T08:32:57.139Z"
     },
     "bircendi__c2_matematik": {
       "id": "bircendi__c2_matematik",
@@ -2950,7 +2950,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 26,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "siyer-571__c3_kaynakca_2": {
       "id": "siyer-571__c3_kaynakca_2",
@@ -2962,7 +2962,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 7,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "siyer-571__ev_2__c1_olay": {
       "id": "siyer-571__ev_2__c1_olay",
@@ -2974,7 +2974,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 1,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "divrigi-ulu-camii__c4_konumu": {
       "id": "divrigi-ulu-camii__c4_konumu",
@@ -3454,7 +3454,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 2,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "siyer-571__c2_kok_deger_3": {
       "id": "siyer-571__c2_kok_deger_3",
@@ -3466,7 +3466,7 @@
       "studentName": "Hümeyra BULUT",
       "version": 28,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:53.145Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "bilim-79-said-el-endelusi__c1_dogum_tarihi_yeri": {
       "id": "bilim-79-said-el-endelusi__c1_dogum_tarihi_yeri",
@@ -6569,405 +6569,39 @@
       "projectId": "proje-bilim",
       "itemId": "bilim-1",
       "criterionKey": "c1_temel_bilgiler",
-      "content": "P2 Harezmi Cebir Metni: 1794865464065 [Düzenlendi: Sıfırın matematiğe kazandırılması]",
+      "content": "P2 Harezmi Cebir Metni: 1794904111801 [Düzenlendi: Sıfırın matematiğe kazandırılması]",
       "studentId": "stu2-zumra",
       "studentName": "Zümra DURAN",
-      "version": 2,
+      "version": 4,
       "status": "in_review",
-      "updatedAt": "2026-11-16T21:44:35.105Z"
+      "updatedAt": "2026-11-17T08:28:47.818Z"
+    },
+    "siyer-572__ev_17__c1_olay": {
+      "id": "siyer-572__ev_17__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_17",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "updatedAt": "2026-11-17T08:23:12.037Z"
+    },
+    "siyer-572__ev_18__c1_olay": {
+      "id": "siyer-572__ev_18__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_18",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "updatedAt": "2026-11-17T08:33:33.392Z"
     }
   },
   "revisions": [
-    {
-      "id": "rev-1794835237844-993",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "",
-      "newContent": "h",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 6,
-      "createdAt": "2026-11-16T13:20:37.844Z"
-    },
-    {
-      "id": "rev-1794835242147-832",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "h",
-      "newContent": "H",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 7,
-      "createdAt": "2026-11-16T13:20:41.690Z"
-    },
-    {
-      "id": "rev-1794835244373-217",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "H",
-      "newContent": "Hz. ",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 8,
-      "createdAt": "2026-11-16T13:20:44.373Z"
-    },
-    {
-      "id": "rev-1794835247681-728",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. ",
-      "newContent": "Hz. Muh",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 9,
-      "createdAt": "2026-11-16T13:20:47.223Z"
-    },
-    {
-      "id": "rev-1794835251349-272",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muh",
-      "newContent": "Hz. Muhammed ",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 10,
-      "createdAt": "2026-11-16T13:20:50.913Z"
-    },
-    {
-      "id": "rev-1794835255673-380",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed ",
-      "newContent": "Hz. Muhammed bu yılda",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 11,
-      "createdAt": "2026-11-16T13:20:55.227Z"
-    },
-    {
-      "id": "rev-1794835264145-405",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda",
-      "newContent": "Hz. Muhammed bu yılda 2",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 12,
-      "createdAt": "2026-11-16T13:21:04.145Z"
-    },
-    {
-      "id": "rev-1794835272944-964",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 2",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 13,
-      "createdAt": "2026-11-16T13:21:12.444Z"
-    },
-    {
-      "id": "rev-1794835285432-222",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. ",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 14,
-      "createdAt": "2026-11-16T13:21:25.073Z"
-    },
-    {
-      "id": "rev-1794835288994-853",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. ",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 15,
-      "createdAt": "2026-11-16T13:21:28.644Z"
-    },
-    {
-      "id": "rev-1794835296738-401",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 16,
-      "createdAt": "2026-11-16T13:21:36.216Z"
-    },
-    {
-      "id": "rev-1794835301290-726",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile e",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 17,
-      "createdAt": "2026-11-16T13:21:40.840Z"
-    },
-    {
-      "id": "rev-1794835310496-162",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile e",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tü",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 18,
-      "createdAt": "2026-11-16T13:21:49.970Z"
-    },
-    {
-      "id": "rev-1794835321617-921",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tü",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar ol",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 19,
-      "createdAt": "2026-11-16T13:22:01.115Z"
-    },
-    {
-      "id": "rev-1794835325019-702",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar ol",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olar",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 20,
-      "createdAt": "2026-11-16T13:22:04.538Z"
-    },
-    {
-      "id": "rev-1794835327304-745",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olar",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 21,
-      "createdAt": "2026-11-16T13:22:07.304Z"
-    },
-    {
-      "id": "rev-1794835335379-566",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak M",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 22,
-      "createdAt": "2026-11-16T13:22:14.929Z"
-    },
-    {
-      "id": "rev-1794835339160-570",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak M",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 23,
-      "createdAt": "2026-11-16T13:22:18.753Z"
-    },
-    {
-      "id": "rev-1794835345107-800",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 24,
-      "createdAt": "2026-11-16T13:22:24.511Z"
-    },
-    {
-      "id": "rev-1794835354509-636",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 25,
-      "createdAt": "2026-11-16T13:22:33.828Z"
-    },
-    {
-      "id": "rev-1794835362798-484",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir ",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 26,
-      "createdAt": "2026-11-16T13:22:42.224Z"
-    },
-    {
-      "id": "rev-1794835372264-368",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir ",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve tiv",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 27,
-      "createdAt": "2026-11-16T13:22:51.436Z"
-    },
-    {
-      "id": "rev-1794835375328-176",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve tiv",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 28,
-      "createdAt": "2026-11-16T13:22:54.983Z"
-    },
-    {
-      "id": "rev-1794835383596-855",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 29,
-      "createdAt": "2026-11-16T13:23:03.032Z"
-    },
-    {
-      "id": "rev-1794835388647-598",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürd",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 30,
-      "createdAt": "2026-11-16T13:23:08.075Z"
-    },
-    {
-      "id": "rev-1794835392839-353",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürd",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdür",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 31,
-      "createdAt": "2026-11-16T13:23:12.839Z"
-    },
-    {
-      "id": "rev-1794835396908-601",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdür",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdürmekte",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 32,
-      "createdAt": "2026-11-16T13:23:16.441Z"
-    },
-    {
-      "id": "rev-1794835401631-906",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdürmekte",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdürmekteydi",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 33,
-      "createdAt": "2026-11-16T13:23:21.088Z"
-    },
-    {
-      "id": "rev-1794835533221-981",
-      "recordKey": "siyer-597__c1_olay",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c1_olay",
-      "prevContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdürmekteydi",
-      "newContent": "Hz. Muhammed bu yılda 26 yaşındadır. Hz. Hatice ile evli bir tüccar olarak Mekke'de sakin bir aile ve ticaret hayatı sürdürmekteydi.",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 34,
-      "createdAt": "2026-11-16T13:25:33.221Z"
-    },
-    {
-      "id": "rev-1794835557611-609",
-      "recordKey": "siyer-597__c2_kok_deger",
-      "projectId": "proje-siyer",
-      "itemId": "siyer-597",
-      "criterionKey": "c2_kok_deger",
-      "prevContent": "Öz denetim",
-      "newContent": "",
-      "studentId": "stu-siye-ogrenciara",
-      "studentName": "Öğrenci Araştırmacı",
-      "version": 3,
-      "createdAt": "2026-11-16T13:25:57.199Z"
-    },
     {
       "id": "rev-1794835597980-279",
       "recordKey": "siyer-597__c2_kok_deger",
@@ -13117,6 +12751,417 @@
       "studentName": "Hümeyra BULUT",
       "version": 6,
       "createdAt": "2026-11-16T21:49:53.922Z"
+    },
+    {
+      "id": "rev-edit-1794899377690-422",
+      "recordKey": "cifte-minareli-medrese__editing",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu-tari-ogrenciara",
+      "studentName": "Öğrenci Araştırmacı",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T07:09:37.353Z"
+    },
+    {
+      "id": "rev-review-1794903761893-723",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-17T08:22:41.893Z"
+    },
+    {
+      "id": "rev-1794903767317-207",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v45 Geri Yüklendi)",
+      "version": 46,
+      "createdAt": "2026-11-17T08:22:47.317Z"
+    },
+    {
+      "id": "rev-1794904005587-923",
+      "recordKey": "cifte-minareli-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794865607719)",
+      "newContent": "Test 1 Otomatik Kayıt Metni: Çifte Minareli Medrese taç kapı bezemeleri (Özgün Analiz 1794904003217)",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 109,
+      "createdAt": "2026-11-17T08:26:43.220Z"
+    },
+    {
+      "id": "rev-1794904011204-791",
+      "recordKey": "bircendi__c1_eserler",
+      "projectId": "proje-bilim",
+      "itemId": "bircendi",
+      "criterionKey": "c1_eserler",
+      "prevContent": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794865613933)",
+      "newContent": "Test 2 Taslak Kaydet Metni: Bircendî astronomi risalesi değerlendirmesi (1794904011202)",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 7,
+      "createdAt": "2026-11-17T08:26:51.202Z"
+    },
+    {
+      "id": "rev-final-1794904022559-150",
+      "recordKey": "divrigi-darussifasi__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:27:02.559Z"
+    },
+    {
+      "id": "rev-review-1794904027473-86",
+      "recordKey": "divrigi-darussifasi__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Düzeltme İstendi: Lütfen kaynakça sayfa numarasını ekleyiniz.]",
+      "studentId": "teacher-admin",
+      "studentName": "Danışman Öğretmen",
+      "version": 1,
+      "status": "correction_requested",
+      "createdAt": "2026-11-17T08:27:07.473Z"
+    },
+    {
+      "id": "rev-final-1794904033920-399",
+      "recordKey": "divrigi-darussifasi__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:27:13.920Z"
+    },
+    {
+      "id": "rev-1794904051060-659",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+      "newContent": "1. Olay: Hz. Muhammed dünyaya geldi",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 21,
+      "createdAt": "2026-11-17T08:27:29.295Z"
+    },
+    {
+      "id": "rev-final-1794904089972-933",
+      "recordKey": "cifte-minareli-medrese__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:28:07.541Z"
+    },
+    {
+      "id": "rev-edit-1794904094386-43",
+      "recordKey": "cifte-minareli-medrese__editing",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T08:28:12.963Z"
+    },
+    {
+      "id": "rev-1794904099787-106",
+      "recordKey": "cifte-minareli-medrese__c1_mimari",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_mimari",
+      "prevContent": "P1 Başlangıç Metni: 1794904087539",
+      "newContent": "P1 Başlangıç Metni: 1794904087539 [Düzenlendi: Taç kapı bezeme detayları zenginleştirildi]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 111,
+      "createdAt": "2026-11-17T08:28:19.787Z"
+    },
+    {
+      "id": "rev-final-1794904104236-644",
+      "recordKey": "cifte-minareli-medrese__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:28:23.140Z"
+    },
+    {
+      "id": "rev-final-1794904111803-487",
+      "recordKey": "bilim-1__finalized",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-1",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:28:31.801Z"
+    },
+    {
+      "id": "rev-edit-1794904117168-483",
+      "recordKey": "bilim-1__editing",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-1",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T08:28:35.325Z"
+    },
+    {
+      "id": "rev-1794904124269-859",
+      "recordKey": "bilim-1__c1_temel_bilgiler",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-1",
+      "criterionKey": "c1_temel_bilgiler",
+      "prevContent": "P2 Harezmi Cebir Metni: 1794904111801",
+      "newContent": "P2 Harezmi Cebir Metni: 1794904111801 [Düzenlendi: Sıfırın matematiğe kazandırılması]",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 4,
+      "createdAt": "2026-11-17T08:28:44.269Z"
+    },
+    {
+      "id": "rev-final-1794904129298-630",
+      "recordKey": "bilim-1__finalized",
+      "projectId": "proje-bilim",
+      "itemId": "bilim-1",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu2-zumra",
+      "studentName": "Zümra DURAN",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:28:47.818Z"
+    },
+    {
+      "id": "rev-final-1794904135738-217",
+      "recordKey": "siyer-571__finalized",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:28:53.273Z"
+    },
+    {
+      "id": "rev-edit-1794904142310-818",
+      "recordKey": "siyer-571__editing",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T08:28:59.467Z"
+    },
+    {
+      "id": "rev-1794904151065-12",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "P3 571 Yılı Olayı: 1794904133273",
+      "newContent": "P3 571 Yılı Olayı: 1794904133273 [Düzenlendi: Fil Hadisesi detayları]",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 23,
+      "createdAt": "2026-11-17T08:29:11.065Z"
+    },
+    {
+      "id": "rev-final-1794904156043-863",
+      "recordKey": "siyer-571__finalized",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:29:14.736Z"
+    },
+    {
+      "id": "rev-edit-1794904163121-954",
+      "recordKey": "cifte-minareli-medrese__editing",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T08:29:23.121Z"
+    },
+    {
+      "id": "rev-final-1794904168671-536",
+      "recordKey": "cifte-minareli-medrese__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:29:26.993Z"
+    },
+    {
+      "id": "rev-edit-1794904174183-381",
+      "recordKey": "cifte-minareli-medrese__editing",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T08:29:32.447Z"
+    },
+    {
+      "id": "rev-final-1794904180135-522",
+      "recordKey": "cifte-minareli-medrese__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:29:38.699Z"
+    },
+    {
+      "id": "rev-edit-1794904185001-628",
+      "recordKey": "cifte-minareli-medrese__editing",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "editing",
+      "prevContent": "finalized",
+      "newContent": "[Yeniden Düzenlemeye Açıldı]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "editing",
+      "createdAt": "2026-11-17T08:29:43.404Z"
+    },
+    {
+      "id": "rev-final-1794904189504-948",
+      "recordKey": "cifte-minareli-medrese__finalized",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "finalized",
+      "prevContent": "draft",
+      "newContent": "[Kesinleştirildi - Öğretmen İncelemesinde]",
+      "studentId": "stu-busenur",
+      "studentName": "Busenur Esila ÖZDEMİR",
+      "version": 1,
+      "status": "in_review",
+      "createdAt": "2026-11-17T08:29:48.323Z"
+    },
+    {
+      "id": "rev-review-1794904377139-405",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-17T08:32:57.139Z"
+    },
+    {
+      "id": "rev-1794904381643-55",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v46 Geri Yüklendi)",
+      "version": 47,
+      "createdAt": "2026-11-17T08:33:01.643Z"
+    },
+    {
+      "id": "rev-1794904400716-645",
+      "recordKey": "siyer-571__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-571",
+      "criterionKey": "c1_olay",
+      "prevContent": "P3 571 Yılı Olayı: 1794904133273 [Düzenlendi: Fil Hadisesi detayları]",
+      "newContent": "571 yılında Fil Vakası gerçekleşti ve Peygamber Efendimiz dünyaya geldi.",
+      "studentId": "stu3-humeyra",
+      "studentName": "Hümeyra BULUT",
+      "version": 24,
+      "createdAt": "2026-11-17T08:33:20.715Z"
     }
   ],
   "sources": {},
@@ -13570,6 +13615,33 @@
       "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
       "status": "approved",
       "createdAt": "2026-11-16T21:49:20.783Z"
+    },
+    {
+      "id": "fb-1794903761893",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-17T08:22:41.893Z"
+    },
+    {
+      "id": "fb-1794904027473",
+      "projectId": "proje-tarih",
+      "itemId": "divrigi-darussifasi",
+      "teacherName": "Danışman Öğretmen",
+      "message": "Lütfen kaynakça sayfa numarasını ekleyiniz.",
+      "status": "correction_requested",
+      "createdAt": "2026-11-17T08:27:07.473Z"
+    },
+    {
+      "id": "fb-1794904377139",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-17T08:32:57.139Z"
     }
   ],
   "comparisons": {},
@@ -13578,7 +13650,7 @@
       "susamislar-konagi": {
         "itemId": "susamislar-konagi",
         "assignedStudentId": "stu-hazel",
-        "updatedAt": "2026-11-16T21:49:35.579Z",
+        "updatedAt": "2026-11-17T08:33:10.930Z",
         "assignedBy": "Fenci Öğretmen"
       }
     },
@@ -13602,14 +13674,16 @@
         "siyer-572__ev_13",
         "siyer-572__ev_14",
         "siyer-572__ev_15",
-        "siyer-572__ev_16"
+        "siyer-572__ev_16",
+        "siyer-572__ev_17",
+        "siyer-572__ev_18"
       ]
     },
     "proje-siyer_year_flags": {
       "siyer-573": {
         "status": "no_event_found",
         "label": "Araştırıldı – Olay tespit edilemedi",
-        "updatedAt": "2026-11-16T21:50:10.225Z",
+        "updatedAt": "2026-11-17T08:33:38.147Z",
         "updatedBy": "Fenci Öğretmen"
       }
     },
@@ -13627,15 +13701,15 @@
         "studentId": "stu-busenur",
         "studentName": "Busenur Esila ÖZDEMİR",
         "status": "in_review",
-        "finalizedAt": "2026-11-16T21:47:13.380Z"
+        "finalizedAt": "2026-11-17T08:27:13.920Z"
       },
       "cifte-minareli-medrese": {
         "itemId": "cifte-minareli-medrese",
         "studentId": "stu-busenur",
         "studentName": "Busenur Esila ÖZDEMİR",
         "status": "approved",
-        "finalizedAt": "2026-11-16T21:45:20.620Z",
-        "reviewedAt": "2026-11-16T21:49:20.783Z"
+        "finalizedAt": "2026-11-17T08:29:48.323Z",
+        "reviewedAt": "2026-11-17T08:32:57.139Z"
       }
     },
     "proje-bilim_finalized": {
@@ -13644,7 +13718,7 @@
         "studentId": "stu2-zumra",
         "studentName": "Zümra DURAN",
         "status": "in_review",
-        "finalizedAt": "2026-11-16T21:44:35.105Z"
+        "finalizedAt": "2026-11-17T08:28:47.818Z"
       }
     },
     "proje-siyer_finalized": {
@@ -13653,7 +13727,7 @@
         "studentId": "stu3-humeyra",
         "studentName": "Hümeyra BULUT",
         "status": "in_review",
-        "finalizedAt": "2026-11-16T21:44:53.145Z"
+        "finalizedAt": "2026-11-17T08:29:14.736Z"
       }
     }
   },
@@ -13666,21 +13740,21 @@
     },
     "stu2-zumra": {
       "projectId": "proje-bilim",
-      "itemId": "bircendi",
+      "itemId": "bilim-1",
       "studentName": "Zümra DURAN",
-      "updatedAt": "2026-11-16T21:47:21.051Z"
+      "updatedAt": "2026-11-17T08:28:47.818Z"
     },
     "stu-busenur": {
       "projectId": "proje-tarih",
       "itemId": "cifte-minareli-medrese",
       "studentName": "Busenur Esila ÖZDEMİR",
-      "updatedAt": "2026-11-16T21:47:18.038Z"
+      "updatedAt": "2026-11-17T08:29:48.323Z"
     },
     "stu3-humeyra": {
       "projectId": "proje-siyer",
       "itemId": "siyer-571",
       "studentName": "Hümeyra BULUT",
-      "updatedAt": "2026-11-16T21:47:26.026Z"
+      "updatedAt": "2026-11-17T08:29:14.736Z"
     },
     "stu-bili-fatmazehra": {
       "projectId": "proje-bilim",
@@ -13707,5 +13781,5 @@
       "updatedAt": "2026-11-16T19:40:24.258Z"
     }
   },
-  "lastCloudSyncTime": "2026-11-16T21:50:13.742Z"
+  "lastCloudSyncTime": "2026-11-17T08:33:42.419Z"
 }

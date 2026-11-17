@@ -719,7 +719,7 @@
                         ` : items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
-                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 13 : (activeProjectId === 'proje-siyer' ? 5 : 18));
+                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 14 : (activeProjectId === 'proje-siyer' ? 5 : 18));
                             const pct = totalCriteria > 0 ? Math.round((filledCount / totalCriteria) * 100) : 0;
                             const status = getItemStatus(it.id);
                             const permanentOrder = getItemPermanentOrder(it);
@@ -1548,7 +1548,6 @@ function renderActiveItemForm(item, projData) {
                         <span>WORD İNDİR</span>
                     </button>
                 </div>
-                </div>
             </div>
 
             ${activeProjectId === 'proje-bilim' ? `
@@ -1628,7 +1627,7 @@ function renderActiveItemForm(item, projData) {
             ${activeProjectId === 'proje-siyer' ? renderSiyerActiveYearForm(item, canEditItem) : criteriaList.map((crit, idx) => {
                 const recordKey = `${item.id}__${crit.key}`;
                 const saved = runtimeRecords[recordKey] || (item.id === "divrigi-ulu-camii" ? runtimeRecords[`divrigi-ulu-camii-darussifasi__${crit.key}`] : null) || (item.id === "divrigi-ulu-camii-darussifasi" ? runtimeRecords[`divrigi-ulu-camii__${crit.key}`] : null) || (item.id === "bilim-01-bircendi" ? runtimeRecords[`bircendi__${crit.key}`] : null) || (item.id === "bircendi" ? runtimeRecords[`bilim-01-bircendi__${crit.key}`] : null);
-                const contentVal = saved ? saved.content : (item.criteria?.[crit.key] || "");
+                const contentVal = saved ? saved.content : (item.criteria?.[crit.key] || ((crit.key === 'c1_bilim_insani_adi' && activeProjectId === 'proje-bilim') ? (item.title || "") : ""));
                 const version = saved ? saved.version : 1;
                 const lastEditor = saved ? saved.studentName : "Sistem";
 
@@ -1854,7 +1853,7 @@ function renderActiveItemForm(item, projData) {
     function computeStudentStats(stuId, projectId = activeProjectId) {
         const projData = seedData?.projects?.[projectId] || {};
         const items = projData.items || [];
-        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 13 : (projectId === "proje-siyer" ? 5 : 18));
+        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 14 : (projectId === "proje-siyer" ? 5 : 18));
         const assignedItems = items.filter(it => getItemAssignedStudentId(it, projectId) === stuId);
         let startedCount = 0;
         let completedCount = 0;
@@ -2386,7 +2385,7 @@ function renderActiveItemForm(item, projData) {
         const projData = seedData?.projects?.["proje-bilim"] || {};
         const items = projData.items || [];
         const students = getProjectStudents("proje-bilim");
-        const totalCriteria = (projData.criteriaList || []).length || 13;
+        const totalCriteria = (projData.criteriaList || []).length || 14;
         const distValid = isProjectDistributionValid("proje-bilim");
 
         return `

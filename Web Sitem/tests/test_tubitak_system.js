@@ -370,6 +370,11 @@ async function runTests() {
     await tubitakRecordsHandler(p2OwnSave.req, p2OwnSave.res);
     assert.strictEqual(p2OwnSave.getStatus(), 200);
 
+    // Proje 2 kriter doğrulaması (1. Kriter: Bilim İnsanının Adı)
+    assert.strictEqual(p2All.criteriaList.length, 14, "Proje 2 kriter sayısı 14 olmalı (1. Bilim İnsanının Adı dahil)");
+    assert.strictEqual(p2All.criteriaList[0].key, "c1_bilim_insani_adi", "1. Kriter c1_bilim_insani_adi olmalı");
+    assert.strictEqual(p2All.criteriaList[0].title, "1. Bilim İnsanının Adı");
+
     // Öğretmen BİRCENDÎ için .docx indirebilmeli ve başlık/kriter adı içermemeli
     const p2DocxReq = mockReqRes("GET", {}, {
         projectId: "proje-bilim",
