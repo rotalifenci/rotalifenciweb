@@ -7,10 +7,10 @@
       "criterionKey": "c1_location",
       "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
       "studentId": "stu-tari-aliveli",
-      "studentName": "Ali Veli (Geri Yükleme v51)",
-      "version": 52,
+      "studentName": "Ali Veli (Geri Yükleme v53)",
+      "version": 54,
       "status": "draft",
-      "updatedAt": "2026-11-17T22:12:13.133Z"
+      "updatedAt": "2026-11-17T23:11:05.136Z"
     },
     "susamislar-konagi__c1_yapi_adi": {
       "id": "susamislar-konagi__c1_yapi_adi",
@@ -34,7 +34,7 @@
       "studentName": "Fenci Öğretmen",
       "version": 6,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c2_yapim_yili": {
       "id": "cifte-minareli-medrese__c2_yapim_yili",
@@ -46,7 +46,7 @@
       "studentName": "Fenci Öğretmen",
       "version": 6,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "bilim-01-bircendi__c9_yontemler_problemler": {
       "id": "bilim-01-bircendi__c9_yontemler_problemler",
@@ -610,7 +610,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "divrigi-ulu-camii__c1_yapi_adi": {
       "id": "divrigi-ulu-camii__c1_yapi_adi",
@@ -2722,7 +2722,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 24,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c3_medeniyet": {
       "id": "cifte-minareli-medrese__c3_medeniyet",
@@ -2734,7 +2734,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 4,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c5_yaptiran": {
       "id": "cifte-minareli-medrese__c5_yaptiran",
@@ -2746,7 +2746,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c6_mimar": {
       "id": "cifte-minareli-medrese__c6_mimar",
@@ -2758,7 +2758,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c7_mimari_tarz": {
       "id": "cifte-minareli-medrese__c7_mimari_tarz",
@@ -2770,7 +2770,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "siyer-572__ev_14__c1_olay": {
       "id": "siyer-572__ev_14__c1_olay",
@@ -2806,7 +2806,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 111,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "bircendi__c1_eserler": {
       "id": "bircendi__c1_eserler",
@@ -2854,7 +2854,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "bircendi__c2_matematik": {
       "id": "bircendi__c2_matematik",
@@ -7162,7 +7162,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c8_yapilis_amaci": {
       "id": "cifte-minareli-medrese__c8_yapilis_amaci",
@@ -7174,7 +7174,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c9_toplumsal_kulturel_onemi": {
       "id": "cifte-minareli-medrese__c9_toplumsal_kulturel_onemi",
@@ -7186,7 +7186,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 9,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c10_yapim_malzemesi": {
       "id": "cifte-minareli-medrese__c10_yapim_malzemesi",
@@ -7198,7 +7198,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 8,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c11_plan": {
       "id": "cifte-minareli-medrese__c11_plan",
@@ -7210,7 +7210,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c12_kulturel_miras_statusu": {
       "id": "cifte-minareli-medrese__c12_kulturel_miras_statusu",
@@ -7222,7 +7222,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c13_tarihsel_degisiklikler": {
       "id": "cifte-minareli-medrese__c13_tarihsel_degisiklikler",
@@ -7234,7 +7234,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c14_restorasyon": {
       "id": "cifte-minareli-medrese__c14_restorasyon",
@@ -7246,7 +7246,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c15_kulturel_miras_tescil": {
       "id": "cifte-minareli-medrese__c15_kulturel_miras_tescil",
@@ -7258,7 +7258,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c16_benzer_ortak_ozellikler": {
       "id": "cifte-minareli-medrese__c16_benzer_ortak_ozellikler",
@@ -7270,7 +7270,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "cifte-minareli-medrese__c17_benzer_farkli_ozellikler": {
       "id": "cifte-minareli-medrese__c17_benzer_farkli_ozellikler",
@@ -7282,7 +7282,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-17T22:12:07.094Z"
+      "updatedAt": "2026-11-17T23:10:59.637Z"
     },
     "gok-medrese__c8_yapilis_amaci": {
       "id": "gok-medrese__c8_yapilis_amaci",
@@ -8015,61 +8015,33 @@
       "version": 1,
       "status": "in_review",
       "updatedAt": "2026-11-17T22:12:36.198Z"
+    },
+    "siyer-572__ev_21__c1_olay": {
+      "id": "siyer-572__ev_21__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_21",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "updatedAt": "2026-11-17T22:48:57.637Z"
+    },
+    "siyer-572__ev_22__c1_olay": {
+      "id": "siyer-572__ev_22__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_22",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "updatedAt": "2026-11-17T23:11:26.382Z"
     }
   },
   "revisions": [
-    {
-      "id": "rev-1794922406997-199",
-      "recordKey": "bilim-83-sagani-ahmed-b-muhammed__c13_kaynakca",
-      "projectId": "proje-bilim",
-      "itemId": "bilim-83-sagani-ahmed-b-muhammed",
-      "criterionKey": "c13_kaynakca",
-      "prevContent": "farklı isminin k. :\n\n\n1-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n2-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n3-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n4-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n5-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n6-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n7-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n8-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n9-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n10-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n11-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n12-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com",
-      "newContent": "farklı isminin k. :https://kutuphane.isam.org.tr/?-max=10&-skip=1030&LISTE::wharf=A&blm=sonucdkm&geldi=ara_dkm_ayrinti&navdil=tr&utm_source=chatgpt.com\n\n\n1-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n2-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n3-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n4-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n5-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n6-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n7-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n8-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n9-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n10-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n11-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com\n\n12-https://islamansiklopedisi.org.tr/sagani-ahmed-b-muhammed?utm_source=chatgpt.com",
-      "studentId": "stu2-muhammed",
-      "studentName": "Muhammed Enes YERLİKAYA",
-      "version": 9,
-      "createdAt": "2026-11-17T13:33:26.996Z"
-    },
-    {
-      "id": "rev-1794922422359-89",
-      "recordKey": "bilim-84-ahvazi-ahmed-b-huseyin__c1_bilim_insani_adi",
-      "projectId": "proje-bilim",
-      "itemId": "bilim-84-ahvazi-ahmed-b-huseyin",
-      "criterionKey": "c1_bilim_insani_adi",
-      "prevContent": "",
-      "newContent": "AHVÂZÎ, Ahmed b. Hüseyin ",
-      "studentId": "stu2-muhammed",
-      "studentName": "Muhammed Enes YERLİKAYA",
-      "version": 1,
-      "createdAt": "2026-11-17T13:33:41.871Z"
-    },
-    {
-      "id": "rev-1794922430922-841",
-      "recordKey": "bilim-84-ahvazi-ahmed-b-huseyin__c1_bilim_insani_adi",
-      "projectId": "proje-bilim",
-      "itemId": "bilim-84-ahvazi-ahmed-b-huseyin",
-      "criterionKey": "c1_bilim_insani_adi",
-      "prevContent": "AHVÂZÎ, Ahmed b. Hüseyin ",
-      "newContent": "AHVÂZÎ, Ahmed b. Hüseyin (",
-      "studentId": "stu2-muhammed",
-      "studentName": "Muhammed Enes YERLİKAYA",
-      "version": 2,
-      "createdAt": "2026-11-17T13:33:50.332Z"
-    },
-    {
-      "id": "rev-1794922485160-363",
-      "recordKey": "bilim-84-ahvazi-ahmed-b-huseyin__c1_bilim_insani_adi",
-      "projectId": "proje-bilim",
-      "itemId": "bilim-84-ahvazi-ahmed-b-huseyin",
-      "criterionKey": "c1_bilim_insani_adi",
-      "prevContent": "AHVÂZÎ, Ahmed b. Hüseyin (",
-      "newContent": "AHVÂZÎ, Ahmed b. Hüseyin (Ebü’l-Hüseyn Ahmed b. el-Hüseyn el-Kâtib el-Ehvâzî şeklindedir.",
-      "studentId": "stu2-muhammed",
-      "studentName": "Muhammed Enes YERLİKAYA",
-      "version": 3,
-      "createdAt": "2026-11-17T13:34:44.761Z"
-    },
     {
       "id": "rev-1794922490651-380",
       "recordKey": "bilim-84-ahvazi-ahmed-b-huseyin__c1_bilim_insani_adi",
@@ -14569,6 +14541,60 @@
       "studentName": "Ali Veli (v51 Geri Yüklendi)",
       "version": 52,
       "createdAt": "2026-11-17T22:12:13.133Z"
+    },
+    {
+      "id": "rev-review-1794955708126-735",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-17T22:48:28.126Z"
+    },
+    {
+      "id": "rev-1794955713766-112",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v52 Geri Yüklendi)",
+      "version": 53,
+      "createdAt": "2026-11-17T22:48:33.766Z"
+    },
+    {
+      "id": "rev-review-1794957059637-303",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-17T23:10:59.637Z"
+    },
+    {
+      "id": "rev-1794957065136-764",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v53 Geri Yüklendi)",
+      "version": 54,
+      "createdAt": "2026-11-17T23:11:05.136Z"
     }
   ],
   "sources": {},
@@ -15094,6 +15120,24 @@
       "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
       "status": "approved",
       "createdAt": "2026-11-17T22:12:07.094Z"
+    },
+    {
+      "id": "fb-1794955708126",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-17T22:48:28.126Z"
+    },
+    {
+      "id": "fb-1794957059637",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-17T23:10:59.637Z"
     }
   ],
   "comparisons": {},
@@ -15102,7 +15146,7 @@
       "susamislar-konagi": {
         "itemId": "susamislar-konagi",
         "assignedStudentId": "stu-hazel",
-        "updatedAt": "2026-11-17T22:12:22.136Z",
+        "updatedAt": "2026-11-17T23:11:13.311Z",
         "assignedBy": "Fenci Öğretmen"
       }
     },
@@ -15130,14 +15174,16 @@
         "siyer-572__ev_17",
         "siyer-572__ev_18",
         "siyer-572__ev_19",
-        "siyer-572__ev_20"
+        "siyer-572__ev_20",
+        "siyer-572__ev_21",
+        "siyer-572__ev_22"
       ]
     },
     "proje-siyer_year_flags": {
       "siyer-573": {
         "status": "no_event_found",
         "label": "Araştırıldı – Olay tespit edilemedi",
-        "updatedAt": "2026-11-17T22:12:42.691Z",
+        "updatedAt": "2026-11-17T23:11:31.539Z",
         "updatedBy": "Fenci Öğretmen"
       }
     },
@@ -15164,7 +15210,7 @@
         "status": "approved",
         "finalizedAt": "2026-11-17T13:41:38.323Z",
         "reopenedAt": "2026-11-17T13:41:45.356Z",
-        "reviewedAt": "2026-11-17T22:12:07.094Z"
+        "reviewedAt": "2026-11-17T23:10:59.637Z"
       },
       "sivas-ulu-camii": {
         "itemId": "sivas-ulu-camii",
@@ -15285,5 +15331,5 @@
       "updatedAt": "2026-11-17T13:41:38.323Z"
     }
   },
-  "lastCloudSyncTime": "2026-11-17T22:12:47.623Z"
+  "lastCloudSyncTime": "2026-11-17T23:11:34.543Z"
 }

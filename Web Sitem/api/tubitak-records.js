@@ -503,6 +503,13 @@ module.exports = async function handler(req, res) {
                     }
 
                     const prevContent = existing.content || "";
+
+                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydın üzerine yazamaz!
+                    if (!newContent.trim() && prevContent.trim()) {
+                        savedRecords[recKey] = existing;
+                        continue;
+                    }
+
                     if (prevContent.trim() !== newContent.trim() || existing.version === 0) {
                         const newVersion = (existing.version || 0) + 1;
                         const assignedStuId = getEffectiveAssignedStudentId(store, projectId, recItemId);
@@ -604,13 +611,18 @@ module.exports = async function handler(req, res) {
                         status: "draft"
                     };
                     const prevContent = existing.content || "";
-                    const newVersion = (existing.version || 0) + (prevContent.trim() !== newContent.trim() ? 1 : 0);
+                    let safeFinalContent = newContent;
+                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydı ezemez
+                    if (!safeFinalContent.trim() && prevContent.trim()) {
+                        safeFinalContent = prevContent;
+                    }
+                    const newVersion = (existing.version || 0) + (prevContent.trim() !== safeFinalContent.trim() ? 1 : 0);
                     store.records[recKey] = {
                         id: recKey,
                         projectId,
                         itemId: recItemId,
                         criterionKey: critKey,
-                        content: newContent,
+                        content: safeFinalContent,
                         studentId: session.studentId,
                         studentName: session.studentName,
                         version: newVersion || 1,
@@ -790,6 +802,19 @@ module.exports = async function handler(req, res) {
 
             const prevContent = existing.content || "";
             const newContent = String(content || "");
+
+            // 🛡️ KALICI KORUMA: Boş metin mevcut dolu kaydın üzerine yazamaz!
+            if (!newContent.trim() && prevContent.trim()) {
+                return res.status(200).json({
+                    ok: true,
+                    status: "saved",
+                    message: "Mevcut dolu kayıt boş veri ile ezilmeye karşı korundu.",
+                    version: existing.version,
+                    updatedAt: existing.updatedAt,
+                    recordKey,
+                    content: prevContent
+                });
+            }
 
             // İçerik tamamen aynıysa boşuna sürüm şişirme
             if (prevContent.trim() === newContent.trim() && existing.version > 0) {

@@ -68,6 +68,18 @@
     // 2. Başlatma & Oturum Kontrolü
     async function init() {
         loadStoredSession();
+        // ⚡ Anında yerel önbellekten yükle (Ağ beklenmeden veri kutuları 0. milisaniyede dolsun)
+        if (activeProjectId) {
+            try {
+                const cachedRecords = localStorage.getItem(`rotali_cached_records_${activeProjectId}`);
+                if (cachedRecords) {
+                    const parsedRecs = JSON.parse(cachedRecords);
+                    if (parsedRecs && typeof parsedRecs === 'object') {
+                        runtimeRecords = { ...parsedRecs, ...runtimeRecords };
+                    }
+                }
+            } catch(e) {}
+        }
         await loadSeedData();
         if (currentSession) {
             await syncProjectData(currentSession.projectId);
@@ -87,11 +99,19 @@
             const raw = localStorage.getItem("rotali_tubitak_session");
             if (raw) {
                 const parsed = JSON.parse(raw);
-                if (parsed.exp && parsed.exp > Date.now()) {
+                const exp = Number(parsed.exp || parsed.expiresAt || 0);
+                const isValid = (exp > 0 ? exp > Date.now() : Boolean(parsed.token));
+                if (isValid) {
                     currentSession = parsed;
                     if (currentSession.role === "student" && currentSession.projectId !== "all") {
                         activeProjectId = currentSession.projectId;
                     }
+                    try {
+                        const savedActiveItem = localStorage.getItem(`rotali_last_item_${activeProjectId}`);
+                        if (savedActiveItem) {
+                            activeItemId = savedActiveItem;
+                        }
+                    } catch(e) {}
                 } else {
                     localStorage.removeItem("rotali_tubitak_session");
                 }
@@ -121,7 +141,7 @@
         }
     }
 
-    // 3. Sunucu Veri Senkronizasyonu (Supabase / API)
+    // 3. Sunucu Veri Senkronizasyonu (Gist Cloud DB / Supabase Bridge / API)
     async function syncProjectData(projId) {
         if (!currentSession || !currentSession.token) return;
         const targetProj = (currentSession.role === "teacher" && projId) ? projId : currentSession.projectId;
@@ -135,6 +155,9 @@
                 const data = await res.json();
                 if (data.ok) {
                     runtimeRecords = { ...runtimeRecords, ...(data.records || {}) };
+                    try {
+                        localStorage.setItem(`rotali_cached_records_${targetProj}`, JSON.stringify(runtimeRecords));
+                    } catch(e) {}
                     runtimeRevisions = data.revisions || runtimeRevisions;
                     runtimeSources = { ...runtimeSources, ...(data.sources || {}) };
                     runtimeFeedbacks = data.feedbacks || runtimeFeedbacks;
@@ -150,6 +173,7 @@
             }
         } catch (err) {
             console.warn("Project sync warning (using offline cache):", err.message);
+            updateUIAutosaveBadge("waiting_connection");
         }
     }
 
@@ -1218,7 +1242,12 @@
             ];
             keys.forEach(k => {
                 const el = document.getElementById(`input-${k}`);
-                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${k}`]?.content || "");
+                const prevVal = runtimeRecords[`${targetItemId}__${k}`]?.content || "";
+                let contentVal = el ? el.value : prevVal;
+                // 🛡️ KALICI KORUMA: DOM'da boş görünse bile dolu veriyi koru
+                if (!contentVal.trim() && prevVal.trim()) {
+                    contentVal = prevVal;
+                }
                 recordsToSave.push({
                     criterionKey: k,
                     content: contentVal,
@@ -1230,7 +1259,12 @@
             const critList = projData.criteriaList || [];
             critList.forEach(crit => {
                 const el = document.getElementById(`input-${crit.key}`);
-                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "");
+                const prevVal = runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
+                let contentVal = el ? el.value : prevVal;
+                // 🛡️ KALICI KORUMA: DOM'da boş görünse bile dolu veriyi koru
+                if (!contentVal.trim() && prevVal.trim()) {
+                    contentVal = prevVal;
+                }
                 recordsToSave.push({
                     criterionKey: crit.key,
                     content: contentVal,
@@ -1373,7 +1407,11 @@
             ];
             keys.forEach(k => {
                 const el = document.getElementById(`input-${k}`);
-                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${k}`]?.content || "");
+                const prevVal = runtimeRecords[`${targetItemId}__${k}`]?.content || "";
+                let contentVal = el ? el.value : prevVal;
+                if (!contentVal.trim() && prevVal.trim()) {
+                    contentVal = prevVal;
+                }
                 recordsToSave.push({
                     criterionKey: k,
                     content: contentVal,
@@ -1384,7 +1422,11 @@
             const critList = projData.criteriaList || [];
             critList.forEach(crit => {
                 const el = document.getElementById(`input-${crit.key}`);
-                const contentVal = el ? el.value : (runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "");
+                const prevVal = runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
+                let contentVal = el ? el.value : prevVal;
+                if (!contentVal.trim() && prevVal.trim()) {
+                    contentVal = prevVal;
+                }
                 recordsToSave.push({
                     criterionKey: crit.key,
                     content: contentVal,
@@ -4983,6 +5025,12 @@ function renderActiveItemForm(item, projData) {
         async selectItem(itemId) {
             await flushPendingSaves();
             activeItemId = itemId;
+            try {
+                localStorage.setItem(`rotali_last_item_${activeProjectId}`, itemId);
+                if (currentSession?.studentId) {
+                    localStorage.setItem(`rotali_last_active_${activeProjectId}_${currentSession.studentId}`, itemId);
+                }
+            } catch(e) {}
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 

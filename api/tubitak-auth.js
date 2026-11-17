@@ -207,6 +207,7 @@ module.exports = async function handler(req, res) {
             studentId: finalStudentId,
             studentName: finalStudentName,
             studentPin: finalStudentPin,
+            exp: expiresAt,
             expiresAt
         });
     } catch (err) {
