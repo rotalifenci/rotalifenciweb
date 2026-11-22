@@ -5,12 +5,12 @@
       "projectId": "proje-tarih",
       "itemId": "cifte-minareli-medrese",
       "criterionKey": "c1_location",
-      "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795382578175).",
+      "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384209747).",
       "studentId": "stu-tari-aliveli",
-      "studentName": "Ali Veli (Geri Yükleme v75)",
-      "version": 76,
+      "studentName": "Ali Veli (Geri Yükleme v79)",
+      "version": 80,
       "status": "draft",
-      "updatedAt": "2026-11-22T21:23:20.059Z"
+      "updatedAt": "2026-11-22T21:50:29.038Z"
     },
     "susamislar-konagi__c1_yapi_adi": {
       "id": "susamislar-konagi__c1_yapi_adi",
@@ -34,7 +34,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 6,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c2_yapim_yili": {
       "id": "cifte-minareli-medrese__c2_yapim_yili",
@@ -46,7 +46,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 6,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "bilim-01-bircendi__c9_yontemler_problemler": {
       "id": "bilim-01-bircendi__c9_yontemler_problemler",
@@ -610,7 +610,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "divrigi-ulu-camii__c1_yapi_adi": {
       "id": "divrigi-ulu-camii__c1_yapi_adi",
@@ -2722,7 +2722,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 27,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c3_medeniyet": {
       "id": "cifte-minareli-medrese__c3_medeniyet",
@@ -2734,7 +2734,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 4,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c5_yaptiran": {
       "id": "cifte-minareli-medrese__c5_yaptiran",
@@ -2746,7 +2746,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c6_mimar": {
       "id": "cifte-minareli-medrese__c6_mimar",
@@ -2758,7 +2758,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c7_mimari_tarz": {
       "id": "cifte-minareli-medrese__c7_mimari_tarz",
@@ -2770,7 +2770,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 4,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "siyer-572__ev_14__c1_olay": {
       "id": "siyer-572__ev_14__c1_olay",
@@ -2806,7 +2806,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 111,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "bircendi__c1_eserler": {
       "id": "bircendi__c1_eserler",
@@ -2854,7 +2854,7 @@
       "studentName": "Busenur Esila ÖZDEMİR",
       "version": 1,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "bircendi__c2_matematik": {
       "id": "bircendi__c2_matematik",
@@ -7162,7 +7162,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c8_yapilis_amaci": {
       "id": "cifte-minareli-medrese__c8_yapilis_amaci",
@@ -7174,7 +7174,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 5,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c9_toplumsal_kulturel_onemi": {
       "id": "cifte-minareli-medrese__c9_toplumsal_kulturel_onemi",
@@ -7186,7 +7186,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 9,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c10_yapim_malzemesi": {
       "id": "cifte-minareli-medrese__c10_yapim_malzemesi",
@@ -7198,7 +7198,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 8,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c11_plan": {
       "id": "cifte-minareli-medrese__c11_plan",
@@ -7210,7 +7210,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c12_kulturel_miras_statusu": {
       "id": "cifte-minareli-medrese__c12_kulturel_miras_statusu",
@@ -7222,7 +7222,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c13_tarihsel_degisiklikler": {
       "id": "cifte-minareli-medrese__c13_tarihsel_degisiklikler",
@@ -7234,7 +7234,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c14_restorasyon": {
       "id": "cifte-minareli-medrese__c14_restorasyon",
@@ -7246,7 +7246,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 2,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c15_kulturel_miras_tescil": {
       "id": "cifte-minareli-medrese__c15_kulturel_miras_tescil",
@@ -7258,7 +7258,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c16_benzer_ortak_ozellikler": {
       "id": "cifte-minareli-medrese__c16_benzer_ortak_ozellikler",
@@ -7270,7 +7270,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 4,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "cifte-minareli-medrese__c17_benzer_farkli_ozellikler": {
       "id": "cifte-minareli-medrese__c17_benzer_farkli_ozellikler",
@@ -7282,7 +7282,7 @@
       "studentName": "Öğrenci Araştırmacı",
       "version": 3,
       "status": "approved",
-      "updatedAt": "2026-11-22T21:23:14.597Z"
+      "updatedAt": "2026-11-22T21:50:22.590Z"
     },
     "gok-medrese__c8_yapilis_amaci": {
       "id": "gok-medrese__c8_yapilis_amaci",
@@ -22835,87 +22835,21 @@
       "version": 1,
       "status": "in_review",
       "updatedAt": "2026-11-22T20:34:57.781Z"
+    },
+    "siyer-572__ev_25__c1_olay": {
+      "id": "siyer-572__ev_25__c1_olay",
+      "projectId": "proje-siyer",
+      "itemId": "siyer-572__ev_25",
+      "criterionKey": "c1_olay",
+      "content": "571 yılı ikinci olay kaydı test metni.",
+      "studentId": "stu-siye-799",
+      "studentName": "Hümeyra BULUT",
+      "version": 1,
+      "status": "in_review",
+      "updatedAt": "2026-11-22T21:48:17.170Z"
     }
   },
   "revisions": [
-    {
-      "id": "rev-1795374259301-258",
-      "recordKey": "seyh-coban-turbesi__c11_plan",
-      "projectId": "proje-tarih",
-      "itemId": "seyh-coban-turbesi",
-      "criterionKey": "c11_plan",
-      "prevContent": "",
-      "newContent": " Kare planlı olan yapı, içten kubbe ile örtülmüş; dıştan ise basık konik bir çatıyla kapatılmıştır. Kubbeye geçişin tromplarla sağlandığı ve yapının sekizgen bir kasnağa oturduğu görülmektedir. Bu kasnağın kuzey, güney, doğu ve batı cephelerinde birer yuvarlak pencereye yer verilmiştir. Doğu cephesinde bulunan dikdörtgen pencerenin ise sonradan içi doldurularak kapatıldığı anlaşılmaktadır\nTürbe, kare planlı olup kesme taştan yapıldı. Mezar odası, ziyaret yeri ve üst örtü olmak üzere üç birimden ibarettir. Mezar odasına ziyaret yerinde bulunan kapağın altından inilmektedir.",
-      "studentId": "stu-zeynep",
-      "studentName": "Zeynep Ecrin ELİŞ",
-      "version": 1,
-      "createdAt": "2026-11-22T19:04:18.893Z"
-    },
-    {
-      "id": "rev-1795374261469-461",
-      "recordKey": "seyh-coban-turbesi__c12_kulturel_miras_statusu",
-      "projectId": "proje-tarih",
-      "itemId": "seyh-coban-turbesi",
-      "criterionKey": "c12_kulturel_miras_statusu",
-      "prevContent": "",
-      "newContent": "mülkiyeti Vakıflar Genel Müdürlüğü'ne ait tarihi bir kültürel miras yapısıdır.",
-      "studentId": "stu-zeynep",
-      "studentName": "Zeynep Ecrin ELİŞ",
-      "version": 1,
-      "createdAt": "2026-11-22T19:04:21.469Z"
-    },
-    {
-      "id": "rev-1795374263840-840",
-      "recordKey": "seyh-coban-turbesi__c13_tarihsel_degisiklikler",
-      "projectId": "proje-tarih",
-      "itemId": "seyh-coban-turbesi",
-      "criterionKey": "c13_tarihsel_degisiklikler",
-      "prevContent": "",
-      "newContent": " Yapı, farklı dönemlerde geçirdiği onarım ve yenilemelerle bugünkü halini almıştır.",
-      "studentId": "stu-zeynep",
-      "studentName": "Zeynep Ecrin ELİŞ",
-      "version": 1,
-      "createdAt": "2026-11-22T19:04:23.840Z"
-    },
-    {
-      "id": "rev-1795374266293-777",
-      "recordKey": "seyh-coban-turbesi__c14_restorasyon",
-      "projectId": "proje-tarih",
-      "itemId": "seyh-coban-turbesi",
-      "criterionKey": "c14_restorasyon",
-      "prevContent": "",
-      "newContent": "Türbenin farklı dönemlerde birkaç kez onarımdan geçirildiği bilinmektedir.\n Türbenin günümüze ulaşan üç kitabesi vardır. Bunlardan ilkinin okunan kısımlarında: “Bu yıkık mescit Allah’ın yardımına muhtaç Eşref ... tarafından 772 (M. 1370) tarihinde onarılmıştır.”; ikincisinde: Bu kubbe, rahmetli, günahları bağışlanmış, Allah’ın rahmetine muhtaç Şeyh Çoban’a aittir. Allah kabrini nurlandırsın. Ulu Sultan Mehmed -Allah mülkünü daim eylesin- devleti günlerinde Pir Ahmed Bey’in azatlı kölesi Yusuf bin Abdullah tarafından 862 (M. 1458) tarihinde onarıldı.”; Üçüncüsünde ise: “1318 (M. 1900/1901) sene-i hicriyyesinde ve şevketlü Gazi Abdülhamid Han-ı Sânî hazretlerinin, taht-ı saltanatlarında Şeyh Hüseyin Râi kaddese sırrahü’l-Bâri hazretlerinin işbu türbe-i şerifesi mütevellilerinin mesal-i mahsusa-i hamiyet-perverâneleriyle tecdiden inşa olunmuştur.” ifadeleri yer alır. Kitabelerdeki bilgilerden türbenin Eretna Beyliği ve Osmanlılar döneminde kapsamlı onarımlardan geçirildiği ve ilk halinin bir hayli değişikliğe uğratıldığı anlaşılmaktadır.",
-      "studentId": "stu-zeynep",
-      "studentName": "Zeynep Ecrin ELİŞ",
-      "version": 1,
-      "createdAt": "2026-11-22T19:04:26.293Z"
-    },
-    {
-      "id": "rev-1795374268362-883",
-      "recordKey": "seyh-coban-turbesi__c15_kulturel_miras_tescil",
-      "projectId": "proje-tarih",
-      "itemId": "seyh-coban-turbesi",
-      "criterionKey": "c15_kulturel_miras_tescil",
-      "prevContent": "",
-      "newContent": " Tescilli bir kültür mirası ve inanç turizmi yapısıdır.",
-      "studentId": "stu-zeynep",
-      "studentName": "Zeynep Ecrin ELİŞ",
-      "version": 1,
-      "createdAt": "2026-11-22T19:04:28.362Z"
-    },
-    {
-      "id": "rev-1795374271435-630",
-      "recordKey": "seyh-coban-turbesi__c16_benzer_ortak_ozellikler",
-      "projectId": "proje-tarih",
-      "itemId": "seyh-coban-turbesi",
-      "criterionKey": "c16_benzer_ortak_ozellikler",
-      "prevContent": "",
-      "newContent": "Kesme Taş Malzeme: Beden duvarlarında ve yapı elemanlarında düzgün kesme taş kullanılması, bölgedeki birçok tarihî türbe ve anıtsal yapıyla paylaşılan temel özelliktir.\nKare Plan ve Sekizgen Kasnak: Kare planlı gövdenin tromplar yardımıyla kubbeye bağlanması ve sekizgen kasnak üzerine oturan örtü sistemi, Anadolu'daki benzer dönem türbelerinin tipik özelliklerindendir.\nİki Katlı Düzen (Cenazelik / Mumyalık): Üst kısımda ziyaret ve sanduka alanının, alt kısımda ise mezarların yer aldığı iki katlı kurgu Anadolu türbe geleneğinin yaygın bir uygulamasıdır.",
-      "studentId": "stu-zeynep",
-      "studentName": "Zeynep Ecrin ELİŞ",
-      "version": 1,
-      "createdAt": "2026-11-22T19:04:30.975Z"
-    },
     {
       "id": "rev-edit-1795374713036-253",
       "recordKey": "cifte-minareli-medrese__editing",
@@ -29399,6 +29333,86 @@
       "studentName": "Ali Veli (v75 Geri Yüklendi)",
       "version": 76,
       "createdAt": "2026-11-22T21:23:20.059Z"
+    },
+    {
+      "id": "rev-1795384033277-437",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795382578175).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384033264).",
+      "studentId": "stu-busenur",
+      "studentName": "Ali Veli",
+      "version": 77,
+      "createdAt": "2026-11-22T21:47:13.265Z"
+    },
+    {
+      "id": "rev-review-1795384049421-272",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-22T21:47:29.415Z"
+    },
+    {
+      "id": "rev-1795384057932-57",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384033264).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384033264).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v77 Geri Yüklendi)",
+      "version": 78,
+      "createdAt": "2026-11-22T21:47:37.932Z"
+    },
+    {
+      "id": "rev-1795384209754-933",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384033264).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384209747).",
+      "studentId": "stu-busenur",
+      "studentName": "Ali Veli",
+      "version": 79,
+      "createdAt": "2026-11-22T21:50:09.747Z"
+    },
+    {
+      "id": "rev-review-1795384222593-28",
+      "recordKey": "cifte-minareli-medrese__teacher_review",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "review",
+      "prevContent": "in_review",
+      "newContent": "[Öğretmen Onayladı]",
+      "studentId": "teacher-admin",
+      "studentName": "Fenci Öğretmen",
+      "version": 1,
+      "status": "approved",
+      "createdAt": "2026-11-22T21:50:22.590Z"
+    },
+    {
+      "id": "rev-1795384229039-790",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384209747).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi 1795384209747).",
+      "studentId": "stu-tari-aliveli",
+      "studentName": "Ali Veli (v79 Geri Yüklendi)",
+      "version": 80,
+      "createdAt": "2026-11-22T21:50:29.038Z"
     }
   ],
   "sources": {},
@@ -30041,6 +30055,24 @@
       "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
       "status": "approved",
       "createdAt": "2026-11-22T21:23:14.597Z"
+    },
+    {
+      "id": "fb-1795384049421",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-22T21:47:29.415Z"
+    },
+    {
+      "id": "fb-1795384222592",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-22T21:50:22.590Z"
     }
   ],
   "comparisons": {},
@@ -30049,7 +30081,7 @@
       "susamislar-konagi": {
         "itemId": "susamislar-konagi",
         "assignedStudentId": "stu-hazel",
-        "updatedAt": "2026-11-22T21:23:32.580Z",
+        "updatedAt": "2026-11-22T21:50:42.427Z",
         "assignedBy": "Fenci Öğretmen"
       }
     },
@@ -30081,14 +30113,15 @@
         "siyer-572__ev_21",
         "siyer-572__ev_22",
         "siyer-572__ev_23",
-        "siyer-572__ev_24"
+        "siyer-572__ev_24",
+        "siyer-572__ev_25"
       ]
     },
     "proje-siyer_year_flags": {
       "siyer-573": {
         "status": "no_event_found",
         "label": "Araştırıldı – Olay tespit edilemedi",
-        "updatedAt": "2026-11-22T21:23:55.657Z",
+        "updatedAt": "2026-11-22T21:48:23.717Z",
         "updatedBy": "Fenci Öğretmen"
       }
     },
@@ -30114,7 +30147,7 @@
         "studentName": "Öğrenci Araştırmacı",
         "status": "approved",
         "finalizedAt": "2026-11-22T19:17:25.865Z",
-        "reviewedAt": "2026-11-22T21:23:14.597Z"
+        "reviewedAt": "2026-11-22T21:50:22.590Z"
       },
       "sivas-ulu-camii": {
         "itemId": "sivas-ulu-camii",
@@ -30549,5 +30582,5 @@
       "updatedAt": "2026-11-22T20:34:01.138Z"
     }
   },
-  "lastCloudSyncTime": "2026-11-22T21:24:00.071Z"
+  "lastCloudSyncTime": "2026-11-22T21:50:46.580Z"
 }

@@ -64,6 +64,7 @@
     const offlineQueue = [];
     let saveState = "idle"; // "idle", "dirty", "saving", "saved", "error", "waiting_connection"
     let latestSyncHealth = null;
+    let isWordDownloading = false;
 
     // Tarihsel kriter ve eser anahtar eşlemeleri (Historical Aliasing)
     const CRITERION_ALIASES = {
@@ -4906,7 +4907,6 @@ function renderActiveItemForm(item, projData) {
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
-        let isWordDownloading = false;
         async downloadStudentWord(itemId, btnEl, projectId) {
             if (!currentSession) {
                 showNotice("Word belgesi indirmek için lütfen giriş yapınız.", "warning");
