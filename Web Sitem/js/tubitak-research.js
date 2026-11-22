@@ -596,7 +596,7 @@
                             </span>
                             ${isTeacher ? `
                             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                                👑 ÖĞRETMEN YÖNETİCİ
+                                👑 ÖĞRETMEN: ${escapeHtml(currentSession.studentName || 'rotali58')}
                             </span>
                             ` : `
                             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">

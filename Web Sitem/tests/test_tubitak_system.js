@@ -74,9 +74,20 @@ async function runTests() {
     console.log("   ✅ Başarılı! Başka projeye erişim 403 Forbidden ile engellendi.\n");
 
     // -------------------------------------------------------------
-    // TEST 3: Öğretmen tüm projelere erişebiliyor mu?
+    // TEST 3: Öğretmen tüm projelere erişebiliyor mu? (Yeni şifre rotali5867 ve isim rotali58)
     // -------------------------------------------------------------
-    console.log("3. Öğretmen Ana Şifresi ile Giriş Testi (tubitak2204):");
+    console.log("3. Öğretmen Ana Şifresi ile Giriş Testi (rotali5867 / rotali58):");
+    const teacherLoginNew = mockReqRes("POST", {
+        password: "rotali5867"
+    });
+    await tubitakAuthHandler(teacherLoginNew.req, teacherLoginNew.res);
+    assert.strictEqual(teacherLoginNew.getStatus(), 200);
+    const teacherDataNew = teacherLoginNew.getData();
+    assert.strictEqual(teacherDataNew.role, "teacher");
+    assert.strictEqual(teacherDataNew.projectId, "all");
+    assert.strictEqual(teacherDataNew.studentName, "rotali58");
+    console.log("   ✅ Başarılı! Öğretmen rotali5867 şifresi ve rotali58 ismiyle doğrulandı.");
+
     const teacherLogin = mockReqRes("POST", {
         password: "tubitak2204",
         studentName: "Fenci Öğretmen"

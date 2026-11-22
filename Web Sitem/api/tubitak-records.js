@@ -432,7 +432,7 @@ module.exports = async function handler(req, res) {
                     total: totalScore,
                     feedback: String(req.body?.feedback || rubricInput.feedback || '').trim(),
                     reviewedAt: now,
-                    reviewedBy: session.studentName || 'Danışman Öğretmen'
+                    reviewedBy: session.studentName || 'rotali58'
                 };
                 comp.updatedAt = now;
 
@@ -1151,7 +1151,7 @@ module.exports = async function handler(req, res) {
                     prevContent: "in_review",
                     newContent: targetStatus === "approved" ? "[Öğretmen Onayladı]" : `[Düzeltme İstendi: ${String(feedbackMessage || '').slice(0, 50)}]`,
                     studentId: session.studentId,
-                    studentName: session.studentName || "Danışman Öğretmen",
+                    studentName: session.studentName || "rotali58",
                     version: 1,
                     status: targetStatus,
                     createdAt: now
@@ -1451,7 +1451,7 @@ module.exports = async function handler(req, res) {
                     total: totalScore,
                     feedback: String(req.body?.feedback || rubricInput.feedback || '').trim(),
                     reviewedAt: now,
-                    reviewedBy: session.studentName || 'Danışman Öğretmen'
+                    reviewedBy: session.studentName || 'rotali58'
                 };
                 comp.updatedAt = now;
 

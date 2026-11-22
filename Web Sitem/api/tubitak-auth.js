@@ -60,9 +60,10 @@ const PROJECT_PASSWORDS = {
     "tubitak-siyer": { role: "student", projectId: "proje-siyer", projectName: "Siyer Kronolojik Araştırma Sistemi (571–632)" },
 
     // 👑 Öğretmen / Yönetici Ana Şifreleri (3 Projeye de Tam Yetkili)
-    "tubitak2204": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)" },
-    "rotali2026": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)" },
-    "ogretmen2026": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)" }
+    "rotali5867": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)", defaultTeacherName: "rotali58" },
+    "tubitak2204": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)", defaultTeacherName: "rotali58" },
+    "rotali2026": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)", defaultTeacherName: "rotali58" },
+    "ogretmen2026": { role: "teacher", projectId: "all", projectName: "Tüm Projeler (Öğretmen Yönetim Merkezi)", defaultTeacherName: "rotali58" }
 };
 
 function generateToken(payload) {
@@ -150,7 +151,7 @@ module.exports = async function handler(req, res) {
 
         if (isTeacher) {
             finalStudentId = "teacher-admin";
-            finalStudentName = String(studentName || "Danışman Öğretmen").trim();
+            finalStudentName = String(studentName && studentName !== "Danışman Öğretmen" ? studentName : (projectAuth.defaultTeacherName || "rotali58")).trim();
             finalStudentPin = "ADM";
         } else {
             // 1. Doğrudan studentId gönderilmişse
