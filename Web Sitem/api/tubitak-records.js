@@ -36,7 +36,19 @@ function getProjectSeed(projectId = 'proje-tarih') {
             const parsed = JSON.parse(fs.readFileSync(seedDataPath, 'utf8'));
             const proj = parsed?.projects?.[targetId];
             if (proj) {
-                const students = Array.isArray(proj.studentTeam) ? proj.studentTeam : [];
+                let students = Array.isArray(proj.studentTeam) ? [...proj.studentTeam] : [];
+                if (students.length === 0 && Array.isArray(proj.items)) {
+                    const studentMap = {};
+                    proj.items.forEach((it) => {
+                        if (it.assignedStudentId && !studentMap[it.assignedStudentId]) {
+                            studentMap[it.assignedStudentId] = {
+                                id: it.assignedStudentId,
+                                name: it.assignedStudentName || it.assignedStudentId
+                            };
+                        }
+                    });
+                    students = Object.values(studentMap);
+                }
                 const itemMap = {};
                 (proj.items || []).forEach((it) => {
                     itemMap[it.id] = it.assignedStudentId || null;
@@ -69,10 +81,12 @@ function resolveSessionStudentId(session, projectId = 'proje-tarih') {
     if (students.some((s) => s.id === rawId)) return rawId;
     const normName = normalizeTrName(session?.studentName || '');
     if (!normName) return null;
+    const exact = students.find(s => normalizeTrName(s.name) === normName);
+    if (exact) return exact.id;
     for (const s of students) {
         const sNorm = normalizeTrName(s.name);
-        const firstWord = sNorm.split(' ')[0];
-        if (normName === sNorm || (firstWord && normName.includes(firstWord))) {
+        const sWords = sNorm.split(' ');
+        if (sWords.length > 1 && sWords.every(w => normName.includes(w))) {
             return s.id;
         }
     }
@@ -90,6 +104,68 @@ function getEffectiveAssignedStudentId(store, projectId, itemId) {
     if (custom) return custom;
     const { itemMap } = getProjectSeed(projectId);
     return itemMap[baseId] || null;
+}
+
+function resolveEffectiveStudent(session, reqBodyOrQuery, projectId, itemId, store) {
+    const { students } = getProjectSeed(projectId);
+    const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
+    const assignedStu = (students || []).find(s => s.id === assignedStuId);
+
+    // 1. Doğrudan body veya query üzerinden gelen studentId
+    const explicitStuId = String(reqBodyOrQuery?.studentId || '').trim();
+    if (explicitStuId) {
+        const matched = (students || []).find(s => s.id === explicitStuId);
+        if (matched) {
+            return {
+                id: matched.id,
+                name: String(reqBodyOrQuery?.studentName || matched.name).trim()
+            };
+        }
+    }
+
+    // 2. Doğrudan body veya query üzerinden gelen studentName
+    const explicitStuName = String(reqBodyOrQuery?.studentName || '').trim();
+    if (explicitStuName && explicitStuName !== "Öğrenci Araştırmacı") {
+        const normIn = normalizeTrName(explicitStuName);
+        let matched = (students || []).find(s => normalizeTrName(s.name) === normIn);
+        if (!matched) {
+            matched = (students || []).find(s => {
+                const normS = normalizeTrName(s.name);
+                const sWords = normS.split(' ');
+                return sWords.length > 1 && sWords.every(w => normIn.includes(w));
+            });
+        }
+        return {
+            id: matched ? matched.id : (explicitStuId || "student"),
+            name: matched ? matched.name : explicitStuName
+        };
+    }
+
+    // 3. Oturum token'ındaki studentId
+    const sessionStuId = resolveSessionStudentId(session, projectId);
+    if (sessionStuId) {
+        const matched = (students || []).find(s => s.id === sessionStuId);
+        if (matched) {
+            return {
+                id: matched.id,
+                name: (session?.studentName && session.studentName !== "Öğrenci Araştırmacı") ? session.studentName : matched.name
+            };
+        }
+    }
+
+    // 4. Konunun atanmış öğrencisi
+    if (assignedStu) {
+        return {
+            id: assignedStu.id,
+            name: assignedStu.name
+        };
+    }
+
+    // 5. Varsayılan oturum verisi
+    return {
+        id: session?.studentId || "student",
+        name: (session?.studentName && session.studentName !== "Öğrenci Araştırmacı") ? session.studentName : (assignedStu?.name || "Öğrenci Araştırmacı")
+    };
 }
 
 // İsteğe bağlı Supabase REST istemcisi (Varsa ikincil yedek olarak PostgreSQL'e yazar)
@@ -201,13 +277,28 @@ module.exports = async function handler(req, res) {
                         return res.status(403).json({ ok: false, error: "Bu projenin kayıtlarına erişim yetkiniz bulunmuyor." });
                     }
 
+                    const effectiveStu = resolveEffectiveStudent(session, req.query, exportProjId, item.id, store);
+                    const itemSources = (store.sources ? Object.values(store.sources).filter(s => s && (s.itemId === item.id || (exportProjId === 'proje-siyer' && String(s.itemId || '').startsWith(item.id)))) : []);
+                    const finalMetaKey = `${exportProjId}_finalized`;
+                    const itemFinalized = (store.itemsMeta && store.itemsMeta[finalMetaKey] && store.itemsMeta[finalMetaKey][item.id]) || null;
+                    const itemStatus = itemFinalized?.status || 'editing';
+
+                    const isStudentReq = userRole === "student" || Boolean(req.query.studentName);
+                    const metaOpts = {
+                        academic: isStudentReq,
+                        studentName: (isStudentReq && effectiveStu?.name) ? effectiveStu.name : '',
+                        projectId: exportProjId,
+                        status: itemStatus,
+                        sourcesList: itemSources
+                    };
+
                     let docxResult;
                     if (exportProjId === "proje-siyer") {
                         const extraIds = (store.itemsMeta && store.itemsMeta['proje-siyer_events'] && store.itemsMeta['proje-siyer_events'][item.id]) || [];
                         const eventIds = [item.id, ...extraIds.filter((id) => id && id !== item.id)].slice(0, 3);
-                        docxResult = await generateSiyerYearDocxBuffer(item, eventIds, projObj.criteriaList, mergedRecords);
+                        docxResult = await generateSiyerYearDocxBuffer(item, eventIds, projObj.criteriaList, mergedRecords, metaOpts);
                     } else {
-                        docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords);
+                        docxResult = await generateMonumentDocxBuffer(item, projObj.criteriaList, mergedRecords, metaOpts);
                     }
                     if (!docxResult || docxResult.paragraphCount === 0) {
                         return res.status(404).json({ ok: false, error: "Bu araştırma için henüz indirilebilecek veri bulunamadı." });
@@ -585,10 +676,11 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
                 }
                 const store = await getCloudStore();
+                const effectiveStu = resolveEffectiveStudent(session, req.body, projectId, itemId, store);
                 if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
-                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId && !req.body?.studentId) {
                         return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır." });
                     }
                 }
@@ -623,8 +715,8 @@ module.exports = async function handler(req, res) {
                         itemId: recItemId,
                         criterionKey: critKey,
                         content: safeFinalContent,
-                        studentId: session.studentId,
-                        studentName: session.studentName,
+                        studentId: effectiveStu.id,
+                        studentName: effectiveStu.name,
                         version: newVersion || 1,
                         status: "in_review",
                         updatedAt: now
@@ -651,8 +743,8 @@ module.exports = async function handler(req, res) {
                     criterionKey: "finalized",
                     prevContent: "draft",
                     newContent: "[Kesinleştirildi - Öğretmen İncelemesinde]",
-                    studentId: session.studentId,
-                    studentName: session.studentName,
+                    studentId: effectiveStu.id,
+                    studentName: effectiveStu.name,
                     version: 1,
                     status: "in_review",
                     createdAt: now
@@ -663,14 +755,14 @@ module.exports = async function handler(req, res) {
                 if (!store.itemsMeta[finalMetaKey]) store.itemsMeta[finalMetaKey] = {};
                 store.itemsMeta[finalMetaKey][itemId] = {
                     itemId,
-                    studentId: session.studentId,
-                    studentName: session.studentName,
+                    studentId: effectiveStu.id,
+                    studentName: effectiveStu.name,
                     status: "in_review",
                     finalizedAt: now
                 };
 
                 if (!store.studentState) store.studentState = {};
-                store.studentState[session.studentId] = { projectId, itemId, studentName: session.studentName, updatedAt: now };
+                store.studentState[effectiveStu.id] = { projectId, itemId, studentName: effectiveStu.name, updatedAt: now };
 
                 await saveCloudStore(store);
 
@@ -678,7 +770,7 @@ module.exports = async function handler(req, res) {
                     ok: true,
                     status: "in_review",
                     finalizedStatus: "finalized",
-                    message: "Çalışmanız başarıyla kesinleştirildi! 🎓",
+                    message: "Çalışmanız başarıyla kesinleştirildi.",
                     updatedCount,
                     updatedAt: now
                 });
@@ -694,10 +786,11 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
                 }
                 const store = await getCloudStore();
+                const effectiveStu = resolveEffectiveStudent(session, req.body, projectId, itemId, store);
                 if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
-                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
+                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId && !req.body?.studentId) {
                         return res.status(403).json({ ok: false, error: "Bu kayıt başka bir öğrenciye atanmıştır." });
                     }
                 }
@@ -720,8 +813,8 @@ module.exports = async function handler(req, res) {
                 store.itemsMeta[finalMetaKey][itemId] = {
                     ...(store.itemsMeta[finalMetaKey][itemId] || {}),
                     itemId,
-                    studentId: session.studentId,
-                    studentName: session.studentName,
+                    studentId: effectiveStu.id,
+                    studentName: effectiveStu.name,
                     status: "editing",
                     reopenedAt: now
                 };
@@ -734,8 +827,8 @@ module.exports = async function handler(req, res) {
                     criterionKey: "editing",
                     prevContent: "finalized",
                     newContent: "[Yeniden Düzenlemeye Açıldı]",
-                    studentId: session.studentId,
-                    studentName: session.studentName,
+                    studentId: effectiveStu.id,
+                    studentName: effectiveStu.name,
                     version: 1,
                     status: "editing",
                     createdAt: now

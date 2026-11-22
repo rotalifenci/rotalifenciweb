@@ -239,26 +239,28 @@ async function runTests() {
     await tubitakRecordsHandler(ownEdit.req, ownEdit.res);
     assert.strictEqual(ownEdit.getStatus(), 200);
 
-    // Öğretmen #15 eseri Zeynep'e yeniden atayabilmeli (200) ve mevcut kayıt korunmalı
-    const reassignReq = mockReqRes("PUT", {
-        action: "reassign_item",
-        projectId: "proje-tarih",
-        itemId: "susamislar-konagi",
-        assignedStudentId: "stu-zeynep"
-    }, {}, { authorization: `Bearer ${teacherToken}` });
-    await tubitakRecordsHandler(reassignReq.req, reassignReq.res);
-    assert.strictEqual(reassignReq.getStatus(), 200);
-    assert.strictEqual(reassignReq.getData().assignments["susamislar-konagi"].assignedStudentId, "stu-zeynep");
-
-    // Eski haline geri al (Hazel)
-    const restoreAssignReq = mockReqRes("PUT", {
-        action: "reassign_item",
-        projectId: "proje-tarih",
-        itemId: "susamislar-konagi",
-        assignedStudentId: "stu-hazel"
-    }, {}, { authorization: `Bearer ${teacherToken}` });
-    await tubitakRecordsHandler(restoreAssignReq.req, restoreAssignReq.res);
-    assert.strictEqual(restoreAssignReq.getStatus(), 200);
+    try {
+        // Öğretmen #15 eseri Zeynep'e yeniden atayabilmeli (200) ve mevcut kayıt korunmalı
+        const reassignReq = mockReqRes("PUT", {
+            action: "reassign_item",
+            projectId: "proje-tarih",
+            itemId: "susamislar-konagi",
+            assignedStudentId: "stu-zeynep"
+        }, {}, { authorization: `Bearer ${teacherToken}` });
+        await tubitakRecordsHandler(reassignReq.req, reassignReq.res);
+        assert.strictEqual(reassignReq.getStatus(), 200);
+        assert.strictEqual(reassignReq.getData().assignments["susamislar-konagi"].assignedStudentId, "stu-zeynep");
+    } finally {
+        // Eski haline geri al (Hazel)
+        const restoreAssignReq = mockReqRes("PUT", {
+            action: "reassign_item",
+            projectId: "proje-tarih",
+            itemId: "susamislar-konagi",
+            assignedStudentId: "stu-hazel"
+        }, {}, { authorization: `Bearer ${teacherToken}` });
+        await tubitakRecordsHandler(restoreAssignReq.req, restoreAssignReq.res);
+        assert.strictEqual(restoreAssignReq.getStatus(), 200);
+    }
     console.log("   ✅ Başarılı! Öğrenci yetki izolasyonu ve öğretmen görev atama akışı doğrulandı.\n");
 
     // -------------------------------------------------------------
@@ -282,7 +284,7 @@ async function runTests() {
     const emptyDocxReq = mockReqRes("GET", {}, {
         projectId: "proje-tarih",
         exportDocx: "single",
-        itemId: "tashan"
+        itemId: "tarihi-mehmet-ali-hamami"
     }, { authorization: `Bearer ${teacherToken}` });
     await tubitakRecordsHandler(emptyDocxReq.req, emptyDocxReq.res);
     assert.strictEqual(emptyDocxReq.getStatus(), 404);

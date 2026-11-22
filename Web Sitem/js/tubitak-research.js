@@ -1426,7 +1426,9 @@
                 body: JSON.stringify({
                     action: "reopen_item_edit",
                     projectId: activeProjectId,
-                    itemId: targetItemId
+                    itemId: targetItemId,
+                    studentId: currentSession.studentId,
+                    studentName: currentSession.studentName
                 })
             });
         } catch (err) {
@@ -1447,14 +1449,20 @@
         }, 100);
     }
 
+    let isFinalizingItem = false;
     async function finalizeCurrentItem(targetItemId = activeItemId) {
         if (!currentSession || !targetItemId) return;
+        if (isFinalizingItem) {
+            showNotice("Kesinleştirme işlemi sürüyor, lütfen bekleyiniz...", "info");
+            return;
+        }
+
         const projData = seedData?.projects?.[activeProjectId] || {};
         const items = projData.items || [];
         const currentItem = items.find(it => it.id === targetItemId) || { id: targetItemId };
 
         if (!isUserAssignedToItem(currentItem)) {
-            showNotice("Bu kayıt başka bir öğrenciye atanmıştır.", "error");
+            showNotice("Bu kayıt başka bir öğrenciye atanmıştır. Yalnızca sorumlu olduğunuz kayıtları kesinleştirebilirsiniz.", "error");
             return;
         }
 
@@ -1463,49 +1471,56 @@
             return;
         }
 
-        await flushPendingSaves();
-        updateUIAutosaveBadge("saving", "Kesinleştiriliyor...");
-
-        const recordsToSave = [];
-        if (activeProjectId === "proje-siyer") {
-            const keys = [
-                "c1_olay", "c2_kok_deger", "c3_kaynakca",
-                "c1_olay_2", "c2_kok_deger_2", "c3_kaynakca_2",
-                "c1_olay_3", "c2_kok_deger_3", "c3_kaynakca_3"
-            ];
-            keys.forEach(k => {
-                const el = document.getElementById(`input-${k}`);
-                const prevRec = getRecordWithAliases(targetItemId, k);
-                const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
-                let contentVal = el ? el.value : prevVal;
-                if (!contentVal.trim() && prevVal.trim()) {
-                    contentVal = prevVal;
-                }
-                recordsToSave.push({
-                    criterionKey: k,
-                    content: contentVal,
-                    clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
-                });
-            });
-        } else {
-            const critList = projData.criteriaList || [];
-            critList.forEach(crit => {
-                const el = document.getElementById(`input-${crit.key}`);
-                const prevRec = getRecordWithAliases(targetItemId, crit.key);
-                const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
-                let contentVal = el ? el.value : prevVal;
-                if (!contentVal.trim() && prevVal.trim()) {
-                    contentVal = prevVal;
-                }
-                recordsToSave.push({
-                    criterionKey: crit.key,
-                    content: contentVal,
-                    clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
-                });
-            });
+        isFinalizingItem = true;
+        const finalizeBtn = document.getElementById("btn-tubitak-finalize");
+        if (finalizeBtn) {
+            finalizeBtn.disabled = true;
+            finalizeBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-white"></i> <span>Kesinleştiriliyor...</span>';
         }
 
         try {
+            await flushPendingSaves();
+            updateUIAutosaveBadge("saving", "Kesinleştiriliyor...");
+
+            const recordsToSave = [];
+            if (activeProjectId === "proje-siyer") {
+                const keys = [
+                    "c1_olay", "c2_kok_deger", "c3_kaynakca",
+                    "c1_olay_2", "c2_kok_deger_2", "c3_kaynakca_2",
+                    "c1_olay_3", "c2_kok_deger_3", "c3_kaynakca_3"
+                ];
+                keys.forEach(k => {
+                    const el = document.getElementById(`input-${k}`);
+                    const prevRec = getRecordWithAliases(targetItemId, k);
+                    const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
+                    let contentVal = el ? el.value : prevVal;
+                    if (!contentVal.trim() && prevVal.trim()) {
+                        contentVal = prevVal;
+                    }
+                    recordsToSave.push({
+                        criterionKey: k,
+                        content: contentVal,
+                        clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
+                    });
+                });
+            } else {
+                const critList = projData.criteriaList || [];
+                critList.forEach(crit => {
+                    const el = document.getElementById(`input-${crit.key}`);
+                    const prevRec = getRecordWithAliases(targetItemId, crit.key);
+                    const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
+                    let contentVal = el ? el.value : prevVal;
+                    if (!contentVal.trim() && prevVal.trim()) {
+                        contentVal = prevVal;
+                    }
+                    recordsToSave.push({
+                        criterionKey: crit.key,
+                        content: contentVal,
+                        clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
+                    });
+                });
+            }
+
             const res = await fetch("/api/tubitak-records", {
                 method: "POST",
                 headers: {
@@ -1516,6 +1531,8 @@
                     action: "finalize_item",
                     projectId: activeProjectId,
                     itemId: targetItemId,
+                    studentId: currentSession.studentId,
+                    studentName: currentSession.studentName,
                     records: recordsToSave
                 })
             });
@@ -1525,6 +1542,8 @@
                 if (!runtimeFinalized) runtimeFinalized = {};
                 runtimeFinalized[targetItemId] = {
                     itemId: targetItemId,
+                    studentId: currentSession.studentId,
+                    studentName: currentSession.studentName,
                     status: "in_review",
                     finalizedAt: new Date().toISOString()
                 };
@@ -1533,7 +1552,7 @@
                         v.status = "in_review";
                     }
                 }
-                showNotice("Çalışmanız başarıyla kesinleştirildi! 🎓 (İstediğiniz zaman DÜZENLE butonuna basarak tekrar düzenleyebilirsiniz)", "success");
+                showNotice("Çalışmanız başarıyla kesinleştirildi.", "success");
                 await syncProjectData(activeProjectId);
                 renderMainContainer(document.getElementById("tubitak-research-container"));
             } else {
@@ -1543,6 +1562,12 @@
         } catch (err) {
             updateUIAutosaveBadge("error", "Bağlantı hatası");
             showNotice("Bağlantı hatası: " + err.message, "error");
+        } finally {
+            isFinalizingItem = false;
+            if (finalizeBtn) {
+                finalizeBtn.disabled = false;
+                finalizeBtn.innerHTML = '<i class="fa-solid fa-check-double text-white"></i> <span>KESİNLEŞTİR</span>';
+            }
         }
     }
 
@@ -4844,9 +4869,15 @@ function renderActiveItemForm(item, projData) {
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
+        let isWordDownloading = false;
         async downloadStudentWord(itemId, btnEl, projectId) {
             if (!currentSession) {
                 showNotice("Word belgesi indirmek için lütfen giriş yapınız.", "warning");
+                return;
+            }
+
+            if (isWordDownloading) {
+                showNotice("Word belgesi oluşturuluyor, lütfen bekleyiniz...", "info");
                 return;
             }
 
@@ -4870,7 +4901,7 @@ function renderActiveItemForm(item, projData) {
                 return;
             }
 
-            // 2. Eğer düzenleme yetkisi olan öğrenciyse bekleyen yerel kayıtları sessizce kaydetmeyi dene (indirmeyi asla engellemez)
+            // 2. Eğer düzenleme yetkisi olan öğrenciyse bekleyen yerel kayıtları sessizce kaydetmeyi dene
             if (isItemEditableByCurrentUser(item)) {
                 try {
                     await flushPendingSaves();
@@ -4878,16 +4909,34 @@ function renderActiveItemForm(item, projData) {
             }
 
             // 3. Buton göstergesi ve indirme hazırlığı
+            isWordDownloading = true;
             const origHtml = btnEl ? btnEl.innerHTML : "";
             if (btnEl) {
                 btnEl.disabled = true;
                 btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-blue-200"></i> <span>İndiriliyor...</span>';
             }
-            showNotice("Word belgesi hazırlanıyor ve indiriliyor... 📄", "info");
+            showNotice("Word belgesi (.docx) hazırlanıyor ve indiriliyor... 📄", "info");
 
-            const rawDocName = targetProjId === "proje-siyer" && item?.year ? String(item.year) : (item?.title || targetItemId || "Arastirma_Metni");
-            const fallbackName = (rawDocName.replace(/[<>:"/\\|?*\x00-\x1f]/g, "").trim() || "Arastirma_Metni") + ".docx";
-            const directUrl = "/api/tubitak-records?projectId=" + encodeURIComponent(targetProjId) + "&exportDocx=single&itemId=" + encodeURIComponent(targetItemId) + "&token=" + encodeURIComponent(currentSession.token || "") + "&fresh=true";
+            const studentNameParam = (currentSession.studentName && currentSession.studentName !== "Öğrenci Araştırmacı")
+                ? currentSession.studentName
+                : "";
+            const studentIdParam = currentSession.studentId || "";
+
+            const rawDocName = targetProjId === "proje-siyer" && item?.year ? `${item.year}_Yili` : (item?.title || targetItemId || "Arastirma_Metni");
+            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const fallbackName = `${targetProjId}_${rawDocName.replace(/[<>:"/\\|?*\x00-\x1f\s]/g, "_")}_${dateStr}.docx`;
+
+            const queryParams = new URLSearchParams({
+                projectId: targetProjId,
+                exportDocx: "single",
+                itemId: targetItemId,
+                token: currentSession.token || "",
+                fresh: "true"
+            });
+            if (studentNameParam) queryParams.set("studentName", studentNameParam);
+            if (studentIdParam) queryParams.set("studentId", studentIdParam);
+
+            const directUrl = `/api/tubitak-records?${queryParams.toString()}`;
 
             try {
                 const res = await fetch(directUrl, {
@@ -4902,7 +4951,7 @@ function renderActiveItemForm(item, projData) {
                     } catch (e) {}
 
                     if (res.status === 404 || errMsg.includes("bulunamadı") || errMsg.includes("henüz")) {
-                        showNotice("Bu araştırma için henüz kaydedilmiş veri bulunmuyor.", "warning");
+                        showNotice("Bu araştırma için henüz kaydedilmiş veri bulunmuyor. Lütfen önce araştırma verilerini girip kaydediniz.", "warning");
                     } else if (res.status === 403) {
                         showNotice("Bu araştırmayı indirme yetkiniz bulunmuyor.", "error");
                     } else {
@@ -4943,22 +4992,17 @@ function renderActiveItemForm(item, projData) {
                     } catch (e) {}
                 }, 4000);
 
-                showNotice('"' + downloadFilename + '" Word belgesi başarıyla indirildi. ✅', "success");
+                showNotice(`"${downloadFilename}" Word belgesi başarıyla indirildi. ✅`, "success");
             } catch (err) {
-                // Blob veya fetch hatası olursa doğrudan iframe fallback'i çalıştır
+                // Fetch veya blob hatasında (örneğin mobil safari indirme kısıtlamasında) doğrudan pencere / konum yönlendirmesi
                 try {
-                    const hiddenIframe = document.createElement("iframe");
-                    hiddenIframe.style.display = "none";
-                    hiddenIframe.src = directUrl;
-                    document.body.appendChild(hiddenIframe);
-                    setTimeout(() => {
-                        try { if (hiddenIframe.parentNode) hiddenIframe.parentNode.removeChild(hiddenIframe); } catch (e) {}
-                    }, 6000);
-                    showNotice('"' + fallbackName + '" indirme bağlantısı başlatıldı.', "success");
+                    window.location.assign(directUrl);
+                    showNotice(`"${fallbackName}" indirme işlemi başlatıldı. ✅`, "success");
                 } catch (fallbackErr) {
                     showNotice("Word indirme bağlantı hatası: " + err.message, "error");
                 }
             } finally {
+                isWordDownloading = false;
                 if (btnEl) {
                     btnEl.disabled = false;
                     btnEl.innerHTML = origHtml;

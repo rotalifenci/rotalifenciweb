@@ -28,6 +28,27 @@ function sanitizeDocxFilename(title) {
     return `${cleaned || 'Tarihi_Eser'}.docx`;
 }
 
+function sanitizeStudentDocxFilename(projectName, itemTitle, studentName, dateStr) {
+    const cleanProj = String(projectName || 'Tubitak')
+        .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
+        .replace(/\s+/g, '_')
+        .trim();
+    const cleanItem = String(itemTitle || 'Arastirma')
+        .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
+        .replace(/\s+/g, '_')
+        .trim();
+    const cleanStudent = String(studentName || '')
+        .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
+        .replace(/\s+/g, '_')
+        .trim();
+    const dStr = dateStr || new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+    if (cleanStudent) {
+        return `${cleanProj}_${cleanItem}_${cleanStudent}_${dStr}.docx`;
+    }
+    return `${cleanProj}_${cleanItem}_${dStr}.docx`;
+}
+
 function buildAsciiFallbackFilename(utf8Name) {
     return String(utf8Name || 'belge.docx')
         .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
@@ -163,10 +184,262 @@ async function buildPlainTextDocxBuffer(textParagraphs) {
     return Packer.toBuffer(doc);
 }
 
-async function generateMonumentDocxBuffer(item, criteriaList, recordsMap) {
+async function buildAcademicDocxBuffer({
+    projectTitle,
+    itemTitle,
+    orderLabel,
+    studentName,
+    reportDate,
+    statusLabel,
+    sections,
+    sourcesList
+}) {
+    const marginTwips = convertMillimetersToTwip(25); // 2.5 cm
+    const docChildren = [];
+
+    // 1. Üst Kurum / Yarışma Bilgisi
+    docChildren.push(
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 80, after: 80 },
+            children: [
+                new TextRun({
+                    text: "T.C. MİLLÎ EĞİTİM BAKANLIĞI / TÜBİTAK 2204-B ORTAOKUL ÖĞRENCİLERİ ARAŞTIRMA PROJELERİ",
+                    bold: true,
+                    size: 20, // 10 pt
+                    font: 'Times New Roman',
+                    color: '475569'
+                })
+            ]
+        }),
+        // 2. Proje Adı (Heading 1)
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 80, after: 100 },
+            children: [
+                new TextRun({
+                    text: String(projectTitle || 'BİLİMSEL ARAŞTIRMA RAPORU').toUpperCase(),
+                    bold: true,
+                    size: 28, // 14 pt
+                    font: 'Times New Roman',
+                    color: '0F172A'
+                })
+            ]
+        }),
+        // 3. Konu Başlığı (Heading 2)
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 60, after: 220 },
+            children: [
+                new TextRun({
+                    text: `Araştırma Konusu: ${itemTitle || 'Genel Araştırma'}`,
+                    bold: true,
+                    italics: false,
+                    size: 24, // 12 pt
+                    font: 'Times New Roman',
+                    color: '1D4ED8'
+                })
+            ]
+        })
+    );
+
+    // 4. Meta Bilgi Tablosu
+    const metaTable = new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+            new TableRow({
+                children: [
+                    new TableCell({
+                        shading: { fill: "F8FAFC", type: ShadingType.CLEAR },
+                        children: [new Paragraph({ children: [new TextRun({ text: "Araştırmacı Öğrenci:", bold: true, size: 20, font: 'Times New Roman' }), new TextRun({ text: ` ${studentName || 'Öğrenci Araştırmacı'}`, size: 20, font: 'Times New Roman' })] })]
+                    }),
+                    new TableCell({
+                        shading: { fill: "F8FAFC", type: ShadingType.CLEAR },
+                        children: [new Paragraph({ children: [new TextRun({ text: "Konu / Sıra:", bold: true, size: 20, font: 'Times New Roman' }), new TextRun({ text: ` ${orderLabel || itemTitle}`, size: 20, font: 'Times New Roman' })] })]
+                    })
+                ]
+            }),
+            new TableRow({
+                children: [
+                    new TableCell({
+                        shading: { fill: "F8FAFC", type: ShadingType.CLEAR },
+                        children: [new Paragraph({ children: [new TextRun({ text: "Rapor Tarihi:", bold: true, size: 20, font: 'Times New Roman' }), new TextRun({ text: ` ${reportDate || new Date().toLocaleDateString('tr-TR')}`, size: 20, font: 'Times New Roman' })] })]
+                    }),
+                    new TableCell({
+                        shading: { fill: "F8FAFC", type: ShadingType.CLEAR },
+                        children: [new Paragraph({ children: [new TextRun({ text: "İnceleme Durumu:", bold: true, size: 20, font: 'Times New Roman' }), new TextRun({ text: ` ${statusLabel || 'Kesinleştirildi'}`, size: 20, font: 'Times New Roman' })] })]
+                    })
+                ]
+            })
+        ]
+    });
+    docChildren.push(metaTable);
+    docChildren.push(new Paragraph({ spacing: { after: 180 }, children: [] }));
+
+    // 5. Araştırma Kriterleri ve Öğrenci Bulguları
+    for (const sec of (sections || [])) {
+        if (!sec.text || !sec.text.trim()) continue;
+
+        // Kriter Başlığı / Soru
+        docChildren.push(
+            new Paragraph({
+                spacing: { before: 200, after: 80 },
+                children: [
+                    new TextRun({
+                        text: sec.title,
+                        bold: true,
+                        size: 24, // 12 pt
+                        font: 'Times New Roman',
+                        color: '1E293B'
+                    })
+                ]
+            })
+        );
+
+        // Öğrenci Metin Paragrafları
+        const lines = sec.text.replace(/\r\n/g, '\n').split('\n');
+        for (const line of lines) {
+            const tr = line.trim();
+            if (!tr) continue;
+            docChildren.push(
+                new Paragraph({
+                    alignment: AlignmentType.JUSTIFIED,
+                    spacing: { line: 360, after: 120 },
+                    children: [
+                        new TextRun({
+                            text: tr,
+                            font: 'Times New Roman',
+                            size: 24
+                        })
+                    ]
+                })
+            );
+        }
+    }
+
+    // 6. Eklenen Akademik Kaynaklar / Kaynakça
+    if (Array.isArray(sourcesList) && sourcesList.length > 0) {
+        docChildren.push(
+            new Paragraph({
+                spacing: { before: 260, after: 100 },
+                children: [
+                    new TextRun({
+                        text: "AKADEMİK KAYNAKLAR VE KAYNAKÇA",
+                        bold: true,
+                        size: 24,
+                        font: 'Times New Roman',
+                        color: '0F172A'
+                    })
+                ]
+            })
+        );
+
+        sourcesList.forEach((src, idx) => {
+            const details = [
+                src.author,
+                src.title ? `"${src.title}"` : null,
+                src.publisher,
+                src.year ? `(${src.year})` : null,
+                src.page ? `s. ${src.page}` : null,
+                src.url ? `Erişim: ${src.url}` : null
+            ].filter(Boolean).join(', ');
+
+            docChildren.push(
+                new Paragraph({
+                    spacing: { line: 300, after: 80 },
+                    children: [
+                        new TextRun({ text: `[${idx + 1}] `, bold: true, size: 22, font: 'Times New Roman', color: '334155' }),
+                        new TextRun({ text: details || src.title || 'Kaynak', size: 22, font: 'Times New Roman' }),
+                        ...(src.description ? [new TextRun({ text: ` — ${src.description}`, italics: true, size: 20, font: 'Times New Roman', color: '64748B' })] : [])
+                    ]
+                })
+            );
+        });
+    }
+
+    const doc = new Document({
+        styles: {
+            default: {
+                document: {
+                    run: { font: 'Times New Roman', size: 24 },
+                    paragraph: {
+                        alignment: AlignmentType.JUSTIFIED,
+                        spacing: { line: 360, after: 120 }
+                    }
+                }
+            }
+        },
+        sections: [
+            {
+                properties: {
+                    page: {
+                        size: {
+                            width: convertMillimetersToTwip(210),
+                            height: convertMillimetersToTwip(297)
+                        },
+                        margin: {
+                            top: marginTwips,
+                            right: marginTwips,
+                            bottom: marginTwips,
+                            left: marginTwips
+                        }
+                    }
+                },
+                children: docChildren
+            }
+        ]
+    });
+
+    return Packer.toBuffer(doc);
+}
+
+async function generateMonumentDocxBuffer(item, criteriaList, recordsMap, metaOptions = {}) {
     const textParagraphs = extractMonumentTextParagraphs(item, criteriaList, recordsMap);
     if (textParagraphs.length === 0) {
         return null;
+    }
+
+    // Academic formatting if requested or if studentName is provided
+    if (metaOptions.academic || metaOptions.studentName) {
+        const sections = [];
+        for (const crit of (criteriaList || [])) {
+            const savedContent = getDocxRecordValue(recordsMap, item.id, crit.key);
+            const rawText = savedContent && savedContent.trim()
+                ? savedContent
+                : (item.criteria && typeof item.criteria[crit.key] === 'string' ? item.criteria[crit.key] : (crit.key === 'c1_bilim_insani_adi' ? (item.title || '') : ''));
+
+            if (rawText && rawText.trim()) {
+                sections.push({
+                    title: crit.title || crit.key,
+                    text: rawText.trim()
+                });
+            }
+        }
+
+        const projId = metaOptions.projectId || (criteriaList.some(c => c.key === 'c1_bilim_insani_adi') ? 'proje-bilim' : 'proje-tarih');
+        const projTitle = projId === 'proje-bilim'
+            ? 'Matematik ve Astronomide Türk-İslam Bilim İnsanları Araştırma Raporu'
+            : 'Sivas Kültürel Miras – Tarihî Eserler Araştırma Raporu';
+        const projPrefix = projId === 'proje-bilim' ? 'Tubitak_Bilim' : 'Tubitak_Tarih';
+        const unitWord = projId === 'proje-bilim' ? 'Bilim İnsanı' : 'Eser';
+
+        const buffer = await buildAcademicDocxBuffer({
+            projectTitle: projTitle,
+            itemTitle: item.title || item.id,
+            orderLabel: `${unitWord} #${item.orderIndex || 1}`,
+            studentName: metaOptions.studentName,
+            reportDate: metaOptions.reportDate || new Date().toLocaleDateString('tr-TR'),
+            statusLabel: (metaOptions.status === 'in_review' || metaOptions.status === 'finalized') ? 'Kesinleştirildi 🎓' : (metaOptions.status === 'approved' ? 'Onaylandı ✅' : 'Düzenleniyor 📝'),
+            sections,
+            sourcesList: metaOptions.sourcesList || []
+        });
+
+        const filename = sanitizeStudentDocxFilename(projPrefix, item.title, metaOptions.studentName);
+        return {
+            buffer,
+            filename,
+            paragraphCount: textParagraphs.length
+        };
     }
 
     const buffer = await buildPlainTextDocxBuffer(textParagraphs);
@@ -275,15 +548,78 @@ function extractSiyerYearTextParagraphs(yearItem, recordsMap) {
     return { allParagraphs, eventCount: nonEmptyEvents };
 }
 
-async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, recordsMap) {
+async function generateSiyerYearDocxBuffer(yearItem, eventIds, criteriaList, recordsMap, metaOptions = {}) {
     const { allParagraphs, eventCount } = extractSiyerYearTextParagraphs(yearItem, recordsMap);
 
     if (allParagraphs.length === 0) {
         return null;
     }
 
-    const buffer = await buildPlainTextDocxBuffer(allParagraphs);
+    const yearId = yearItem.id;
     const yearLabel = String(yearItem.year || yearItem.id).replace(/^siyer-/, '');
+
+    if (metaOptions.academic || metaOptions.studentName) {
+        const eventsConfig = [
+            { num: 1, title: "1. Olay (Ana Olay)", olayKey: "c1_olay", olayLegacy: null, kokKey: "c2_kok_deger", kokLegacy: null, kaynakKey: "c3_kaynakca", kaynakLegacy: null },
+            { num: 2, title: "2. Olay", olayKey: "c1_olay_2", olayLegacy: `${yearId}__ev_2__c1_olay`, kokKey: "c2_kok_deger_2", kokLegacy: `${yearId}__ev_2__c2_kok_deger`, kaynakKey: "c3_kaynakca_2", kaynakLegacy: `${yearId}__ev_2__c3_kaynakca` },
+            { num: 3, title: "3. Olay", olayKey: "c1_olay_3", olayLegacy: `${yearId}__ev_3__c1_olay`, kokKey: "c2_kok_deger_3", kokLegacy: `${yearId}__ev_3__c2_kok_deger`, kaynakKey: "c3_kaynakca_3", kaynakLegacy: `${yearId}__ev_3__c3_kaynakca` }
+        ];
+
+        function getVal(key, legacyKey) {
+            const fullKey = `${yearId}__${key}`;
+            let rec = recordsMap && recordsMap[fullKey];
+            if ((!rec || !rec.content) && legacyKey && recordsMap && recordsMap[legacyKey]) {
+                rec = recordsMap[legacyKey];
+            }
+            if (rec && typeof rec.content === 'string' && rec.content.trim()) {
+                return rec.content.trim();
+            }
+            if (yearItem.criteria && typeof yearItem.criteria[key] === 'string' && yearItem.criteria[key].trim()) {
+                return yearItem.criteria[key].trim();
+            }
+            return '';
+        }
+
+        const sections = [];
+        for (const ev of eventsConfig) {
+            const olay = getVal(ev.olayKey, ev.olayLegacy);
+            const kok = getVal(ev.kokKey, ev.kokLegacy);
+            const kaynak = getVal(ev.kaynakKey, ev.kaynakLegacy);
+
+            if (!olay && !kok && !kaynak) continue;
+
+            const lines = [];
+            if (olay) lines.push(olay);
+            if (kok) lines.push(`İlişkili Kök Değerler: ${kok}`);
+            if (kaynak) lines.push(`Kaynakça: ${kaynak}`);
+
+            sections.push({
+                title: `${ev.title.toUpperCase()} (${yearLabel}. YIL)`,
+                text: lines.join('\n\n')
+            });
+        }
+
+        const buffer = await buildAcademicDocxBuffer({
+            projectTitle: "Siyer-i Nebi Kronolojisi Araştırma Raporu (571–632)",
+            itemTitle: `${yearLabel}. Yılı Araştırması`,
+            orderLabel: `Siyer Kronolojisi (${yearLabel}. Yıl)`,
+            studentName: metaOptions.studentName,
+            reportDate: metaOptions.reportDate || new Date().toLocaleDateString('tr-TR'),
+            statusLabel: (metaOptions.status === 'in_review' || metaOptions.status === 'finalized') ? 'Kesinleştirildi 🎓' : (metaOptions.status === 'approved' ? 'Onaylandı ✅' : 'Düzenleniyor 📝'),
+            sections,
+            sourcesList: metaOptions.sourcesList || []
+        });
+
+        const filename = sanitizeStudentDocxFilename('Tubitak_Siyer', `${yearLabel}_Yili`, metaOptions.studentName);
+        return {
+            buffer,
+            filename,
+            paragraphCount: allParagraphs.length,
+            eventCount
+        };
+    }
+
+    const buffer = await buildPlainTextDocxBuffer(allParagraphs);
     return {
         buffer,
         filename: sanitizeDocxFilename(yearLabel),
@@ -802,6 +1138,7 @@ async function generateComparisonDocxBuffer(comparison, monumentsClassification)
 
 module.exports = {
     sanitizeDocxFilename,
+    sanitizeStudentDocxFilename,
     buildAsciiFallbackFilename,
     extractMonumentTextParagraphs,
     generateMonumentDocxBuffer,

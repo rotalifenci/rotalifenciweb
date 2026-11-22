@@ -97,8 +97,8 @@ module.exports = async function handler(req, res) {
     if (req.method === "GET") {
         const queryAction = req.query?.action;
         if (queryAction === "get_team") {
-            const pass = String(req.query.password || "").trim().toLowerCase();
-            const pAuth = PROJECT_PASSWORDS[pass];
+            const pass = normalizeTr(req.query.password || "").replace(/\s+/g, '');
+            const pAuth = PROJECT_PASSWORDS[pass] || PROJECT_PASSWORDS[String(req.query.password || "").trim().toLowerCase()];
             if (!pAuth) {
                 return res.status(401).json({ ok: false, error: "Geçersiz şifre." });
             }
@@ -128,13 +128,13 @@ module.exports = async function handler(req, res) {
 
     try {
         const { password, studentName, studentPin, studentId: reqStudentId } = req.body || {};
-        const cleanPass = String(password || "").trim().toLowerCase();
+        const cleanPass = normalizeTr(password || "").replace(/\s+/g, '');
+        const projectAuth = PROJECT_PASSWORDS[cleanPass] || PROJECT_PASSWORDS[String(password || "").trim().toLowerCase()];
 
         if (!cleanPass) {
             return res.status(400).json({ ok: false, error: "Lütfen proje şifrenizi giriniz." });
         }
 
-        const projectAuth = PROJECT_PASSWORDS[cleanPass];
         if (!projectAuth) {
             return res.status(401).json({
                 ok: false,
