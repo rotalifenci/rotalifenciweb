@@ -282,7 +282,7 @@ async function runTests() {
     const emptyDocxReq = mockReqRes("GET", {}, {
         projectId: "proje-tarih",
         exportDocx: "single",
-        itemId: "altinyayla-merkez-camii"
+        itemId: "tashan"
     }, { authorization: `Bearer ${teacherToken}` });
     await tubitakRecordsHandler(emptyDocxReq.req, emptyDocxReq.res);
     assert.strictEqual(emptyDocxReq.getStatus(), 404);

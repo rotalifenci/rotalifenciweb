@@ -291,35 +291,51 @@ async function getCloudStore({ forceFresh = false } = {}) {
  * Eşzamanlı yazma durumlarında en son bulut kopyasıyla birleştirilerek PATCH edilir.
  */
 let _gistMutex = Promise.resolve();
+let _pendingGistStore = null;
+let _lastGistPatchTime = 0;
+const GIST_MIN_WRITE_INTERVAL_MS = 2000; // GitHub secondary rate limit koruması (min 2 sn aralık)
+
+async function flushGistQueue() {
+    if (!_pendingGistStore) return _cachedStore;
+    const storeToWrite = _pendingGistStore;
+    _pendingGistStore = null;
+
+    const timeSinceLast = Date.now() - _lastGistPatchTime;
+    if (timeSinceLast < GIST_MIN_WRITE_INTERVAL_MS) {
+        await new Promise(res => setTimeout(res, GIST_MIN_WRITE_INTERVAL_MS - timeSinceLast));
+    }
+
+    try {
+        let remoteStore = null;
+        try {
+            remoteStore = await fetchGistDirect();
+        } catch (e) {}
+
+        const merged = remoteStore ? mergeStores(remoteStore, storeToWrite) : storeToWrite;
+        merged.lastCloudSyncTime = new Date().toISOString();
+        await patchGistDirect(merged);
+        _lastGistPatchTime = Date.now();
+        _cachedStore = merged;
+        writeDiskFallback(merged);
+        _lastCloudError = null;
+        return merged;
+    } catch (err) {
+        console.warn('Cloud save warning (disk fallback preserved):', err.message);
+        _lastCloudError = err.message;
+        return storeToWrite;
+    }
+}
 
 async function saveCloudStore(store) {
     _cachedStore = store;
     _lastFetchTime = Date.now();
     writeDiskFallback(store);
 
-    // Gist'e yazma işlemini sıraya koy (Mutex Serialization)
-    _gistMutex = _gistMutex.then(async () => {
-        try {
-            // Çakışmayı önlemek için önce son Gist kopyasını alıp birleştir
-            let remoteStore = null;
-            try {
-                remoteStore = await fetchGistDirect();
-            } catch (e) {}
+    // Gelen depoyu bekleyen kuyrukla güvenle birleştir (Write Coalescing)
+    _pendingGistStore = _pendingGistStore ? mergeStores(_pendingGistStore, store) : store;
 
-            const merged = remoteStore ? mergeStores(remoteStore, store) : store;
-            merged.lastCloudSyncTime = new Date().toISOString();
-            await patchGistDirect(merged);
-            _cachedStore = merged;
-            writeDiskFallback(merged);
-            _lastCloudError = null;
-            return merged;
-        } catch (err) {
-            console.warn('Cloud save warning (disk fallback preserved):', err.message);
-            _lastCloudError = err.message;
-            return store;
-        }
-    });
-
+    // Mutex zinciri ile tek seferde tek Gist flush işlemi çalıştırılır
+    _gistMutex = _gistMutex.then(() => flushGistQueue()).catch(() => store);
     return await _gistMutex;
 }
 

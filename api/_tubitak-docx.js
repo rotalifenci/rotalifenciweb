@@ -40,15 +40,56 @@ function buildAsciiFallbackFilename(utf8Name) {
         .replace(/\s+/g, '_') || 'belge.docx';
 }
 
+const CRITERION_ALIASES = {
+    "c4_konumu": ["c1_location", "c5_konum_ada_parsel", "c2_tescil_konum"],
+    "c5_yaptiran": ["c3_banisi"],
+    "c7_mimari_tarz": ["c4_mimari", "c8_susleme_sanat", "c3_mimari_ozellik", "c1_mimari"],
+    "c10_yapim_malzemesi": ["c6_kullanilan_malzeme"],
+    "c11_plan": ["c7_plan_tipi"],
+    "c14_restorasyon": ["c13_onarimlar"],
+    "c15_kulturel_miras_tescil": ["c14_gunumuz_durumu"],
+    "c18_kaynak": ["c16_kaynakca", "c18_degerlendirme"]
+};
+
+const ITEM_ALIASES = {
+    "divrigi-ulu-camii": "divrigi-ulu-camii-darussifasi",
+    "divrigi-ulu-camii-darussifasi": "divrigi-ulu-camii",
+    "bilim-01-bircendi": "bircendi",
+    "bircendi": "bilim-01-bircendi"
+};
+
+function getDocxRecordValue(recordsMap, itemId, critKey) {
+    if (!recordsMap || !itemId || !critKey) return '';
+    const directKey = `${itemId}__${critKey}`;
+    let rec = recordsMap[directKey];
+    if (rec && typeof rec.content === 'string' && rec.content.trim().length > 0) return rec.content;
+
+    const altItemId = ITEM_ALIASES[itemId];
+    if (altItemId) {
+        const altRec = recordsMap[`${altItemId}__${critKey}`];
+        if (altRec && typeof altRec.content === 'string' && altRec.content.trim().length > 0) return altRec.content;
+    }
+
+    const aliases = CRITERION_ALIASES[critKey] || [];
+    for (const aKey of aliases) {
+        const r1 = recordsMap[`${itemId}__${aKey}`];
+        if (r1 && typeof r1.content === 'string' && r1.content.trim().length > 0) return r1.content;
+        if (altItemId) {
+            const r2 = recordsMap[`${altItemId}__${aKey}`];
+            if (r2 && typeof r2.content === 'string' && r2.content.trim().length > 0) return r2.content;
+        }
+    }
+    return (rec && typeof rec.content === 'string') ? rec.content : '';
+}
+
 function extractMonumentTextParagraphs(item, criteriaList, recordsMap) {
     const paragraphs = [];
     if (!item || !Array.isArray(criteriaList)) return paragraphs;
 
     for (const crit of criteriaList) {
-        const recordKey = `${item.id}__${crit.key}`;
-        const saved = recordsMap && recordsMap[recordKey];
-        const rawText = saved && typeof saved.content === 'string'
-            ? saved.content
+        const savedContent = getDocxRecordValue(recordsMap, item.id, crit.key);
+        const rawText = savedContent && savedContent.trim()
+            ? savedContent
             : (item.criteria && typeof item.criteria[crit.key] === 'string' ? item.criteria[crit.key] : (crit.key === 'c1_bilim_insani_adi' ? (item.title || '') : ''));
 
         if (!rawText || !rawText.trim()) continue;

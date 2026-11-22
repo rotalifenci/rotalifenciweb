@@ -65,6 +65,53 @@
     let saveState = "idle"; // "idle", "dirty", "saving", "saved", "error", "waiting_connection"
     let latestSyncHealth = null;
 
+    // Tarihsel kriter ve eser anahtar eşlemeleri (Historical Aliasing)
+    const CRITERION_ALIASES = {
+        "c4_konumu": ["c1_location", "c5_konum_ada_parsel", "c2_tescil_konum"],
+        "c5_yaptiran": ["c3_banisi"],
+        "c7_mimari_tarz": ["c4_mimari", "c8_susleme_sanat", "c3_mimari_ozellik", "c1_mimari"],
+        "c10_yapim_malzemesi": ["c6_kullanilan_malzeme"],
+        "c11_plan": ["c7_plan_tipi"],
+        "c14_restorasyon": ["c13_onarimlar"],
+        "c15_kulturel_miras_tescil": ["c14_gunumuz_durumu"],
+        "c18_kaynak": ["c16_kaynakca", "c18_degerlendirme"]
+    };
+
+    const ITEM_ALIASES = {
+        "divrigi-ulu-camii": "divrigi-ulu-camii-darussifasi",
+        "divrigi-ulu-camii-darussifasi": "divrigi-ulu-camii",
+        "bilim-01-bircendi": "bircendi",
+        "bircendi": "bilim-01-bircendi"
+    };
+
+    function getRecordWithAliases(itemId, critKey) {
+        if (!itemId || !critKey) return null;
+        const directKey = `${itemId}__${critKey}`;
+        let rec = runtimeRecords[directKey];
+        if (rec && typeof rec.content === 'string' && rec.content.trim().length > 0) return rec;
+
+        const altItemId = ITEM_ALIASES[itemId];
+        if (altItemId) {
+            const altKey = `${altItemId}__${critKey}`;
+            const altRec = runtimeRecords[altKey];
+            if (altRec && typeof altRec.content === 'string' && altRec.content.trim().length > 0) return altRec;
+        }
+
+        const aliases = CRITERION_ALIASES[critKey] || [];
+        for (const aKey of aliases) {
+            const k1 = `${itemId}__${aKey}`;
+            const r1 = runtimeRecords[k1];
+            if (r1 && typeof r1.content === 'string' && r1.content.trim().length > 0) return r1;
+
+            if (altItemId) {
+                const k2 = `${altItemId}__${aKey}`;
+                const r2 = runtimeRecords[k2];
+                if (r2 && typeof r2.content === 'string' && r2.content.trim().length > 0) return r2;
+            }
+        }
+        return rec || (altItemId ? runtimeRecords[`${altItemId}__${critKey}`] : null) || null;
+    }
+
     // 2. Başlatma & Oturum Kontrolü
     async function init() {
         loadStoredSession();
@@ -154,7 +201,26 @@
             if (res.ok) {
                 const data = await res.json();
                 if (data.ok) {
-                    runtimeRecords = { ...runtimeRecords, ...(data.records || {}) };
+                    const incomingRecs = data.records || {};
+                    for (const [k, incRec] of Object.entries(incomingRecs)) {
+                        const existing = runtimeRecords[k];
+                        if (!existing) {
+                            runtimeRecords[k] = incRec;
+                        } else {
+                            const incContent = (incRec && typeof incRec.content === 'string') ? incRec.content : '';
+                            const curContent = (existing && typeof existing.content === 'string') ? existing.content : '';
+                            const incVer = incRec?.version || 0;
+                            const curVer = existing?.version || 0;
+
+                            // 🛡️ KALICI KORUMA: Dolu yerel metin, sunucudan gelen boş metinle ezilmez!
+                            if (curContent.trim() && !incContent.trim()) {
+                                continue;
+                            }
+                            if (incVer >= curVer || !curContent.trim()) {
+                                runtimeRecords[k] = incRec;
+                            }
+                        }
+                    }
                     try {
                         localStorage.setItem(`rotali_cached_records_${targetProj}`, JSON.stringify(runtimeRecords));
                     } catch(e) {}
@@ -291,13 +357,13 @@
 
         updateUIAutosaveBadge("dirty");
 
-        // Zamanlayıcıyı sıfırla ve yeniden kur (~1000ms)
+        // Zamanlayıcıyı sıfırla ve yeniden kur (~2000ms debounce)
         if (autoSaveTimers[recordKey]) clearTimeout(autoSaveTimers[recordKey]);
 
         autoSaveTimers[recordKey] = setTimeout(async () => {
             delete autoSaveTimers[recordKey];
             await executeSave(criterionKey, newContent, targetItemId);
-        }, 1000);
+        }, 2000);
     }
 
     async function executeSave(criterionKey, content, targetItemId = activeItemId) {
@@ -1242,7 +1308,8 @@
             ];
             keys.forEach(k => {
                 const el = document.getElementById(`input-${k}`);
-                const prevVal = runtimeRecords[`${targetItemId}__${k}`]?.content || "";
+                const prevRec = getRecordWithAliases(targetItemId, k);
+                const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
                 // 🛡️ KALICI KORUMA: DOM'da boş görünse bile dolu veriyi koru
                 if (!contentVal.trim() && prevVal.trim()) {
@@ -1251,7 +1318,7 @@
                 recordsToSave.push({
                     criterionKey: k,
                     content: contentVal,
-                    clientVersion: runtimeRecords[`${targetItemId}__${k}`]?.version || 0
+                    clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
                 });
             });
         } else {
@@ -1259,7 +1326,8 @@
             const critList = projData.criteriaList || [];
             critList.forEach(crit => {
                 const el = document.getElementById(`input-${crit.key}`);
-                const prevVal = runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
+                const prevRec = getRecordWithAliases(targetItemId, crit.key);
+                const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
                 // 🛡️ KALICI KORUMA: DOM'da boş görünse bile dolu veriyi koru
                 if (!contentVal.trim() && prevVal.trim()) {
@@ -1268,7 +1336,7 @@
                 recordsToSave.push({
                     criterionKey: crit.key,
                     content: contentVal,
-                    clientVersion: runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
+                    clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
                 });
             });
         }
@@ -1407,7 +1475,8 @@
             ];
             keys.forEach(k => {
                 const el = document.getElementById(`input-${k}`);
-                const prevVal = runtimeRecords[`${targetItemId}__${k}`]?.content || "";
+                const prevRec = getRecordWithAliases(targetItemId, k);
+                const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
                 if (!contentVal.trim() && prevVal.trim()) {
                     contentVal = prevVal;
@@ -1415,14 +1484,15 @@
                 recordsToSave.push({
                     criterionKey: k,
                     content: contentVal,
-                    clientVersion: runtimeRecords[`${targetItemId}__${k}`]?.version || 0
+                    clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
                 });
             });
         } else {
             const critList = projData.criteriaList || [];
             critList.forEach(crit => {
                 const el = document.getElementById(`input-${crit.key}`);
-                const prevVal = runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
+                const prevRec = getRecordWithAliases(targetItemId, crit.key);
+                const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
                 if (!contentVal.trim() && prevVal.trim()) {
                     contentVal = prevVal;
@@ -1430,7 +1500,7 @@
                 recordsToSave.push({
                     criterionKey: crit.key,
                     content: contentVal,
-                    clientVersion: runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
+                    clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
                 });
             });
         }
@@ -1645,10 +1715,10 @@ function renderActiveItemForm(item, projData) {
         <div class="space-y-5">
             ${activeProjectId === 'proje-siyer' ? renderSiyerActiveYearForm(item, canEditItem) : criteriaList.map((crit, idx) => {
                 const recordKey = `${item.id}__${crit.key}`;
-                const saved = runtimeRecords[recordKey] || (item.id === "divrigi-ulu-camii" ? runtimeRecords[`divrigi-ulu-camii-darussifasi__${crit.key}`] : null) || (item.id === "divrigi-ulu-camii-darussifasi" ? runtimeRecords[`divrigi-ulu-camii__${crit.key}`] : null) || (item.id === "bilim-01-bircendi" ? runtimeRecords[`bircendi__${crit.key}`] : null) || (item.id === "bircendi" ? runtimeRecords[`bilim-01-bircendi__${crit.key}`] : null);
-                const contentVal = saved ? saved.content : (item.criteria?.[crit.key] || ((crit.key === 'c1_bilim_insani_adi' && activeProjectId === 'proje-bilim') ? (item.title || "") : ""));
+                const saved = getRecordWithAliases(item.id, crit.key);
+                const contentVal = (saved && typeof saved.content === 'string') ? saved.content : (item.criteria?.[crit.key] || ((crit.key === 'c1_bilim_insani_adi' && activeProjectId === 'proje-bilim') ? (item.title || "") : ""));
                 const version = saved ? saved.version : 1;
-                const lastEditor = saved ? saved.studentName : "Sistem";
+                const lastEditor = saved ? (saved.studentName || "Öğrenci") : "Sistem";
 
                 return `
                 <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs space-y-2.5 transition-all focus-within:border-amber-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-amber-400/20">
@@ -2049,8 +2119,8 @@ function renderActiveItemForm(item, projData) {
         let count = 0;
         for (const crit of criteriaList) {
             const hasContent = eventIds.some(evId => {
-                const rec = runtimeRecords[`${evId}__${crit.key}`] || (evId === "divrigi-ulu-camii" ? runtimeRecords[`divrigi-ulu-camii-darussifasi__${crit.key}`] : null) || (evId === "divrigi-ulu-camii-darussifasi" ? runtimeRecords[`divrigi-ulu-camii__${crit.key}`] : null) || (evId === "bilim-01-bircendi" ? runtimeRecords[`bircendi__${crit.key}`] : null) || (evId === "bircendi" ? runtimeRecords[`bilim-01-bircendi__${crit.key}`] : null);
-                return rec && rec.content && rec.content.trim().length > 0;
+                const rec = getRecordWithAliases(evId, crit.key);
+                return rec && typeof rec.content === 'string' && rec.content.trim().length > 0;
             });
             if (hasContent) {
                 count++;

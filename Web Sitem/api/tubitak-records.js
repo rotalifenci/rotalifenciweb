@@ -833,14 +833,22 @@ module.exports = async function handler(req, res) {
             const isStaleTimestamp = clientTimestamp && existing.updatedAt && (new Date(clientTimestamp) < new Date(existing.updatedAt));
             const isStaleVersion = typeof clientVersion === "number" && clientVersion > 0 && existing.version && (clientVersion < existing.version);
 
+            // Çakışma yalnızca FARKLI bir kullanıcının daha yeni bir kaydı varsa uygulanır.
+            // Aynı öğrenci yazarken oluşan hızlı autosave istekleri asla 409 ile reddedilmez.
+            const isDifferentEditor = Boolean(
+                existing.studentId && session?.studentId && existing.studentId !== session.studentId &&
+                existing.studentName && session?.studentName && existing.studentName !== session.studentName
+            );
+
             // Öğretmen istekleri veya sürüm belirtilmemiş genel güncellemeler sürüm çakışmasıyla engellenmez
-            if (userRole !== "teacher" && (isStaleTimestamp || isStaleVersion) && existing.version > 0 && prevContent.trim() !== newContent.trim()) {
+            if (userRole !== "teacher" && isDifferentEditor && (isStaleTimestamp || isStaleVersion) && existing.version > 0 && prevContent.trim() !== newContent.trim()) {
                 return res.status(409).json({
                     ok: false,
                     status: "conflict",
-                    error: "Daha yeni bir kayıt mevcuttur. Eski istek üzerine yazılamaz.",
+                    error: "Bu kayıt başka bir araştırmacı tarafından güncellenmiştir.",
                     currentVersion: existing.version,
                     currentContent: existing.content,
+                    currentEditor: existing.studentName || "Diğer Araştırmacı",
                     updatedAt: existing.updatedAt
                 });
             }
