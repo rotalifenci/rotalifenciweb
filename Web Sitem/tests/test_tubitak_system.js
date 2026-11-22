@@ -93,12 +93,19 @@ async function runTests() {
     // TEST 4: Öğrencinin yazdığı veri otomatik kaydediliyor mu?
     // -------------------------------------------------------------
     console.log("4. Otomatik Kayıt Motoru Testi (Autosave Record):");
+    const preFetchReq = mockReqRes("GET", {}, { projectId: "proje-tarih" }, {
+        authorization: `Bearer ${studentToken}`
+    });
+    await tubitakRecordsHandler(preFetchReq.req, preFetchReq.res);
+    const preVer = preFetchReq.getData()?.records?.["cifte-minareli-medrese__c1_location"]?.version || 0;
+
+    const testContent = `Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi ${Date.now()}).`;
     const saveReq = mockReqRes("POST", {
         projectId: "proje-tarih",
         itemId: "cifte-minareli-medrese",
         criterionKey: "c1_location",
-        content: "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
-        clientVersion: 1
+        content: testContent,
+        clientVersion: preVer
     }, {}, {
         authorization: `Bearer ${studentToken}`
     });
