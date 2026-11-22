@@ -4983,7 +4983,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-13T06:56:28.471Z",
-    "updatedAt": "2026-11-13T06:56:28.471Z"
+    "updatedAt": "2026-11-13T06:56:28.471Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794552978138_mat-5ed59415-311f-4aa1-a461-0882354a0717_cover.jpg"
   },
   {
     "id": "mat-7ae7c4f6-3491-4b98-a266-195ef4459552",
@@ -5011,7 +5012,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-13T10:53:56.154Z",
-    "updatedAt": "2026-11-13T10:53:56.154Z"
+    "updatedAt": "2026-11-13T10:53:56.154Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1794567215101_mat-7ae7c4f6-3491-4b98-a266-195ef4459552_cover.jpg"
   },
   {
     "id": "mat-7e59c2aa-8400-4401-bd76-b633096aaf3c",
@@ -5039,6 +5041,119 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-13T11:35:19.326Z",
-    "updatedAt": "2026-11-13T11:35:19.326Z"
+    "updatedAt": "2026-11-13T11:35:19.326Z",
+    "cover": "https://img.youtube.com/vi/ayNelVHqa4g/hqdefault.jpg"
+  },
+  {
+    "id": "mat-c176158b-3ecb-45f6-b3d5-1e0e337fa5fe",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "SU",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "photo_2026-11-19_14-34-14.jpg",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377983735_photo_2026-11-19_14-34-14.jpg",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377981893_mat-c176158b-3ecb-45f6-b3d5-1e0e337fa5fe_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377981893_mat-c176158b-3ecb-45f6-b3d5-1e0e337fa5fe_cover.jpg",
+    "format": "JPG",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-22T20:06:24.741Z",
+    "updatedAt": "2026-11-22T20:06:24.741Z"
+  },
+  {
+    "id": "mat-73dbcc71-b0c3-45bc-becf-932b9cf36b9f",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "SU",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "photo_2026-11-19_14-34-12.jpg",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377963364_photo_2026-11-19_14-34-12.jpg",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377961126_mat-73dbcc71-b0c3-45bc-becf-932b9cf36b9f_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377961126_mat-73dbcc71-b0c3-45bc-becf-932b9cf36b9f_cover.jpg",
+    "format": "JPG",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-22T20:06:04.334Z",
+    "updatedAt": "2026-11-22T20:06:04.334Z"
+  },
+  {
+    "id": "mat-069b26c5-4751-4b4d-8f51-e4864c91b846",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "SU",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "photo_2026-11-19_14-34-11.jpg",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377942132_photo_2026-11-19_14-34-11.jpg",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377940427_mat-069b26c5-4751-4b4d-8f51-e4864c91b846_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377940427_mat-069b26c5-4751-4b4d-8f51-e4864c91b846_cover.jpg",
+    "format": "JPG",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-22T20:05:43.438Z",
+    "updatedAt": "2026-11-22T20:05:43.438Z"
+  },
+  {
+    "id": "mat-9104f70d-315a-4200-a738-eef786e3cbda",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "SU",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "photo_2026-11-19_14-34-10.jpg",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377913052_photo_2026-11-19_14-34-10.jpg",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377911428_mat-9104f70d-315a-4200-a738-eef786e3cbda_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1795377911428_mat-9104f70d-315a-4200-a738-eef786e3cbda_cover.jpg",
+    "format": "JPG",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-22T20:05:14.053Z",
+    "updatedAt": "2026-11-22T20:05:14.053Z"
   }
 ]
