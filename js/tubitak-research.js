@@ -559,10 +559,10 @@
         updateProgressBadge();
     }
 
-    // 🔑 ŞİFRELİ GİRİŞ EKRANI BİLEŞENİ
+    // 🔑 ŞİFRELİ GİRİŞ EKRANI BİLEŞENİ (SADE & PROJELER GİZLİ)
     function renderLoginScreen() {
         return `
-        <div class="max-w-2xl mx-auto px-4 py-12 animate-in fade-in duration-300">
+        <div class="max-w-xl mx-auto px-4 py-12 animate-in fade-in duration-300">
             <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-10 border-2 border-amber-500/40 shadow-2xl text-white relative overflow-hidden">
                 <div class="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -572,40 +572,36 @@
                     <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-500 to-red-500 flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg shadow-amber-500/25">
                         <i class="fa-solid fa-microscope"></i>
                     </div>
-                    <span class="px-3.5 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest inline-flex items-center gap-1.5 mb-2">
-                        <span>TÜBİTAK 2204-B</span> • <span>BİLİMSEL ARAŞTIRMA MERKEZİ</span>
+                    <span class="px-4 py-1.5 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest inline-flex items-center gap-1.5 mb-3">
+                        <span>TÜBİTAK 2204-B</span>
                     </span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Üç Proje İçin Araştırma & Veri Portalı</h2>
-                    <p class="text-xs sm:text-sm text-slate-300 font-medium max-w-md mx-auto mt-2">
-                        Öğretmeninizden aldığınız proje takım şifresi ve araştırmacı kimliğinizle giriş yapınız.
+                    <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">BİLİMSEL ARAŞTIRMA MERKEZİ</h2>
+                    <p class="text-xs sm:text-sm text-slate-300 font-medium max-w-md mx-auto mt-2.5 leading-relaxed">
+                        Öğretmeninizden aldığınız giriş bilgileriyle araştırma sistemine giriş yapınız.
                     </p>
                 </div>
 
-                <!-- 3 Proje Bilgilendirme Kartları -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-7 relative z-10 text-center">
-                    <div class="p-3 rounded-2xl bg-white/5 border border-amber-400/20 flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-monument text-amber-400 text-sm mb-1 block"></i>
-                        <div class="text-[11px] font-black text-amber-200">1. PROJE EKİBİ</div>
-                    </div>
-                    <div class="p-3 rounded-2xl bg-white/5 border border-cyan-400/20 flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-atom text-cyan-400 text-sm mb-1 block"></i>
-                        <div class="text-[11px] font-black text-cyan-200">2. PROJE EKİBİ</div>
-                    </div>
-                    <div class="p-3 rounded-2xl bg-white/5 border border-emerald-400/20 flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-timeline text-emerald-400 text-sm mb-1 block"></i>
-                        <div class="text-[11px] font-black text-emerald-200">3. PROJE EKİBİ</div>
-                    </div>
-                </div>
-
                 <!-- Giriş Formu -->
-                <form id="tubitak-login-form" class="space-y-5 relative z-10" onsubmit="event.preventDefault(); window.RotaliTubitak.handleLogin();">
+                <form id="tubitak-login-form" class="space-y-4 relative z-10" onsubmit="event.preventDefault(); window.RotaliTubitak.handleLogin();">
+                    <!-- 1. Araştırmacı Kimliği / Kullanıcı Adı -->
                     <div>
-                        <label for="login-password" class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
-                            <span>🔑 Proje Şifresi</span>
-                            <span class="text-[10px] text-amber-400 lowercase font-medium">takım veya öğretmen parolası</span>
+                        <label for="login-username" class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+                            <span>👤 Araştırmacı Kimliği / Kullanıcı Adı</span>
+                            <span class="text-[10px] text-amber-400 lowercase font-medium">adınız veya araştırmacı kodunuz</span>
                         </label>
                         <div class="relative flex items-center">
-                            <input type="password" id="login-password" placeholder="Takım proje şifrenizi veya öğretmen parolanızı giriniz" required class="w-full pl-4 pr-12 py-3.5 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
+                            <input type="text" id="login-username" placeholder="Araştırmacı adınız veya kodunuz" autocomplete="username" class="w-full px-4 py-3.5 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
+                        </div>
+                    </div>
+
+                    <!-- 2. Şifre & Şifreyi Göster / Gizle -->
+                    <div>
+                        <label for="login-password" class="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+                            <span>🔑 Şifre</span>
+                            <span class="text-[10px] text-amber-400 lowercase font-medium">giriş parolası</span>
+                        </label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="login-password" placeholder="Şifrenizi giriniz" required autocomplete="current-password" class="w-full pl-4 pr-12 py-3.5 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
                             <button type="button" id="btn-toggle-login-password" onclick="window.RotaliTubitak.toggleLoginPasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-amber-400 transition-all flex items-center justify-center cursor-pointer focus:outline-none" title="Şifreyi Göster / Gizle">
                                 <i id="login-password-eye-icon" class="fa-solid fa-eye text-sm"></i>
                             </button>
@@ -617,9 +613,10 @@
                         <span id="login-error-text">Hatalı şifre.</span>
                     </div>
 
-                    <button type="submit" id="login-submit-btn" class="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+                    <!-- 3. GİRİŞ YAP Butonu -->
+                    <button type="submit" id="login-submit-btn" class="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer flex items-center justify-center gap-2 mt-2">
                         <i class="fa-solid fa-right-to-bracket text-base"></i>
-                        <span>Araştırma Alanına Giriş Yap</span>
+                        <span>GİRİŞ YAP</span>
                     </button>
                 </form>
 
@@ -4767,26 +4764,40 @@ function renderActiveItemForm(item, projData) {
         },
 
         async handleLogin() {
+            const userEl = document.getElementById("login-username");
             const passEl = document.getElementById("login-password");
             const errEl = document.getElementById("login-error-msg");
             const errText = document.getElementById("login-error-text");
+            const btnEl = document.getElementById("login-submit-btn");
 
             if (!passEl) return;
+            const username = userEl ? userEl.value.trim() : "";
             const password = passEl.value.trim();
 
             if (!password) {
                 if (errEl) {
                     errEl.classList.remove("hidden");
-                    errText.textContent = "Lütfen proje şifrenizi giriniz.";
+                    errText.textContent = "Lütfen şifrenizi giriniz.";
                 }
+                passEl.focus();
                 return;
+            }
+
+            if (errEl) errEl.classList.add("hidden");
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-base"></i> <span>GİRİŞ YAPILIYOR...</span>';
             }
 
             try {
                 const res = await fetch("/api/tubitak-auth", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ password })
+                    body: JSON.stringify({
+                        username,
+                        studentName: username,
+                        password
+                    })
                 });
 
                 const data = await res.json();
@@ -4796,23 +4807,45 @@ function renderActiveItemForm(item, projData) {
                     if (data.role === "student" && data.projectId !== "all") {
                         activeProjectId = data.projectId;
                     }
-                    activeStudentFilterId = ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim") && data.role === "student")
-                        ? (resolveCurrentUserStudentId(activeProjectId) || "all")
-                        : "all";
+
+                    // Öğrenci doğrudan kendi atanmış kayıtlarına yönlendirilir
+                    if (data.role === "student") {
+                        activeStudentFilterId = data.studentId || resolveCurrentUserStudentId(activeProjectId) || "all";
+                        const projData = seedData?.projects?.[activeProjectId];
+                        if (projData?.items && Array.isArray(projData.items)) {
+                            const myAssignedItem = projData.items.find(it => {
+                                const assigned = getItemAssignedStudentId(it, activeProjectId);
+                                return assigned === data.studentId;
+                            });
+                            if (myAssignedItem) {
+                                activeItemId = myAssignedItem.id;
+                            } else if (projData.items[0]) {
+                                activeItemId = projData.items[0].id;
+                            }
+                        }
+                    } else {
+                        activeStudentFilterId = "all";
+                    }
+
                     await syncProjectData(activeProjectId);
                     startLivePolling();
                     renderMainContainer(document.getElementById("tubitak-research-container"));
-                    showNotice(`Giriş başarılı! Hoş geldiniz.`, "success");
+                    showNotice(`Giriş başarılı! Hoş geldiniz${data.studentName ? ', ' + escapeHtml(data.studentName) : ''}.`, "success");
                 } else {
                     if (errEl) {
                         errEl.classList.remove("hidden");
-                        errText.textContent = data.error || "Giriş başarısız. Lütfen şifrenizi kontrol ediniz.";
+                        errText.textContent = data.error || "Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz.";
                     }
                 }
             } catch (err) {
                 if (errEl) {
                     errEl.classList.remove("hidden");
                     errText.textContent = "Bağlantı hatası: " + err.message;
+                }
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '<i class="fa-solid fa-right-to-bracket text-base"></i> <span>GİRİŞ YAP</span>';
                 }
             }
         },
@@ -4838,12 +4871,16 @@ function renderActiveItemForm(item, projData) {
         },
 
         switchProject(projId) {
+            if (currentSession?.role !== "teacher" && currentSession?.projectId !== "all" && currentSession?.projectId !== projId) {
+                showNotice("Yalnızca yetkili olduğunuz araştırma projesini görüntüleyebilirsiniz.", "error");
+                return;
+            }
             flushPendingSaves();
             activeProjectId = projId;
             activeItemId = null;
             activeFilter = "all";
             activePeriodFilter = "all";
-            activeStudentFilterId = "all";
+            activeStudentFilterId = (currentSession?.role === "student") ? (currentSession?.studentId || "all") : "all";
             analysisCategoryFilter = "all";
             syncProjectData(projId);
             renderMainContainer(document.getElementById("tubitak-research-container"));

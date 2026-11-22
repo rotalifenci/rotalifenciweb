@@ -188,9 +188,9 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.ok(appJs.includes('normSubTab === "egitsel-oyunlar" ? "all" : "1"') || appJs.includes('tabName === "egitsel-oyunlar") ? "all" : "1"'), "Eğitsel Oyunlar varsayılan görünümü 2. üniteyi de göstermeli");
 
   const tubitakJs = fs.readFileSync(path.join(webDir, "js", "tubitak-research.js"), "utf8");
-  for (const label of ["1. PROJE EKİBİ", "2. PROJE EKİBİ", "3. PROJE EKİBİ"]) {
-    assert.ok(tubitakJs.includes(label), `TÜBİTAK giriş kartı eksik: ${label}`);
-  }
+  assert.equal(/1\. PROJE EKİBİ|2\. PROJE EKİBİ|3\. PROJE EKİBİ|Üç Proje/.test(tubitakJs), false, "TÜBİTAK giriş ekranında proje bilgileri ve proje ekipleri kesinlikle bulunmamalı");
+  assert.ok(tubitakJs.includes("login-username"), "TÜBİTAK giriş formunda araştırmacı kimliği / kullanıcı adı alanı bulunmalı");
+  assert.ok(tubitakJs.includes("login-password"), "TÜBİTAK giriş formunda şifre alanı bulunmalı");
   assert.equal(/Sivas Kültür Atlası|Türk-İslam Bilginleri|571–632 Zaman Çizgisi/.test(tubitakJs), false, "TÜBİTAK giriş kartlarında proje adı/alt başlık olmamalı");
   assert.ok(tubitakJs.includes("<span>Eserler</span>"), "TÜBİTAK Proje 1 yan panelinde Eserler başlığı olmalı");
 

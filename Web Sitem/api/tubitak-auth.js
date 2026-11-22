@@ -127,23 +127,48 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { password, studentName, studentPin, studentId: reqStudentId } = req.body || {};
+        const { password, studentName, studentPin, studentId: reqStudentId, username } = req.body || {};
+        const effectiveName = String(username || studentName || "").trim();
         const cleanPass = normalizeTr(password || "").replace(/\s+/g, '');
         const projectAuth = PROJECT_PASSWORDS[cleanPass] || PROJECT_PASSWORDS[String(password || "").trim().toLowerCase()];
 
         if (!cleanPass) {
-            return res.status(400).json({ ok: false, error: "Lütfen proje şifrenizi giriniz." });
+            return res.status(400).json({ ok: false, error: "Lütfen şifrenizi giriniz." });
         }
 
         if (!projectAuth) {
             return res.status(401).json({
                 ok: false,
-                error: "Hatalı proje şifresi! Lütfen öğretmenden aldığınız takım şifrenizi kontrol ediniz."
+                error: "Hatalı şifre! Lütfen öğretmeninizden aldığınız şifreyi kontrol ediniz."
             });
         }
 
         const isTeacher = projectAuth.role === "teacher";
         const team = getProjectSeedTeam(projectAuth.projectId);
+
+        // Öğrenci başka bir projenin öğrencisi mi kontrolü (Çapraz proje koruması)
+        if (!isTeacher && effectiveName && effectiveName !== "Öğrenci Araştırmacı") {
+            const normInput = normalizeTr(effectiveName);
+            try {
+                if (fs.existsSync(seedDataPath)) {
+                    const parsed = JSON.parse(fs.readFileSync(seedDataPath, 'utf8'));
+                    for (const [otherProjId, otherProj] of Object.entries(parsed.projects || {})) {
+                        if (otherProjId === projectAuth.projectId) continue;
+                        const otherTeam = Array.isArray(otherProj.studentTeam) ? otherProj.studentTeam : [];
+                        const inOtherTeam = otherTeam.find(s => {
+                            const normS = normalizeTr(s.name);
+                            return normInput === normS || normInput === s.id;
+                        });
+                        if (inOtherTeam) {
+                            return res.status(403).json({
+                                ok: false,
+                                error: "Girdiğiniz araştırmacı kimliği girilen şifreye ait araştırma alanında bulunmuyor. Lütfen size iletilen doğru şifreyi giriniz."
+                            });
+                        }
+                    }
+                }
+            } catch (e) {}
+        }
 
         let finalStudentId = "";
         let finalStudentName = "";
@@ -151,7 +176,7 @@ module.exports = async function handler(req, res) {
 
         if (isTeacher) {
             finalStudentId = "teacher-admin";
-            finalStudentName = String(studentName && studentName !== "Danışman Öğretmen" ? studentName : (projectAuth.defaultTeacherName || "rotali58")).trim();
+            finalStudentName = String(effectiveName && effectiveName !== "Danışman Öğretmen" ? effectiveName : (projectAuth.defaultTeacherName || "rotali58")).trim();
             finalStudentPin = "ADM";
         } else {
             // 1. Doğrudan studentId gönderilmişse
@@ -159,25 +184,26 @@ module.exports = async function handler(req, res) {
             if (reqStudentId) {
                 matchedStudent = team.find(s => s.id === reqStudentId);
             }
-            // 2. studentName eşleşmesi
-            if (!matchedStudent && studentName) {
-                const normInput = normalizeTr(studentName);
+            // 2. effectiveName eşleşmesi (Tam veya parça ad/soyad)
+            if (!matchedStudent && effectiveName) {
+                const normInput = normalizeTr(effectiveName);
                 matchedStudent = team.find(s => {
                     const normS = normalizeTr(s.name);
-                    const firstWord = normS.split(' ')[0];
-                    return normInput === normS || (firstWord && normInput.includes(firstWord));
+                    const sWords = normS.split(' ');
+                    return normInput === normS || normInput === s.id || (sWords.length > 1 && sWords.every(w => normInput.includes(w))) || (sWords[0] && normInput.includes(sWords[0]));
                 });
             }
             // 3. studentPin eşleşmesi
-            if (!matchedStudent && studentPin) {
-                matchedStudent = team.find(s => s.id.endsWith(String(studentPin).trim()));
+            if (!matchedStudent && (studentPin || effectiveName)) {
+                const pinCandidate = String(studentPin || effectiveName).trim();
+                matchedStudent = team.find(s => s.id.endsWith(pinCandidate) || s.id === pinCandidate);
             }
 
             if (matchedStudent) {
                 finalStudentId = matchedStudent.id;
                 finalStudentName = matchedStudent.name;
             } else {
-                finalStudentName = String(studentName || "Öğrenci Araştırmacı").trim();
+                finalStudentName = String(effectiveName || "Öğrenci Araştırmacı").trim();
                 const slugName = normalizeTr(finalStudentName).replace(/[^a-z0-9]/g, '').slice(0, 10);
                 finalStudentId = `stu-${cleanPass.slice(0, 4)}-${slugName || finalStudentPin}`;
             }
