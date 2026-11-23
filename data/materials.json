@@ -5187,5 +5187,33 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-11-23T06:34:38.152Z",
     "updatedAt": "2026-11-23T06:34:38.152Z"
+  },
+  {
+    "id": "mat-b48da5f1-50d3-482d-9199-3e0672c37288",
+    "grade": "8",
+    "category": "ders-notu",
+    "targetSection": "1",
+    "title": "Biruni",
+    "unit": "1. Ünite: Mevsimler ve İklim",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Biruni",
+    "fileUrl": "https://youtube.com/watch?v=Mi_hQ38w_PU&time_continue=1&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3Del%2Bbiruni%2Basyan%25C4%25B1n%2Bkandilleri%26oq%3Del%2Bbiruni%2Basyan%25C4%25B1n%2Bkandilleri%26gs_lcrp%3DEgZjaHJvbWUyBggAE",
+    "imageUrl": "https://img.youtube.com/vi/Mi_hQ38w_PU/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/Mi_hQ38w_PU/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-23T21:14:34.642Z",
+    "updatedAt": "2026-11-23T21:14:34.642Z"
   }
 ]
