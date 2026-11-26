@@ -5994,7 +5994,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         const isActive = (String(num) === String(activeHubUnit));
                         const hasItems = totalItems.length > 0;
                         return `
-                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}', '${grade.number}', '${normSubTab}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : hasItems && normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50/70 text-slate-900 hover:bg-amber-100/80 border border-amber-200 shadow-sm' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
+                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}', '${grade.number}', '${normSubTab}')" data-unit="${num}" data-has-items="${hasItems ? 'true' : 'false'}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : hasItems && normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50/70 text-slate-900 hover:bg-amber-100/80 border border-amber-200 shadow-sm' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
                             <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isActive ? 'text-white' : 'text-slate-800'}">${num}. Ünite${hasItems && normSubTab === 'egitsel-oyunlar' ? ` (${totalItems.length})` : ''}</span>
                             <span class="text-[9px] sm:text-[10px] font-medium ${isActive ? 'text-slate-300' : 'text-slate-500'} truncate w-full" title="${uName}">${uName}</span>
                         </button>
@@ -6202,6 +6202,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             </button>
                                         </div>
                                         ` : ''}
+                                    </div>
                                     `;
                                 })()}
                                 ${totalItems.length > 0 ? `
@@ -6356,7 +6357,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                     </div>
                                                     <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4 font-medium">
-                                                        ${item.desc || cfg.description}
+                                                        ${item.desc || item.description || cfg.description}
                                                     </p>
                                                 </div>
                                                 <div>
@@ -6670,24 +6671,32 @@ window.filterUnitHubSection = function(containerId, unitIndex, gradeNum, subTabK
     } catch(e) {}
 
     // 1. Buton stillerini güncelle
+    const isGamesHub = (subTabKey === "egitsel-oyunlar") || containerId.includes("egitsel-oyunlar");
     const btns = container.querySelectorAll(".unit-filter-btn");
     btns.forEach(b => {
         const bUnit = b.getAttribute("data-unit");
-        const descSpan = b.querySelector("span:last-child");
+        const titleSpan = b.querySelector(":scope > span:first-child");
+        const descSpan = b.querySelector(":scope > span:last-child");
         if (bUnit === String(unitIndex)) {
             b.setAttribute("data-active", "true");
             b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
+            if (titleSpan && titleSpan !== descSpan) titleSpan.className = "text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full text-white";
             if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-300 truncate w-full";
         } else {
             b.removeAttribute("data-active");
             if (bUnit === "all") {
                 b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-indigo-50 text-indigo-900 hover:bg-indigo-100 border border-indigo-200 shadow-sm active:scale-95 cursor-pointer";
+                if (titleSpan && titleSpan !== descSpan) titleSpan.className = "text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full text-indigo-900";
                 if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-indigo-700/80 truncate w-full";
             } else if (bUnit === "lab") {
                 b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
-                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full";
+                if (descSpan) descSpan.className = isGamesHub ? "text-[9px] sm:text-[10px] font-semibold text-amber-700/90 truncate w-full" : "text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full";
             } else {
-                b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+                const btnHasItems = b.getAttribute("data-has-items") === "true";
+                b.className = (btnHasItems && isGamesHub)
+                    ? "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-amber-50/70 text-slate-900 hover:bg-amber-100/80 border border-amber-200 shadow-sm active:scale-95 cursor-pointer"
+                    : "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+                if (titleSpan && titleSpan !== descSpan) titleSpan.className = "text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full text-slate-800";
                 if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-500 truncate w-full";
             }
         }
