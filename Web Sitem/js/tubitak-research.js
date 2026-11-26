@@ -381,7 +381,9 @@
             content,
             clientVersion: existing.version || 0,
             studentName: currentSession.studentName,
-            studentId: currentSession.studentId
+            studentId: currentSession.studentId,
+            isExplicitEdit: true,
+            allowEmpty: true
         };
 
         try {
@@ -1309,13 +1311,11 @@
                 const prevRec = getRecordWithAliases(targetItemId, k);
                 const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
-                // 🛡️ KALICI KORUMA: DOM'da boş görünse bile dolu veriyi koru
-                if (!contentVal.trim() && prevVal.trim()) {
-                    contentVal = prevVal;
-                }
                 recordsToSave.push({
                     criterionKey: k,
                     content: contentVal,
+                    allowEmpty: true,
+                    isExplicitEdit: true,
                     clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
                 });
             });
@@ -1327,13 +1327,11 @@
                 const prevRec = getRecordWithAliases(targetItemId, crit.key);
                 const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
-                // 🛡️ KALICI KORUMA: DOM'da boş görünse bile dolu veriyi koru
-                if (!contentVal.trim() && prevVal.trim()) {
-                    contentVal = prevVal;
-                }
                 recordsToSave.push({
                     criterionKey: crit.key,
                     content: contentVal,
+                    allowEmpty: true,
+                    isExplicitEdit: true,
                     clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
                 });
             });
@@ -1351,6 +1349,10 @@
                     projectId: activeProjectId,
                     itemId: targetItemId,
                     records: recordsToSave,
+                    studentId: currentSession.studentId,
+                    studentName: currentSession.studentName,
+                    allowEmpty: true,
+                    isExplicitEdit: true,
                     clientTimestamp: new Date().toISOString()
                 })
             });
@@ -1492,12 +1494,11 @@
                     const prevRec = getRecordWithAliases(targetItemId, k);
                     const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
                     let contentVal = el ? el.value : prevVal;
-                    if (!contentVal.trim() && prevVal.trim()) {
-                        contentVal = prevVal;
-                    }
                     recordsToSave.push({
                         criterionKey: k,
                         content: contentVal,
+                        allowEmpty: true,
+                        isExplicitEdit: true,
                         clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
                     });
                 });
@@ -1508,12 +1509,11 @@
                     const prevRec = getRecordWithAliases(targetItemId, crit.key);
                     const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
                     let contentVal = el ? el.value : prevVal;
-                    if (!contentVal.trim() && prevVal.trim()) {
-                        contentVal = prevVal;
-                    }
                     recordsToSave.push({
                         criterionKey: crit.key,
                         content: contentVal,
+                        allowEmpty: true,
+                        isExplicitEdit: true,
                         clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
                     });
                 });
@@ -1531,6 +1531,8 @@
                     itemId: targetItemId,
                     studentId: currentSession.studentId,
                     studentName: currentSession.studentName,
+                    allowEmpty: true,
+                    isExplicitEdit: true,
                     records: recordsToSave
                 })
             });
@@ -1705,14 +1707,14 @@ function renderActiveItemForm(item, projData) {
                         </button>
                     </div>
                     ` : ''}
-                    ${!isTeacher ? '' : `
                     <div class="flex items-center gap-1.5 flex-wrap">
                         ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? `
-                        <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Yalnızca kaydedilmiş araştırma metinlerini .docx olarak indir">
+                        <button type="button" onclick="window.RotaliTubitak.downloadMonumentWord('${item.id}', this, '${activeProjectId}')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm" title="Yalnızca kaydedilmiş araştırma metinlerini .docx olarak indir">
                             <i class="fa-solid fa-file-word"></i>
                             <span>Word Olarak İndir</span>
                         </button>
                         ` : ''}
+                        ${!isTeacher ? '' : `
                         ${activeProjectId === 'proje-siyer' ? `
                         <button type="button" onclick="window.RotaliTubitak.markSiyerYearFlag('${item.id}', '${runtimeSiyerYearFlags?.[item.id]?.status === 'no_event_found' ? '' : 'no_event_found'}')" class="px-3 py-1.5 rounded-xl ${runtimeSiyerYearFlags?.[item.id]?.status === 'no_event_found' ? 'bg-slate-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-800'} text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -1725,8 +1727,8 @@ function renderActiveItemForm(item, projData) {
                         <button type="button" onclick="window.RotaliTubitak.teacherReview('${item.id}', 'correction_requested')" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
                             <i class="fa-solid fa-pencil"></i> Düzeltme İste
                         </button>
+                        `}
                     </div>
-                    `}
                 </div>
             </div>
         </div>
@@ -1908,7 +1910,8 @@ function renderActiveItemForm(item, projData) {
     function isUserAssignedToItem(item) {
         if (!currentSession || !item) return false;
         if (currentSession.role === "teacher") return true;
-        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim" && activeProjectId !== "proje-siyer") return true;
+        if (activeProjectId === "proje-siyer") return true;
+        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim") return true;
 
         const myStuId = resolveCurrentUserStudentId(activeProjectId);
         const assignedStuId = getItemAssignedStudentId(item, activeProjectId);
@@ -1921,7 +1924,14 @@ function renderActiveItemForm(item, projData) {
     function isItemEditableByCurrentUser(item) {
         if (!currentSession || !item) return false;
         if (currentSession.role === "teacher") return true;
-        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim" && activeProjectId !== "proje-siyer") return true;
+        if (activeProjectId === "proje-siyer") {
+            const status = getItemStatus(item.id);
+            if (status === "finalized" || status === "in_review" || status === "approved") {
+                return false;
+            }
+            return true;
+        }
+        if (activeProjectId !== "proje-tarih" && activeProjectId !== "proje-bilim") return true;
 
         const myStuId = resolveCurrentUserStudentId(activeProjectId);
         const assignedStuId = getItemAssignedStudentId(item, activeProjectId);
@@ -2094,9 +2104,16 @@ function renderActiveItemForm(item, projData) {
         const projData = seedData?.projects?.[activeProjectId] || {};
         let list = [...(projData.items || [])];
 
-        // Öğrenci Filtresi (Proje 1, Proje 2 & Proje 3)
-        if ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim" || activeProjectId === "proje-siyer") && activeStudentFilterId !== "all") {
+        // Öğrenci Filtresi (Proje 1 & Proje 2; Proje 3'te aktif yıl korunur)
+        if ((activeProjectId === "proje-tarih" || activeProjectId === "proje-bilim") && activeStudentFilterId !== "all") {
             list = list.filter(it => getItemAssignedStudentId(it, activeProjectId) === activeStudentFilterId);
+        } else if (activeProjectId === "proje-siyer" && activeStudentFilterId !== "all") {
+            const filtered = list.filter(it => getItemAssignedStudentId(it, "proje-siyer") === activeStudentFilterId);
+            if (activeItemId && !filtered.some(it => it.id === activeItemId)) {
+                activeStudentFilterId = "all";
+            } else {
+                list = filtered;
+            }
         }
 
         // Arama filtresi (Proje 2 & Proje 3)
@@ -5188,8 +5205,18 @@ function renderActiveItemForm(item, projData) {
         async selectSiyerYear(yr) {
             await flushPendingSaves();
             activeYear = yr;
-            const items = getFilteredItems();
-            if (items.length > 0) activeItemId = items[0].id;
+            activeItemId = `siyer-${yr}`;
+            if (activeProjectId === "proje-siyer" && activeStudentFilterId !== "all") {
+                const projData = seedData?.projects?.["proje-siyer"] || {};
+                const list = projData.items || [];
+                const target = list.find(it => it.id === activeItemId || it.year === yr);
+                if (target && getItemAssignedStudentId(target, "proje-siyer") !== activeStudentFilterId) {
+                    activeStudentFilterId = "all";
+                }
+            }
+            try {
+                localStorage.setItem(`rotali_last_item_${activeProjectId}`, activeItemId);
+            } catch(e) {}
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
@@ -5257,6 +5284,14 @@ function renderActiveItemForm(item, projData) {
                 await flushPendingSaves();
                 activeItemId = match.id;
                 activeYear = match.year;
+                if (activeProjectId === "proje-siyer" && activeStudentFilterId !== "all") {
+                    if (getItemAssignedStudentId(match, "proje-siyer") !== activeStudentFilterId) {
+                        activeStudentFilterId = "all";
+                    }
+                }
+                try {
+                    localStorage.setItem(`rotali_last_item_${activeProjectId}`, activeItemId);
+                } catch(e) {}
                 renderMainContainer(document.getElementById("tubitak-research-container"));
             }
         },

@@ -219,6 +219,16 @@ async function runTests() {
     assert.strictEqual(hazelLogin.getStatus(), 200);
     const hazelToken = hazelLogin.getData().token;
 
+    // Testin her koşulda tekrarlanabilir (idempotent) olması için başlangıçta Susamışlar Konağı'nı Hazel'e ata
+    const initAssignReq = mockReqRes("PUT", {
+        action: "reassign_item",
+        projectId: "proje-tarih",
+        itemId: "susamislar-konagi",
+        assignedStudentId: "stu-hazel"
+    }, {}, { authorization: `Bearer ${teacherToken}` });
+    await tubitakRecordsHandler(initAssignReq.req, initAssignReq.res);
+    assert.strictEqual(initAssignReq.getStatus(), 200);
+
     // Hazel, Busenur'un #1 eserini düzenleyememeli (403)
     const forbiddenEdit = mockReqRes("POST", {
         projectId: "proje-tarih",
@@ -280,11 +290,11 @@ async function runTests() {
     await tubitakRecordsHandler(stuDocxAttempt.req, stuDocxAttempt.res);
     assert.strictEqual(stuDocxAttempt.getStatus(), 403, "Öğrenci toplu Word ZIP indirme isteği 403 ile engellenmeli");
 
-    // Kayıtlı metin yoksa boş .docx üretmemeli (404 açıklayıcı uyarı)
+    // Bulunamayan kayıt için 404 açıklayıcı hata dönmeli
     const emptyDocxReq = mockReqRes("GET", {}, {
         projectId: "proje-tarih",
         exportDocx: "single",
-        itemId: "tarihi-mehmet-ali-hamami"
+        itemId: "tanimsiz-olmayan-eser-id"
     }, { authorization: `Bearer ${teacherToken}` });
     await tubitakRecordsHandler(emptyDocxReq.req, emptyDocxReq.res);
     assert.strictEqual(emptyDocxReq.getStatus(), 404);
@@ -478,15 +488,18 @@ async function runTests() {
     await tubitakRecordsHandler(p3WriteOlay3.req, p3WriteOlay3.res);
     assert.strictEqual(p3WriteOlay3.getStatus(), 200);
 
+    // Proje 3 (Siyer): Öğrenci tüm yıllara (örn. siyer-584) veri girebilmeli
     const p3WriteOther = mockReqRes('POST', {
         projectId: "proje-siyer",
         itemId: "siyer-584",
         criterionKey: "c1_olay",
-        content: "Yetkisiz yıl düzenleme denemesi",
-        clientVersion: 0
+        content: "584 yılı siyer araştırması içeriği",
+        clientVersion: 0,
+        isExplicitEdit: true,
+        allowEmpty: true
     }, {}, { authorization: `Bearer ${p3Token}` });
     await tubitakRecordsHandler(p3WriteOther.req, p3WriteOther.res);
-    assert.strictEqual(p3WriteOther.getStatus(), 403, "Öğrenci başka öğrenciye atanan yılı düzenleyememeli");
+    assert.strictEqual(p3WriteOther.getStatus(), 200, "Siyer öğrencisi tüm yıllara veri girişi yapabilmeli");
 
     // Aynı yıla 2. olay ekleme & kaynak + içerik kaydetme
     const p3AddEv = mockReqRes('PUT', {

@@ -560,7 +560,7 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ ok: false, error: "Bu projeye veri kaydetme yetkiniz yok!" });
                 }
                 const store = await getCloudStore();
-                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
@@ -595,10 +595,12 @@ module.exports = async function handler(req, res) {
 
                     const prevContent = existing.content || "";
 
-                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydın üzerine yazamaz!
+                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydın üzerine yazamaz (kullanıcı açıkça silmediği sürece)
                     if (!newContent.trim() && prevContent.trim()) {
-                        savedRecords[recKey] = existing;
-                        continue;
+                        if (!req.body?.allowEmpty && !itemRec?.allowEmpty && !req.body?.isExplicitEdit && !itemRec?.isExplicitEdit) {
+                            savedRecords[recKey] = existing;
+                            continue;
+                        }
                     }
 
                     if (prevContent.trim() !== newContent.trim() || existing.version === 0) {
@@ -677,7 +679,7 @@ module.exports = async function handler(req, res) {
                 }
                 const store = await getCloudStore();
                 const effectiveStu = resolveEffectiveStudent(session, req.body, projectId, itemId, store);
-                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId && !req.body?.studentId) {
@@ -704,9 +706,11 @@ module.exports = async function handler(req, res) {
                     };
                     const prevContent = existing.content || "";
                     let safeFinalContent = newContent;
-                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydı ezemez
+                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydı ezemez (açık silme hariç)
                     if (!safeFinalContent.trim() && prevContent.trim()) {
-                        safeFinalContent = prevContent;
+                        if (!req.body?.allowEmpty && !itemRec?.allowEmpty && !req.body?.isExplicitEdit && !itemRec?.isExplicitEdit) {
+                            safeFinalContent = prevContent;
+                        }
                     }
                     const newVersion = (existing.version || 0) + (prevContent.trim() !== safeFinalContent.trim() ? 1 : 0);
                     store.records[recKey] = {
@@ -787,7 +791,7 @@ module.exports = async function handler(req, res) {
                 }
                 const store = await getCloudStore();
                 const effectiveStu = resolveEffectiveStudent(session, req.body, projectId, itemId, store);
-                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId && !req.body?.studentId) {
@@ -874,8 +878,8 @@ module.exports = async function handler(req, res) {
             const recordKey = `${itemId}__${criterionKey}`;
             const store = await getCloudStore();
 
-            // Güvenlik: Proje 1, Proje 2 ve Proje 3'te tanımlı öğrenci yalnızca kendi atanmış kayıtlarını düzenleyebilir
-            if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+            // Güvenlik: Proje 1 ve Proje 2'de tanımlı öğrenci yalnızca kendi atanmış kayıtlarını düzenleyebilir (Proje 3 siyer ortak çalışmaya açıktır)
+            if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
                 const sessionStuId = resolveSessionStudentId(session, projectId);
                 const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                 if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
@@ -896,17 +900,19 @@ module.exports = async function handler(req, res) {
             const prevContent = existing.content || "";
             const newContent = String(content || "");
 
-            // 🛡️ KALICI KORUMA: Boş metin mevcut dolu kaydın üzerine yazamaz!
+            // 🛡️ KALICI KORUMA: Boş metin mevcut dolu kaydın üzerine yazamaz (kullanıcı açıkça silmediği sürece)
             if (!newContent.trim() && prevContent.trim()) {
-                return res.status(200).json({
-                    ok: true,
-                    status: "saved",
-                    message: "Mevcut dolu kayıt boş veri ile ezilmeye karşı korundu.",
-                    version: existing.version,
-                    updatedAt: existing.updatedAt,
-                    recordKey,
-                    content: prevContent
-                });
+                if (!req.body?.allowEmpty && !req.body?.isExplicitEdit) {
+                    return res.status(200).json({
+                        ok: true,
+                        status: "saved",
+                        message: "Mevcut dolu kayıt boş veri ile ezilmeye karşı korundu.",
+                        version: existing.version,
+                        updatedAt: existing.updatedAt,
+                        recordKey,
+                        content: prevContent
+                    });
+                }
             }
 
             // İçerik tamamen aynıysa boşuna sürüm şişirme
@@ -1092,7 +1098,7 @@ module.exports = async function handler(req, res) {
 
             // B0) Yeniden Düzenlemeye Açma (Öğrenci & Öğretmen)
             if (action === "reopen_item_edit" || action === "reopen_item_for_edit" || action === "edit_item") {
-                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
@@ -1152,7 +1158,7 @@ module.exports = async function handler(req, res) {
 
             // B) İncelemeye Gönder (Öğrenci)
             if (action === "submit_review") {
-                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim" || projectId === "proje-siyer")) {
+                if (userRole !== "teacher" && (projectId === "proje-tarih" || projectId === "proje-bilim")) {
                     const sessionStuId = resolveSessionStudentId(session, projectId);
                     const assignedStuId = getEffectiveAssignedStudentId(store, projectId, itemId);
                     if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
@@ -1274,13 +1280,7 @@ module.exports = async function handler(req, res) {
                 if (!yearId || !Object.prototype.hasOwnProperty.call(itemMap, yearId)) {
                     return res.status(404).json({ ok: false, error: "Olay eklenecek yıl bulunamadı." });
                 }
-                if (userRole !== "teacher") {
-                    const sessionStuId = resolveSessionStudentId(session, 'proje-siyer');
-                    const assignedStuId = getEffectiveAssignedStudentId(store, 'proje-siyer', yearId);
-                    if (sessionStuId && assignedStuId && sessionStuId !== assignedStuId) {
-                        return res.status(403).json({ ok: false, error: "Bu yıl başka bir öğrenciye atanmıştır." });
-                    }
-                }
+                // Siyer projesinde olay ekleme tüm Siyer araştırmacılarına ve öğretmenlere açıktır
                 if (!store.itemsMeta) store.itemsMeta = {};
                 if (!store.itemsMeta['proje-siyer_events']) store.itemsMeta['proje-siyer_events'] = {};
                 const list = Array.isArray(store.itemsMeta['proje-siyer_events'][yearId])
@@ -1322,14 +1322,7 @@ module.exports = async function handler(req, res) {
                 if (!Object.prototype.hasOwnProperty.call(itemMap, fromYearId) || !Object.prototype.hasOwnProperty.call(itemMap, toYearId)) {
                     return res.status(404).json({ ok: false, error: "Kaynak veya hedef yıl sistemde bulunamadı." });
                 }
-                if (userRole !== "teacher") {
-                    const sessionStuId = resolveSessionStudentId(session, 'proje-siyer');
-                    const fromStuId = getEffectiveAssignedStudentId(store, 'proje-siyer', fromYearId);
-                    const toStuId = getEffectiveAssignedStudentId(store, 'proje-siyer', toYearId);
-                    if (sessionStuId && ((fromStuId && sessionStuId !== fromStuId) || (toStuId && sessionStuId !== toStuId))) {
-                        return res.status(403).json({ ok: false, error: "Yalnızca kendi atanmış yıllarınız arasında olay taşıyabilirsiniz." });
-                    }
-                }
+                // Siyer projesinde olay taşıma tüm Siyer araştırmacılarına ve öğretmenlere açıktır
 
                 if (!store.itemsMeta) store.itemsMeta = {};
                 if (!store.itemsMeta['proje-siyer_events']) store.itemsMeta['proje-siyer_events'] = {};
