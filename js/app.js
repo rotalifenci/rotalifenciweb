@@ -181,7 +181,7 @@ function readFileAsDataURL(file) {
 let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
-const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261029_0100";
+const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261127_2359";
 function ensureMultiDeviceSyncReset() {
     try {
         if (typeof localStorage !== "undefined" && localStorage.getItem("rotali_multi_device_sync_v") !== ROTALI_MULTI_DEVICE_SYNC_VERSION) {
@@ -508,6 +508,8 @@ async function loadCentralizedMaterials() {
     }
 
     let mergedList = Array.from(combinedMap.values()).filter(m => m && m.id && !deletedIds.has(m.id));
+    // Simülasyonları (yerel override'lar "ders-notu"ya taşımış olsa bile) her zaman Simülasyonlar kategorisine yerleştir
+    mergedList.forEach(m => { if (typeof normalizeSimulationPlacement === "function") normalizeSimulationPlacement(m); });
 
     // 3. Kalıcı kullanıcı sıralamasını uygula
     const savedOrder = (typeof getStoredMaterialsOrder === "function") ? getStoredMaterialsOrder() : [];
@@ -1345,6 +1347,74 @@ window.updateSmartboardSyncBadge = updateSmartboardSyncBadge;
 // -------------------------------------------------------------
 const ROTALI_DATA_SCHEMA_VERSION = 20261028_02;
 
+// 🧪 SİMÜLASYON (eski adıyla "Eğitsel Oyun") TESPİT MOTORU
+// Kategori anahtarı geriye dönük uyumluluk için "egitsel-oyunlar" olarak saklanır;
+// kullanıcıya görünen ad her yerde "Simülasyonlar"dır.
+// (Fonksiyon bildirimleri hoist edildiği için listeler TDZ hatası vermemesi adına fonksiyon içinde tutulur)
+function getSimulationCategoryAliases() { return ["egitsel-oyunlar", "egitsel-oyun", "simulasyon", "simulasyonlar", "simülasyon", "simülasyonlar", "oyunlar", "oyun"]; }
+function getSimulationFormats() { return ["SANAL LABORATUVAR", "3D SİMÜLASYON", "3B SİMÜLASYON", "3D SİMÜLATÖR", "3D VR SİMÜLASYONU", "3D VR SİMÜLATÖR", "3D UZAY SİMÜLASYONU", "3D SİNEMATİK", "3D UZAY TRENİ", "3D KOŞU OYUNU", "3D KAÇIŞ ODASI", "SİMÜLASYON", "SIMULASYON", "EĞİTSEL OYUN", "İNTERAKTİF OYUN", "İNTERAKTİF SİMÜLASYON"]; }
+// Başlığında "dinamometre" geçen ama statik ders notu olan kayıtlar (simülasyon DEĞİL)
+function getNonSimulationDinamometreNoteIds() { return ["mat-840c5044-4b84-4157-b37e-7bc1b99df179", "mat-0daf0b71-b420-4e88-9352-41c2334f5a7d"]; }
+
+function getCategoryDisplayLabel(cat) {
+    const k = String(cat || "").trim().toLowerCase();
+    if (getSimulationCategoryAliases().includes(k)) return "Simülasyonlar";
+    const map = { "ders-notu": "Ders Notu / Sunumu", "ders-sunumu": "Ders Notu / Sunumu", "videolar": "Videolar", "etkinlikler": "Etkinlikler", "soru-bankasi": "Test / Deneme", "denemeler": "Yazılıya Hazırlık", "bilim-insanlari": "Bilimin Rotasını Çizenler", "lgs": "LGS Pusulası", "projeler": "Projeler" };
+    return map[k] || String(cat || "");
+}
+window.getCategoryDisplayLabel = getCategoryDisplayLabel;
+
+function normalizeSimulationTabKey(tab) {
+    const t = String(tab || "").trim().toLowerCase();
+    return getSimulationCategoryAliases().includes(t) ? "egitsel-oyunlar" : tab;
+}
+
+function isDinamometreSimulationItem(item) {
+    if (!item) return false;
+    const id = String(item.id || "");
+    if (getNonSimulationDinamometreNoteIds().includes(id)) return false;
+    const title = String(item.title || "").toLowerCase();
+    const url = String(item.fileUrl || "").toLowerCase();
+    return id === "mat-5-2-sim-dinamometre-laboratuvari" || id === "builtin-oyun-5-dinamometre" ||
+        url.includes("dinamometre-laboratuvari") ||
+        (title.includes("dinamometre") && (title.includes("laboratuvar") || title.includes("sanal") || title.includes("kuvveti ölç")));
+}
+
+function isSimulationMaterial(item) {
+    if (!item) return false;
+    const id = String(item.id || "");
+    if (getNonSimulationDinamometreNoteIds().includes(id)) return false;
+    if (isDinamometreSimulationItem(item)) return true;
+    if (id.startsWith("builtin-oyun-") || id.startsWith("oyun-") || id.includes("-sim-") || id.includes("-oyun-")) return true;
+    const cat = String(item.category || "").trim().toLowerCase();
+    if (getSimulationCategoryAliases().includes(cat)) return true;
+    const url = String(item.fileUrl || "").trim();
+    if (url.startsWith("oyunlar/") || url.startsWith("Eğitsel Oyun/") || ["oyun-lab-kacis", "oyun-uzay-ekspresi", "dinamometre-laboratuvari"].includes(url)) return true;
+    const fmt = String(item.format || "").trim().toLocaleUpperCase("tr-TR");
+    if (getSimulationFormats().includes(fmt)) return true;
+    const title = String(item.title || "").toLowerCase();
+    return title.includes("kuvvet laboratuvarı") || title.includes("iş laboratuvarı") || title.includes("yıldız laboratuvarı");
+}
+
+function normalizeSimulationPlacement(item) {
+    if (!item || typeof item !== "object") return item;
+    if (isSimulationMaterial(item)) {
+        item.category = "egitsel-oyunlar";
+    }
+    if (isDinamometreSimulationItem(item)) {
+        item.grade = "5";
+        item.category = "egitsel-oyunlar";
+        item.targetSection = "2";
+        item.unit = "2. Ünite: Kuvveti Tanıyalım";
+        item.fileUrl = "oyunlar/dinamometre-laboratuvari.html";
+        item.imageUrl = item.imageUrl || "assets/dinamometre-laboratuvari-kapak.svg";
+        item.kapakResmi = item.kapakResmi || "assets/dinamometre-laboratuvari-kapak.svg";
+    }
+    return item;
+}
+window.isSimulationMaterial = isSimulationMaterial;
+window.isDinamometreSimulationItem = isDinamometreSimulationItem;
+
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;
     const item = { ...raw };
@@ -1377,6 +1447,7 @@ function sanitizeMaterialItem(raw) {
     item.downloadCount = String(item.downloadCount || "Yeni").trim();
     item.createdAt = String(item.createdAt || "17.09.2026").trim();
     item.updatedAt = String(item.updatedAt || item.createdAt).trim();
+    normalizeSimulationPlacement(item);
     return item;
 }
 
@@ -1688,6 +1759,15 @@ function matchesSubTabCategory(item, subTab) {
     const format = String(item.format || "").trim().toLowerCase();
 
     if (target === "all" || target === "uniteler") return true;
+
+    // 🧪 Simülasyonlar sekmesi: tüm eski/yeni anahtarlar ("egitsel-oyunlar", "simulasyonlar", "oyun" ...) desteklenir
+    if (getSimulationCategoryAliases().includes(target)) {
+        return isSimulationMaterial(item);
+    }
+    // 🛡️ Simülasyonlar asla normal ünite içerik kartlarına (Ders Notu, Video, Etkinlik, Test, Yazılı) sızmaz
+    if (["ders-notu", "ders-sunumu", "ders-notu-sunumu", "ders_notu_sunumu", "not-sunum", "videolar", "etkinlikler", "soru-bankasi", "denemeler"].includes(target) && isSimulationMaterial(item)) {
+        return false;
+    }
 
     if (target === "ders-notu" || target === "ders-sunumu" || target === "ders-notu-sunumu" || target === "ders_notu_sunumu" || target === "not-sunum") {
         return itemCat === "ders-notu" || itemCat === "not" || itemCat === "ders_notu" || 
@@ -2598,7 +2678,7 @@ function getMaterialActionUI(item, fallbackCat = "") {
     if (isIsLab) {
         return { text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-cube", bg: "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-700 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/30" };
     }
-    const isDinamometreLab = title.includes("dinamometre") || file.includes("dinamometre") || url.includes("dinamometre") || (item && (item.id === "mat-5-2-sim-dinamometre-laboratuvari" || item.id === "builtin-oyun-5-dinamometre"));
+    const isDinamometreLab = isDinamometreSimulationItem(item);
     if (isDinamometreLab) {
         return { text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-weight-hanging", bg: "bg-gradient-to-r from-cyan-500 via-blue-600 to-amber-500 hover:from-cyan-600 hover:to-blue-700 shadow-cyan-500/30" };
     }
@@ -2642,7 +2722,7 @@ function getMaterialActionUI(item, fallbackCat = "") {
         return { text: "Videoyu İzle", icon: "fa-solid fa-circle-play", bg: "bg-red-600 hover:bg-red-700 shadow-red-600/20" };
     }
     if (isGame) {
-        return { text: "Oyunu Oyna", icon: "fa-solid fa-gamepad", bg: "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-emerald-600/20" };
+        return { text: "Simülasyonu Başlat", icon: "fa-solid fa-flask", bg: "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-emerald-600/20" };
     }
     if (isPresentation) {
         return { text: "Sunumu Başlat", icon: "fa-solid fa-file-powerpoint", bg: "bg-orange-600 hover:bg-orange-700 shadow-orange-600/20" };
@@ -3326,7 +3406,7 @@ function renderHomeRecentMaterialsSection() {
             id: "default-rec-1",
             grade: "5",
             category: "egitsel-oyunlar",
-            format: "EĞİTSEL OYUN",
+            format: "SİMÜLASYON",
             unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
             title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
             desc: "Beherglas, erlenmayer, dereceli silindir ve deney tüplerini eğlenerek eşleştirin ve tanıyın.",
@@ -4826,7 +4906,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     try {
         savedSubTab = localStorage.getItem(subTabKey) || sessionStorage.getItem(subTabKey);
     } catch(e) {}
-    let subTab = parts[1] || "ders-notu";
+    let subTab = normalizeSimulationTabKey(parts[1] || "ders-notu");
     if (subTab === "uniteler" || subTab === "etkinlikler") subTab = "ders-notu";
     try {
         localStorage.setItem(subTabKey, subTab);
@@ -4896,6 +4976,31 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     const getTabCustomCount = (tabKey) => {
         if (tabKey === "soru-bankasi") return 0; // Test ve sınavlar sadece Yazılıya Hazırlık bölümünde gösterilir
         const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
+        if (tabKey === "egitsel-oyunlar") {
+            // 🧪 Simülasyonlar rozeti: sekme içinde gösterilen birleşik (özel + yerleşik) tekilleştirilmiş sayı
+            const gNumStr = String(grade.number);
+            const sims = allCustomMaterials.filter(item => {
+                if (!item || !item.id || deletedIds.has(item.id)) return false;
+                const g = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+                if (g !== "all" && g !== gNumStr) return false;
+                if (!isSimulationMaterial(item)) return false;
+                const sec = (typeof getMaterialTargetSection === "function") ? getMaterialTargetSection(item) : "1";
+                return sec !== "lab";
+            });
+            let builtinExtra = 0;
+            try {
+                const fullMap = (typeof getBuiltinUnitGamesMap === "function") ? getBuiltinUnitGamesMap() : {};
+                const bMap = fullMap[gNumStr] || {};
+                Object.values(bMap).forEach(list => (list || []).forEach(g => {
+                    if (!g || deletedIds.has(g.id)) return;
+                    const dup = sims.some(c => (c.id && c.id === g.id) ||
+                        (c.fileUrl && g.fileUrl && c.fileUrl.trim().toLowerCase() === g.fileUrl.trim().toLowerCase()) ||
+                        (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim()));
+                    if (!dup) builtinExtra++;
+                }));
+            } catch (e) {}
+            return sims.length + builtinExtra;
+        }
         return allCustomMaterials.filter(item => {
             if (!item || !item.id || deletedIds.has(item.id)) return false;
 
@@ -5061,6 +5166,7 @@ function switchGradeSubTab(gradeId, tabName, event) {
         }
         event.preventDefault();
     }
+    tabName = normalizeSimulationTabKey(tabName);
     const subTabKey = `rotali_active_subtab_${gradeId}`;
     try {
         localStorage.setItem(subTabKey, tabName);
@@ -5602,56 +5708,9 @@ function renderGradeDersNotuAccordion(grade, subData) {
 }
 
 
-function renderGradeUnitBasedHub(grade, subData, subTab) {
-    const gNum = String(grade.number);
-    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
-    const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
-
-    // Resmi MEB Türkiye Yüzyılı Maarif Modeli 7 Ünitesi
-    const unitTitlesMap = {
-        "5": [
-            "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
-            "2. Ünite: Kuvveti Tanıyalım",
-            "3. Ünite: Canlıların Yapısına Yolculuk",
-            "4. Ünite: Işığın Dünyası",
-            "5. Ünite: Maddenin Doğası",
-            "6. Ünite: Yaşamımızdaki Elektrik",
-            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
-        ],
-        "6": [
-            "1. Ünite: Güneş Sistemi ve Tutulmalar",
-            "2. Ünite: Kuvvetin Etkisinde Hareket",
-            "3. Ünite: Canlılarda Sistemler",
-            "4. Ünite: Işığın Yansıması ve Renkler",
-            "5. Ünite: Maddenin Ayırt Edici Özellikleri",
-            "6. Ünite: Elektriğin İletimi ve Direnç",
-            "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
-        ],
-        "7": [
-            "1. Ünite: Güneş Sistemi ve Ötesi",
-            "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
-            "3. Ünite: Vücudumuzdaki Sistemler",
-            "4. Ünite: Işığın Kırılması ve Mercekler",
-            "5. Ünite: Maddenin Doğasına Yolculuk",
-            "6. Ünite: Elektriklenme",
-            "7. Ünite: Sürdürülebilir Yaşam ve Enerji"
-        ],
-        "8": [
-            "1. Ünite: Mevsimler ve İklim",
-            "2. Ünite: DNA ve Genetik Kod",
-            "3. Ünite: Basınç",
-            "4. Ünite: Madde ve Endüstri",
-            "5. Ünite: Basit Makineler",
-            "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
-            "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
-        ]
-    };
-    const currGradeMeb = (typeof MEB_CURRICULUM !== "undefined" && MEB_CURRICULUM[gNum]) ? MEB_CURRICULUM[gNum] : null;
-    const unitList = (currGradeMeb && Array.isArray(currGradeMeb.units)) ? currGradeMeb.units.map(u => u.name) : (unitTitlesMap[gNum] || unitTitlesMap["6"]);
-
-    // Müfredat Yerleşik Eğitsel Oyun Haritası
-    const builtinUnitGamesMap = {
+// 🧪 Müfredat Yerleşik Simülasyon Haritası (rozet sayaçları ve Simülasyonlar sekmesi ortak kullanır)
+function getBuiltinUnitGamesMap() {
+    return {
         "5": {
             "1": [
                 {
@@ -5826,6 +5885,59 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         },
         "8": {}
     };
+}
+window.getBuiltinUnitGamesMap = getBuiltinUnitGamesMap;
+
+function renderGradeUnitBasedHub(grade, subData, subTab) {
+    const gNum = String(grade.number);
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+    const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
+
+    // Resmi MEB Türkiye Yüzyılı Maarif Modeli 7 Ünitesi
+    const unitTitlesMap = {
+        "5": [
+            "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+            "2. Ünite: Kuvveti Tanıyalım",
+            "3. Ünite: Canlıların Yapısına Yolculuk",
+            "4. Ünite: Işığın Dünyası",
+            "5. Ünite: Maddenin Doğası",
+            "6. Ünite: Yaşamımızdaki Elektrik",
+            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
+        ],
+        "6": [
+            "1. Ünite: Güneş Sistemi ve Tutulmalar",
+            "2. Ünite: Kuvvetin Etkisinde Hareket",
+            "3. Ünite: Canlılarda Sistemler",
+            "4. Ünite: Işığın Yansıması ve Renkler",
+            "5. Ünite: Maddenin Ayırt Edici Özellikleri",
+            "6. Ünite: Elektriğin İletimi ve Direnç",
+            "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
+        ],
+        "7": [
+            "1. Ünite: Güneş Sistemi ve Ötesi",
+            "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+            "3. Ünite: Vücudumuzdaki Sistemler",
+            "4. Ünite: Işığın Kırılması ve Mercekler",
+            "5. Ünite: Maddenin Doğasına Yolculuk",
+            "6. Ünite: Elektriklenme",
+            "7. Ünite: Sürdürülebilir Yaşam ve Enerji"
+        ],
+        "8": [
+            "1. Ünite: Mevsimler ve İklim",
+            "2. Ünite: DNA ve Genetik Kod",
+            "3. Ünite: Basınç",
+            "4. Ünite: Madde ve Endüstri",
+            "5. Ünite: Basit Makineler",
+            "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
+            "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
+        ]
+    };
+    const currGradeMeb = (typeof MEB_CURRICULUM !== "undefined" && MEB_CURRICULUM[gNum]) ? MEB_CURRICULUM[gNum] : null;
+    const unitList = (currGradeMeb && Array.isArray(currGradeMeb.units)) ? currGradeMeb.units.map(u => u.name) : (unitTitlesMap[gNum] || unitTitlesMap["6"]);
+
+    // Müfredat Yerleşik Eğitsel Oyun Haritası
+    const builtinUnitGamesMap = getBuiltinUnitGamesMap();
 
     // 7 Bölümün Yapılandırma Bilgileri
     const sectionConfigs = {
@@ -5896,9 +6008,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             icon: "fa-solid fa-gamepad",
             colorText: "text-fuchsia-600",
             btnBg: "bg-fuchsia-600 hover:bg-fuchsia-700 shadow-fuchsia-600/20",
-            btnText: "Oyunu Başlat",
+            btnText: "Simülasyonu Başlat",
             badgeStyle: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-            defaultFormat: "İNTERAKTİF OYUN",
+            defaultFormat: "SİMÜLASYON",
             btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${String(item && item.title || '').replace(/'/g, "\\'")}', '${String(item && item.format || 'İNTERAKTİF OYUN').replace(/'/g, "\\'")}')`
         },
         "bilim-insanlari": {
@@ -5915,7 +6027,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         }
     };
 
-    const normSubTab = (subTab === "oyunlar") ? "egitsel-oyunlar" : ((subTab === "uniteler" || subTab === "bilimin-rotasi") ? "bilim-insanlari" : subTab);
+    const normSubTab = (getSimulationCategoryAliases().includes(String(subTab || "").toLowerCase())) ? "egitsel-oyunlar" : ((subTab === "uniteler" || subTab === "bilimin-rotasi") ? "bilim-insanlari" : subTab);
     const cfg = sectionConfigs[normSubTab] || sectionConfigs["ders-sunumu"];
 
     const allowedLabTabs = ["videolar", "etkinlikler", "egitsel-oyunlar"];
@@ -5952,7 +6064,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             if (m.id === "mat-6-2-sim-kuvvet-laboratuvari" || (m.title && m.title.toLowerCase().includes("kuvvet laboratuvarı"))) {
                 return String(unitNum) === "2";
             }
-            if (m.id === "mat-5-2-sim-dinamometre-laboratuvari" || (m.title && m.title.toLowerCase().includes("dinamometre"))) {
+            if (isDinamometreSimulationItem(m)) {
                 return String(unitNum) === "2";
             }
             if (m.id === "mat-7-2-sim-is-laboratuvari" || (m.title && (m.title.toLowerCase().includes("iş laboratuvarı") || m.title.toLowerCase().includes("is laboratuvari")))) {
@@ -6220,9 +6332,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 (item.id && (String(item.id).includes("uzay-ekspresi") || String(item.id).includes("uzay_ekspresi") || String(item.id).includes("uzay-cagi")));
 
                                             // ⚖️ 0. DİNAMOMETRE SANAL LABORATUVARI
-                                            const isDinamometreLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("dinamometre")) ||
-                                                (item.title && item.title.toLowerCase().includes("dinamometre")) ||
-                                                (item.id && String(item.id).includes("dinamometre"));
+                                            const isDinamometreLaboratuvariItem = isDinamometreSimulationItem(item);
 
                                             // ⚡ 2. KUVVET LABORATUVARI & İŞ LABORATUVARI
                                             const isKuvvetLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("kuvvet-laboratuvari")) ||
@@ -6425,9 +6535,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             <div>
                                 <div class="flex items-center gap-2 mb-0.5">
                                     <span class="text-xs font-black ${normSubTab === 'egitsel-oyunlar' ? 'text-amber-700' : 'text-emerald-700'} uppercase tracking-wider">${grade.number}. Sınıf • Özel Bölüm</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}">${normSubTab === 'egitsel-oyunlar' ? 'Laboratuvar Kaçış Odası & Oyunlar' : 'Laboratuvar & Deneyler'}</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}">${normSubTab === 'egitsel-oyunlar' ? 'Laboratuvar Kaçış Odası & Simülasyonlar' : 'Laboratuvar & Deneyler'}</span>
                                 </div>
-                                 <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${normSubTab === 'egitsel-oyunlar' ? 'Astronotun Kaçış Odası & İnteraktif Laboratuvar Oyunları' : 'Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar'}</h4>
+                                 <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${normSubTab === 'egitsel-oyunlar' ? 'Astronotun Kaçış Odası & İnteraktif Laboratuvar Simülasyonları' : 'Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar'}</h4>
                             </div>
                         </div>
                         <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'} flex items-center justify-center transition-transform duration-300 ${isLabActive ? 'rotate-180' : ''}">
@@ -6440,11 +6550,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             <!-- LABORATUVAR EĞİTSEL OYUNLARI & BULMACALARI -->
                             <div class="mb-3 flex items-center justify-between">
                                 <h5 class="text-sm font-black text-slate-800 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-flask text-fuchsia-600"></i> Laboratuvar Oyunları & Simülasyonlar
+                                    <i class="fa-solid fa-flask text-fuchsia-600"></i> Laboratuvar Simülasyonları
                                 </h5>
                                 ${isAdmin ? `
                                     <button type="button" onclick="triggerUploadModal('${grade.number}', 'egitsel-oyunlar', 'lab')" class="px-3 py-1.5 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer">
-                                        <i class="fa-solid fa-plus"></i> + Lab Oyunu Ekle
+                                        <i class="fa-solid fa-plus"></i> + Lab Simülasyonu Ekle
                                     </button>
                                 ` : ''}
                             </div>
@@ -6466,14 +6576,14 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-fuchsia-400 hover:shadow-md transition-all group">
                                         <div>
                                             <div class="flex items-center justify-between mb-2">
-                                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">${item.format || 'Eğitsel Oyun'}</span>
-                                                <span class="text-[11px] font-bold text-slate-400">Özel Oyun</span>
+                                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">${item.format || 'Simülasyon'}</span>
+                                                <span class="text-[11px] font-bold text-slate-400">Özel Simülasyon</span>
                                             </div>
                                             <h5 class="text-sm font-black text-slate-900 mb-1.5 group-hover:text-fuchsia-700 transition-colors uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h5>
                                             <div class="mat-preview-box relative w-full h-48 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')">
                                                 <img src="${coverImg}" alt="${item.title}" onerror="this.src='rotali-fenci-logo.png'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
-                                            <p class="text-xs text-slate-500 mb-3 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar eğitsel oyunu.'}</p>
+                                            <p class="text-xs text-slate-500 mb-3 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar simülasyonu.'}</p>
                                         </div>
                                         <div>
                                             <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
@@ -7441,7 +7551,7 @@ function renderGradeEducationalGames(grade, subData) {
                             <div>
                                 <div class="flex items-center justify-between mb-3">
                                     <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">
-                                        🎮 ${item.format || 'Eğitsel Oyun'}
+                                        🎮 ${item.format || 'Simülasyon'}
                                     </span>
                                     ${isAdmin ? `
                                         <div class="flex items-center gap-1">
@@ -7461,10 +7571,10 @@ function renderGradeEducationalGames(grade, subData) {
                                     ` : ''}
                                 </div>
                                 <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-fuchsia-700 transition-colors">
-                                    ${item.title || 'İnteraktif Oyun'}
+                                    ${item.title || 'Simülasyon'}
                                 </h5>
                                 <p class="text-xs text-slate-600 font-medium mb-4 leading-relaxed line-clamp-3">
-                                    ${item.desc || 'MEB müfredatına uygun interaktif eğitsel fen oyunu.'}
+                                    ${item.desc || 'MEB müfredatına uygun etkileşimli fen simülasyonu.'}
                                 </p>
                             </div>
                             <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
@@ -7472,7 +7582,7 @@ function renderGradeEducationalGames(grade, subData) {
                                     <i class="fa-solid fa-check-circle text-emerald-500"></i> Hazır
                                 </span>
                                 <button type="button" onclick="openOrDownloadMaterial('${String(item.id).replace(/'/g, "\'")}', '${String(item.fileUrl || item.imageUrl || '#').replace(/'/g, "\'")}', '${String(item.fileName || item.title).replace(/'/g, "\'")}', 'egitsel-oyunlar', '${String(item.title || '').replace(/'/g, "\'")}', '${String(item.format || '').replace(/'/g, "\'")}')" class="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
-                                    <i class="fa-solid fa-play text-[10px]"></i> Oyunu Başlat
+                                    <i class="fa-solid fa-play text-[10px]"></i> Simülasyonu Başlat
                                 </button>
                             </div>
                         </div>
@@ -7922,7 +8032,7 @@ window.rotaliFileManager = function() {
                 fmt = 'Canva';
                 typeCat = 'sunum';
             } else if (lowerUrl.includes('gemini') || lowerUrl.includes('kacis') || lowerUrl.includes('kaçış') || lowerUrl.includes('escape') || lowerUrl.endsWith('.html')) {
-                fmt = 'Eğitsel Oyun';
+                fmt = 'Simülasyon';
                 typeCat = 'gorsel';
             } else if (lowerUrl.endsWith('.pdf')) {
                 fmt = 'PDF';
@@ -8008,7 +8118,7 @@ window.rotaliFileManager = function() {
             const targetUrl = target.blobUrl || target.url;
 
             // Web linki kontrolü
-            if (target.isLink || fmt === 'WEB BAĞLANTISI' || fmt === 'EĞİTSEL OYUN' || (targetUrl && (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) && !target.blobUrl)) {
+            if (target.isLink || fmt === 'WEB BAĞLANTISI' || fmt === 'EĞİTSEL OYUN' || fmt === 'SİMÜLASYON' || (targetUrl && (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) && !target.blobUrl)) {
                 if (targetUrl.includes('gemini') || (target.title && (target.title.toLowerCase().includes('kaçış') || target.title.toLowerCase().includes('kacis')))) {
                     openInteractiveGameModal('oyun-lab-kacis', target.title || 'Laboratuvar Kaçış Odası');
                     return;
@@ -10392,7 +10502,7 @@ function renderTeacherDashboardPage(container) {
                                             <span class="px-2.5 py-1 rounded-lg ${item.grade === '8' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-slate-100 text-slate-700'} font-black text-[11px]">
                                                 ${item.grade === 'all' ? 'Genel' : item.grade + '. Sınıf'}
                                             </span>
-                                            <span class="block text-[10px] text-slate-400 mt-1 uppercase font-bold">${item.category}</span>
+                                            <span class="block text-[10px] text-slate-400 mt-1 uppercase font-bold">${getCategoryDisplayLabel(item.category)}</span>
                                         </td>
                                         <td class="p-3.5">
                                             <div class="font-black text-slate-900 text-sm leading-snug">${item.title}</div>
@@ -15695,7 +15805,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         } else if (checkTitle.includes("uzay ekspresi") || checkTitle.includes("uzay-ekspresi") || String(id).includes("uzay-ekspresi") || (found && found.fileUrl === "oyun-uzay-ekspresi")) {
             gameKey = "oyun-uzay-ekspresi";
         }
-        openInteractiveGameModal(gameKey || targetUrl, title || (found && found.title) || "İnteraktif Fen Oyunu");
+        openInteractiveGameModal(gameKey || targetUrl, title || (found && found.title) || "İnteraktif Fen Simülasyonu");
         return;
     }
 
@@ -17924,7 +18034,7 @@ function openInteractiveSimulationModal(targetUrl, title = "Fen Laboratuvarı Si
         openInteractiveGameModal("oyunlar/is-laboratuvari.html", "İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli 3D Deney)");
         return;
     }
-    if (targetUrl && (targetUrl.includes("dinamometre-laboratuvari") || title.includes("Dinamometre"))) {
+    if (targetUrl && (targetUrl.includes("dinamometre-laboratuvari") || (title.includes("Dinamometre") && (title.includes("Laboratuvar") || title.includes("Sanal"))))) {
         openInteractiveGameModal("oyunlar/dinamometre-laboratuvari.html", "Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!");
         return;
     }
@@ -19663,7 +19773,7 @@ async function handleAdvMaterialSubmit(e) {
             if (lLower.includes("youtube.com") || lLower.includes("youtu.be")) fileFormat = "YouTube Video";
             else if (lLower.includes("drive.google.com")) fileFormat = "Google Drive";
             else if (lLower.includes("canva.com")) fileFormat = "Canva";
-            else if (lLower.includes("gemini") || lLower.includes("kacis") || lLower.includes("kaçış") || lLower.includes("escape") || lLower.endsWith(".html")) fileFormat = "Eğitsel Oyun";
+            else if (lLower.includes("gemini") || lLower.includes("kacis") || lLower.includes("kaçış") || lLower.includes("escape") || lLower.endsWith(".html")) fileFormat = "Simülasyon";
             else if (lLower.endsWith(".pdf")) fileFormat = "PDF";
             else if (lLower.endsWith(".pptx") || lLower.endsWith(".ppt")) fileFormat = "PPTX";
             else if (lLower.endsWith(".docx") || lLower.endsWith(".doc")) fileFormat = "Word";
@@ -20074,7 +20184,7 @@ function openQuickMoveModal(materialId) {
                     <div class="text-sm font-black text-slate-900 line-clamp-2">${item.title}</div>
                     <div class="text-xs text-blue-700 font-bold mt-1.5 flex items-center gap-1.5">
                         <i class="fa-solid fa-location-dot text-blue-600"></i>
-                        <span>Şu Anki Konumu: <strong>${currentGrade}. Sınıf • ${currentCat} • ${currentSec}. Bölüm</strong></span>
+                        <span>Şu Anki Konumu: <strong>${currentGrade}. Sınıf • ${getCategoryDisplayLabel(currentCat)} • ${currentSec}. Bölüm</strong></span>
                     </div>
                 </div>
 
@@ -20243,9 +20353,9 @@ async function executeQuickMove(e, materialId) {
     const modal = document.getElementById("quick-move-modal");
     if (modal) modal.remove();
 
-    showToast(`✅ Materyal ${grade}. Sınıf • ${category} (${unitName}) bölümüne kalıcı olarak taşındı!`, "success");
+    showToast(`✅ Materyal ${grade}. Sınıf • ${getCategoryDisplayLabel(category)} (${unitName}) bölümüne kalıcı olarak taşındı!`, "success");
     setTimeout(() => {
-        showReloadPrompt(`Materyal ${grade}. Sınıf • ${category} bölümüne taşındı! Lütfen sayfayı yenileyiniz.`);
+        showReloadPrompt(`Materyal ${grade}. Sınıf • ${getCategoryDisplayLabel(category)} bölümüne taşındı! Lütfen sayfayı yenileyiniz.`);
     }, 300);
 
     // 4. Buluta kalıcı senkronize et
