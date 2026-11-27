@@ -190,19 +190,33 @@
     }
 
     // 3. Sunucu Veri Senkronizasyonu (Gist Cloud DB / Supabase Bridge / API)
-    async function syncProjectData(projId) {
+    async function syncProjectData(projId, forceFresh = false) {
         if (!currentSession || !currentSession.token) return;
         const targetProj = (currentSession.role === "teacher" && projId) ? projId : currentSession.projectId;
+        const freshParam = (forceFresh || currentSession.role === "teacher") ? "&fresh=true" : "";
 
         try {
-            const res = await fetch(`/api/tubitak-records?projectId=${encodeURIComponent(targetProj)}`, {
-                headers: { "Authorization": `Bearer ${currentSession.token}` }
+            const res = await fetch(`/api/tubitak-records?projectId=${encodeURIComponent(targetProj)}${freshParam}&_t=${Date.now()}`, {
+                headers: { "Authorization": `Bearer ${currentSession.token}` },
+                cache: "no-store"
             });
 
             if (res.ok) {
                 const data = await res.json();
                 if (data.ok) {
                     const incomingRecs = data.records || {};
+                    const orphanLocalRecords = [];
+                    // Yerelde dolu olup sunucuda boş veya hiç olmayan kayıtları tespit et (Yerel Önbellek Kurtarma Köprüsü)
+                    for (const [localKey, localRec] of Object.entries(runtimeRecords)) {
+                        if (!localRec || typeof localRec.content !== 'string' || !localRec.content.trim()) continue;
+                        if (targetProj !== "all" && localRec.projectId && localRec.projectId !== targetProj) continue;
+                        const serverRec = incomingRecs[localKey];
+                        const serverContent = (serverRec && typeof serverRec.content === 'string') ? serverRec.content.trim() : '';
+                        if (!serverContent) {
+                            orphanLocalRecords.push(localRec);
+                        }
+                    }
+
                     for (const [k, incRec] of Object.entries(incomingRecs)) {
                         const existing = runtimeRecords[k];
                         if (!existing) {
@@ -219,6 +233,25 @@
                             }
                             if (incVer >= curVer || !curContent.trim()) {
                                 runtimeRecords[k] = incRec;
+                            }
+                        }
+                    }
+
+                    // Sunucuda eksik kalmış ama tarayıcı önbelleğinde bulunan dolu kayıtları çevrimdışı kuyruğa alıp buluta kurtar
+                    if (orphanLocalRecords.length > 0) {
+                        for (const orp of orphanLocalRecords) {
+                            const itemId = orp.itemId || String(orp.id || '').split('__')[0];
+                            const critKey = orp.criterionKey || String(orp.id || '').split('__')[1];
+                            if (itemId && critKey) {
+                                addToOfflineQueue({
+                                    projectId: orp.projectId || activeProjectId,
+                                    itemId,
+                                    criterionKey: critKey,
+                                    content: orp.content,
+                                    clientVersion: orp.version || 0,
+                                    studentName: orp.studentName || currentSession.studentName,
+                                    studentId: orp.studentId || currentSession.studentId
+                                });
                             }
                         }
                     }
@@ -1311,11 +1344,16 @@
                 const prevRec = getRecordWithAliases(targetItemId, k);
                 const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
+                // Boş olan ve sunucuda da kaydı bulunmayan alanları boşuna gönderme; mevcut dolu alanı da toplu kayıtta boşaltma
+                if (!String(contentVal || "").trim() && !String(prevVal || "").trim()) return;
+                if (!String(contentVal || "").trim() && String(prevVal || "").trim()) {
+                    contentVal = prevVal;
+                }
                 recordsToSave.push({
                     criterionKey: k,
                     content: contentVal,
-                    allowEmpty: true,
-                    isExplicitEdit: true,
+                    allowEmpty: false,
+                    isExplicitEdit: false,
                     clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
                 });
             });
@@ -1327,11 +1365,15 @@
                 const prevRec = getRecordWithAliases(targetItemId, crit.key);
                 const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
                 let contentVal = el ? el.value : prevVal;
+                if (!String(contentVal || "").trim() && !String(prevVal || "").trim()) return;
+                if (!String(contentVal || "").trim() && String(prevVal || "").trim()) {
+                    contentVal = prevVal;
+                }
                 recordsToSave.push({
                     criterionKey: crit.key,
                     content: contentVal,
-                    allowEmpty: true,
-                    isExplicitEdit: true,
+                    allowEmpty: false,
+                    isExplicitEdit: false,
                     clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
                 });
             });
@@ -1351,8 +1393,8 @@
                     records: recordsToSave,
                     studentId: currentSession.studentId,
                     studentName: currentSession.studentName,
-                    allowEmpty: true,
-                    isExplicitEdit: true,
+                    allowEmpty: false,
+                    isExplicitEdit: false,
                     clientTimestamp: new Date().toISOString()
                 })
             });
@@ -1494,11 +1536,15 @@
                     const prevRec = getRecordWithAliases(targetItemId, k);
                     const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${k}`]?.content || "";
                     let contentVal = el ? el.value : prevVal;
+                    if (!String(contentVal || "").trim() && !String(prevVal || "").trim()) return;
+                    if (!String(contentVal || "").trim() && String(prevVal || "").trim()) {
+                        contentVal = prevVal;
+                    }
                     recordsToSave.push({
                         criterionKey: k,
                         content: contentVal,
-                        allowEmpty: true,
-                        isExplicitEdit: true,
+                        allowEmpty: false,
+                        isExplicitEdit: false,
                         clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${k}`]?.version || 0
                     });
                 });
@@ -1509,11 +1555,15 @@
                     const prevRec = getRecordWithAliases(targetItemId, crit.key);
                     const prevVal = prevRec?.content || runtimeRecords[`${targetItemId}__${crit.key}`]?.content || "";
                     let contentVal = el ? el.value : prevVal;
+                    if (!String(contentVal || "").trim() && !String(prevVal || "").trim()) return;
+                    if (!String(contentVal || "").trim() && String(prevVal || "").trim()) {
+                        contentVal = prevVal;
+                    }
                     recordsToSave.push({
                         criterionKey: crit.key,
                         content: contentVal,
-                        allowEmpty: true,
-                        isExplicitEdit: true,
+                        allowEmpty: false,
+                        isExplicitEdit: false,
                         clientVersion: prevRec?.version || runtimeRecords[`${targetItemId}__${crit.key}`]?.version || 0
                     });
                 });
@@ -1531,8 +1581,8 @@
                     itemId: targetItemId,
                     studentId: currentSession.studentId,
                     studentName: currentSession.studentName,
-                    allowEmpty: true,
-                    isExplicitEdit: true,
+                    allowEmpty: false,
+                    isExplicitEdit: false,
                     records: recordsToSave
                 })
             });
@@ -1972,6 +2022,18 @@ function renderActiveItemForm(item, projData) {
         return escapeHtml(text);
     }
 
+    function isSiyerNoEventText(txt) {
+        const norm = String(txt || "").toLocaleLowerCase("tr-TR").trim();
+        if (!norm) return false;
+        return (
+            norm.includes("siyer olayı yoktur") ||
+            norm.includes("siyer olayı gerçekleşmemiştir") ||
+            norm.includes("herhangi bir siyer olayı") ||
+            norm.includes("olay tespit edilemedi") ||
+            norm.includes("olay bulunmamaktadır")
+        );
+    }
+
     function computeStudentStats(stuId, projectId = activeProjectId) {
         const projData = seedData?.projects?.[projectId] || {};
         const items = projData.items || [];
@@ -1983,20 +2045,37 @@ function renderActiveItemForm(item, projData) {
         let filledCriteria = 0;
         let noEventFlagCount = 0;
         let lastUpdatedAt = null;
+        const incompleteItems = [];
+        const recoverableItems = [];
 
         assignedItems.forEach(it => {
-            const isNoEvent = projectId === "proje-siyer" && runtimeSiyerYearFlags?.[it.id]?.status === "no_event_found";
+            const c1Content = (runtimeRecords[`${it.id}__c1_olay`]?.content || '').trim();
+            const c2Content = (runtimeRecords[`${it.id}__c2_kok_deger`]?.content || '').trim();
+            const c3Content = (runtimeRecords[`${it.id}__c3_kaynakca`]?.content || '').trim();
+            const isExplicitNoEvent = projectId === "proje-siyer" && (
+                runtimeSiyerYearFlags?.[it.id]?.status === "no_event_found" ||
+                isSiyerNoEventText(c1Content)
+            );
             const filled = countItemFilledCriteria(it.id, projectId);
             filledCriteria += filled;
-            const isCompleted = isNoEvent || (
+            const isCompleted = isExplicitNoEvent || (
                 projectId === "proje-siyer"
-                    ? ((runtimeRecords[`${it.id}__c1_olay`]?.content || '').trim().length > 0 &&
-                       ((runtimeRecords[`${it.id}__c3_kaynakca`]?.content || '').trim().length > 0 || getItemSources(it.id).length > 0))
+                    ? (c1Content.length > 0 && (c3Content.length > 0 || getItemSources(it.id).length > 0))
                     : (filled === totalCriteria)
             );
-            if (filled > 0 || isNoEvent) startedCount++;
-            if (isCompleted) completedCount++;
-            if (isNoEvent) noEventFlagCount++;
+            if (filled > 0 || isExplicitNoEvent) startedCount++;
+            if (isCompleted) {
+                completedCount++;
+            } else {
+                incompleteItems.push({
+                    id: it.id,
+                    title: it.title || (it.year ? `${it.year} Yılı` : it.id),
+                    filled,
+                    total: totalCriteria,
+                    missing: Math.max(0, totalCriteria - filled)
+                });
+            }
+            if (runtimeSiyerYearFlags?.[it.id]?.status === "no_event_found") noEventFlagCount++;
             if (getItemStatus(it.id) === "approved") approvedCount++;
             Object.values(runtimeRecords).forEach(rec => {
                 const matchRec = rec && (rec.itemId === it.id || (projectId === "proje-siyer" && String(rec.itemId || "").startsWith(`${it.id}__`)));
@@ -2006,6 +2085,16 @@ function renderActiveItemForm(item, projData) {
                     }
                 }
             });
+            // Revizyon geçmişinde kurtarılabilir (önceden dolu olup şu an boş olan) alan var mı kontrol et
+            const itemRevs = (runtimeRevisions || []).filter(r => r && r.itemId === it.id);
+            for (const rev of itemRevs) {
+                const rk = rev.recordKey || `${it.id}__${rev.criterionKey}`;
+                const curVal = (runtimeRecords[rk]?.content || '').trim();
+                const histVal = String(rev.prevContent || rev.newContent || '').trim();
+                if (!curVal && histVal && !rk.endsWith('__finalized') && !rk.endsWith('__editing')) {
+                    recoverableItems.push({ id: it.id, key: rk });
+                }
+            }
         });
 
         const effectiveItemCount = Math.max(0, assignedItems.length - noEventFlagCount);
@@ -2024,7 +2113,9 @@ function renderActiveItemForm(item, projData) {
             missingCriteria,
             pct,
             lastUpdatedAt,
-            assignedItems
+            assignedItems,
+            incompleteItems,
+            recoverableCount: recoverableItems.length
         };
     }
 
@@ -2728,6 +2819,91 @@ function renderActiveItemForm(item, projData) {
         `;
     }
 
+    function renderTeacherDataIntegrityMatrix() {
+        const projects = [
+            { id: "proje-tarih", label: "Proje 1 (Tarihî Eserler)", unit: "Eser" },
+            { id: "proje-bilim", label: "Proje 2 (Bilim İnsanları)", unit: "Bilim İnsanı" },
+            { id: "proje-siyer", label: "Proje 3 (Siyer 571–632)", unit: "Yıl" }
+        ];
+        const rows = [];
+        projects.forEach(p => {
+            const students = getProjectStudents(p.id);
+            students.forEach(stu => {
+                const stats = computeStudentStats(stu.id, p.id);
+                rows.push({
+                    projectLabel: p.label,
+                    projectId: p.id,
+                    unit: p.unit,
+                    studentId: stu.id,
+                    studentName: stu.name,
+                    stats
+                });
+            });
+        });
+
+        return `
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h4 class="font-black text-slate-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                        <span>Öğrenci Veri Bütünlüğü, Doğrulama ve Senkronizasyon Denetim Tablosu</span>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Gerçek bulut veritabanı kayıtlarından anlık hesaplanan doğrulanmış araştırma sayıları, hedef tamamlama oranları ve eksik/kurtarılabilir kayıt durumları.</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Canlı Veritabanı Doğrulaması Aktif (${rows.length} Öğrenci)
+                </span>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-left border-collapse text-[11px]">
+                    <thead class="bg-slate-900 text-white uppercase text-[10px] font-black">
+                        <tr>
+                            <th class="py-2.5 px-3">Öğrenci Adı</th>
+                            <th class="py-2.5 px-3">Proje</th>
+                            <th class="py-2.5 px-3 text-center">Doğrulanan / Hedef</th>
+                            <th class="py-2.5 px-3 text-center">Kriter Doluluğu</th>
+                            <th class="py-2.5 px-3 text-center">Tamamlanma %</th>
+                            <th class="py-2.5 px-3 text-center">Veri Uyuşmazlığı</th>
+                            <th class="py-2.5 px-3">Eksik / Kurtarılabilir Kayıt</th>
+                            <th class="py-2.5 px-3 text-right">Son Başarılı Kayıt</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        ${rows.map(r => {
+                            const s = r.stats;
+                            const lastTimeStr = s.lastUpdatedAt ? new Date(s.lastUpdatedAt).toLocaleString("tr-TR") : "Henüz kayıt yok";
+                            const hasDiscrepancy = s.recoverableCount > 0;
+                            const incompleteSummary = s.incompleteItems.length === 0
+                                ? '<span class="text-emerald-700 font-bold">Eksik yok (Tamamlandı)</span>'
+                                : `<span class="text-amber-800 font-semibold">${s.incompleteItems.length} ${r.unit} (${s.missingCriteria} kriter eksik: ${s.incompleteItems.slice(0, 3).map(x => escapeHtml(x.title)).join(", ")}${s.incompleteItems.length > 3 ? "..." : ""})</span>`;
+                            return `
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="py-2 px-3 font-black text-slate-900 whitespace-nowrap">${escapeHtml(r.studentName)}</td>
+                                <td class="py-2 px-3 text-slate-600 font-semibold whitespace-nowrap">${escapeHtml(r.projectLabel)}</td>
+                                <td class="py-2 px-3 text-center font-black ${s.completedCount === s.assignedTotal ? 'text-emerald-700' : 'text-slate-800'}">${s.completedCount} / ${s.assignedTotal} ${r.unit}</td>
+                                <td class="py-2 px-3 text-center font-bold text-indigo-700">${s.filledCriteria} / ${s.totalPossible}</td>
+                                <td class="py-2 px-3 text-center">
+                                    <span class="px-2 py-0.5 rounded-full font-black text-[10px] ${s.pct === 100 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-900 border border-amber-300'}">%${s.pct}</span>
+                                </td>
+                                <td class="py-2 px-3 text-center whitespace-nowrap">
+                                    ${hasDiscrepancy
+                                        ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-black text-[10px]">⚠️ ${s.recoverableCount} Sürüm Farkı</span>`
+                                        : '<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-black text-[10px]">✅ Senkronize (0 Fark)</span>'}
+                                </td>
+                                <td class="py-2 px-3">${incompleteSummary}</td>
+                                <td class="py-2 px-3 text-right text-slate-500 font-semibold whitespace-nowrap">${escapeHtml(lastTimeStr)}</td>
+                            </tr>
+                            `;
+                        }).join("")}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        `;
+    }
+
     function updateTeacherModalDynamicStats() {
         const totalEl = document.getElementById("teacher-stat-total-records");
         const inReviewEl = document.getElementById("teacher-stat-inreview-records");
@@ -2865,6 +3041,9 @@ function renderActiveItemForm(item, projData) {
                         <span>E-Tabloya Aktar</span>
                     </button>
                 </div>
+
+                <!-- Öğrenci Veri Bütünlüğü, Doğrulama ve Senkronizasyon Denetim Tablosu -->
+                ${renderTeacherDataIntegrityMatrix()}
 
                 <!-- Proje 1: Öğrenci Araştırma Takibi ve Görev Yönetimi -->
                 ${renderProje1TeacherStudentTracking()}

@@ -1,4 +1,5 @@
 const assert = require('assert');
+process.env.TUBITAK_TEST_ISOLATED = '1';
 const tubitakAuthHandler = require('../api/tubitak-auth.js');
 const tubitakRecordsHandler = require('../api/tubitak-records.js');
 

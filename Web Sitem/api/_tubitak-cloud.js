@@ -116,6 +116,19 @@ function mergeStores(baseStore, incomingStore) {
         if (!existRec) {
             merged.records[key] = incRec;
         } else {
+            const incContent = typeof incRec.content === 'string' ? incRec.content.trim() : '';
+            const existContent = typeof existRec.content === 'string' ? existRec.content.trim() : '';
+
+            // 🛡️ KALICI KORUMA: Mevcut dolu kayıt, gelen boş bir kayıtla (explicitDelete işaretli değilse) asla ezilemez!
+            if (existContent.length > 0 && incContent.length === 0 && !incRec.explicitDelete) {
+                continue;
+            }
+            // Eğer mevcut kayıt boşsa ve gelen kayıt doluysa gelen kayıt her zaman kazanır
+            if (existContent.length === 0 && incContent.length > 0) {
+                merged.records[key] = incRec;
+                continue;
+            }
+
             const incTime = incRec.updatedAt ? Date.parse(incRec.updatedAt) : 0;
             const existTime = existRec.updatedAt ? Date.parse(existRec.updatedAt) : 0;
             const incVer = incRec.version || 0;
@@ -135,8 +148,8 @@ function mergeStores(baseStore, incomingStore) {
             revIdSet.add(rev.id);
         }
     }
-    if (merged.revisions.length > 500) {
-        merged.revisions = merged.revisions.slice(-500);
+    if (merged.revisions.length > 2000) {
+        merged.revisions = merged.revisions.slice(-2000);
     }
 
     // 3. Sources Merge
@@ -266,6 +279,11 @@ async function getCloudStore({ forceFresh = false } = {}) {
     }
 
     const diskStore = readDiskFallback();
+    if (process.env.TUBITAK_TEST_ISOLATED === '1') {
+        _cachedStore = _cachedStore ? mergeStores(diskStore, _cachedStore) : diskStore;
+        _lastFetchTime = Date.now();
+        return _cachedStore;
+    }
     try {
         const cloudStore = await fetchGistDirect();
         if (cloudStore) {
@@ -329,6 +347,9 @@ async function flushGistQueue() {
 async function saveCloudStore(store) {
     _cachedStore = store;
     _lastFetchTime = Date.now();
+    if (process.env.TUBITAK_TEST_ISOLATED === '1') {
+        return _cachedStore;
+    }
     writeDiskFallback(store);
 
     // Gelen depoyu bekleyen kuyrukla güvenle birleştir (Write Coalescing)

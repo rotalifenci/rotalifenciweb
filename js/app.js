@@ -2769,7 +2769,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                 <!-- Rozetler -->
                                 <div class="flex items-center justify-between gap-2 mb-3">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80">
-                                        ${item.grade === 'all' ? 'Tüm Sınıflar' : item.grade + '. Sınıf'} • ${item.category === 'videolar' ? 'Video' : (item.category === 'egitsel-oyunlar' ? 'Oyun' : (isTestItem ? 'Soru Hazırlama' : 'Ders Notu'))}
+                                        ${item.grade === 'all' ? 'Tüm Sınıflar' : item.grade + '. Sınıf'} • ${item.category === 'videolar' ? 'Video' : (item.category === 'egitsel-oyunlar' ? 'Simülasyonlar' : (isTestItem ? 'Soru Hazırlama' : 'Ders Notu'))}
                                     </span>
                                     <span class="px-2.5 py-0.5 rounded-lg text-[10.5px] font-black uppercase tracking-wider border shrink-0 ${trueTypeBadgeClass}">
                                         ${trueTypeBadge}
@@ -3482,7 +3482,11 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
         filtered = filtered.filter(m => String(m.grade) === String(filterGrade));
     }
     if (filterCat !== "all") {
-        filtered = filtered.filter(m => (m.category === filterCat || (m.format && m.format.toLowerCase().includes(filterCat.toLowerCase()))));
+        filtered = filtered.filter(m => (
+            m.category === filterCat ||
+            ((filterCat === "egitsel-oyunlar" || filterCat === "oyun") && matchesSubTabCategory(m, "egitsel-oyunlar")) ||
+            (m.format && m.format.toLowerCase().includes(filterCat.toLowerCase()))
+        ));
     }
 
     // Tarihe göre sırala (en son eklenen en başta)
@@ -3504,7 +3508,7 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                         </span>
                         <h2 class="text-2xl sm:text-4xl font-black mb-2 tracking-tight">✨ Yeni Eklenen Fen Materyalleri</h2>
                         <p class="text-xs sm:text-sm text-amber-50 font-medium leading-relaxed">
-                            Öğretmen ve öğrencilerimiz için telefon ve bilgisayardan sisteme yüklenen en güncel ders notları, akıllı tahta sunumları, deney videoları ve eğitsel oyunlar.
+                            Öğretmen ve öğrencilerimiz için telefon ve bilgisayardan sisteme yüklenen en güncel ders notları, akıllı tahta sunumları, deney videoları ve simülasyonlar.
                         </p>
                     </div>
                     ${isAdmin ? `
@@ -3548,8 +3552,8 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                         <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'videolar')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'videolar' ? 'bg-red-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
                             🎥 Video
                         </button>
-                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'oyun')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'oyun' ? 'bg-purple-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
-                            🎮 Oyun
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'egitsel-oyunlar')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'egitsel-oyunlar' || filterCat === 'oyun' ? 'bg-purple-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            🎮 Simülasyonlar
                         </button>
                     </div>
                 </div>
@@ -3668,7 +3672,7 @@ function renderHomePage(container) {
 
                         <!-- Kullanıcının İstediği Tam Metin (Eğitim Ağı Formatında Vurgulu & Akıcı Sunum) -->
                         <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-medium mb-6 max-w-xl">
-                            <strong class="text-slate-900 font-extrabold">Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D eğitsel oyunları ve <em class="text-indigo-900 font-bold not-italic">“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
+                            <strong class="text-slate-900 font-extrabold">Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D simülasyonları ve <em class="text-indigo-900 font-bold not-italic">“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
                         </p>
 
                         <!-- Hızlı Eylem Butonları -->
@@ -3685,7 +3689,7 @@ function renderHomePage(container) {
                         <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-200/80 text-slate-600 text-xs font-bold">
                             <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center gap-1.5">✓ Ünite Ders Notları</span>
                             <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200/80 flex items-center gap-1.5">✓ Akıllı Tahta PPTX</span>
-                            <span class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200/80 flex items-center gap-1.5">✓ 3D Eğitsel Oyunlar</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200/80 flex items-center gap-1.5">✓ 3D Simülasyonlar</span>
                             <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-800 border border-red-200/80 flex items-center gap-1.5">✓ LGS Branş Denemeleri</span>
                         </div>
                     </div>
@@ -3721,7 +3725,7 @@ function renderHomePage(container) {
                 </div>
                 <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
                     <span class="text-2xl sm:text-3xl font-black text-sky-300 tracking-tight">30+</span>
-                    <span class="text-white/90 text-xs font-bold mt-1">Eğitsel Oyun & Simülatör</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Simülasyonlar</span>
                 </div>
                 <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
                     <span class="text-2xl sm:text-3xl font-black text-orange-300 tracking-tight">28</span>
@@ -3914,7 +3918,7 @@ function renderGradesOverview(container) {
                     MÜFREDAT VE ÖĞRENME ALANLARI
                 </span>
                 <h2 class="text-3xl font-black text-slate-900 tracking-tight mb-3">Sınıf Düzeyleri & Alt Bölüm Merkezleri</h2>
-                <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Eğitsel Oyunlar.</p>
+                <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Simülasyonlar.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -3948,8 +3952,8 @@ function renderGradesOverview(container) {
                                     <a href="#grade/${g.id}/denemeler" class="p-2 bg-slate-50 hover:bg-purple-50 hover:text-purple-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎯</span> <span>Yazılıya Hazırlık</span>
                                     </a>
-                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>🎮</span> <span>Eğitsel Oyunlar</span>
+                                    <a href="#grade/${g.id}/egitsel-oyunlar" aria-label="${g.number}. Sınıf Simülasyonlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎮</span> <span>Simülasyonlar</span>
                                     </a>
                                 </div>
                             </div>
@@ -4858,12 +4862,12 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
             desc: "Süre tutularak uygulanan dönemlik ortak sınav senaryoları ve Türkiye geneli branş denemeleri."
         },
         "egitsel-oyunlar": {
-            title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
-            desc: "Eğlenerek öğrenmeyi sağlayan interaktif Wordwall yarışmaları, eşleştirme oyunları ve fen çarkıfeleği."
+            title: `${grade.number}. Sınıf Simülasyonlar`,
+            desc: "MEB müfredatına uygun 3D sanal laboratuvarlar, etkileşimli deney simülasyonları ve öğrenme etkinlikleri."
         },
         "oyunlar": {
-            title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
-            desc: "Eğlenerek öğrenmeyi sağlayan interaktif Wordwall yarışmaları, eşleştirme oyunları ve fen çarkıfeleği."
+            title: `${grade.number}. Sınıf Simülasyonlar`,
+            desc: "MEB müfredatına uygun 3D sanal laboratuvarlar, etkileşimli deney simülasyonları ve öğrenme etkinlikleri."
         },
         "bilim-insanlari": {
             title: `${grade.number}. Sınıf Bilimin Rotasını Çizenler`,
@@ -4998,14 +5002,14 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 </span>
                             </a>
 
-                            <!-- 6. Eğitsel Oyun/Simülasyon -->
-                            <a href="#grade/${grade.id}/egitsel-oyunlar" onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
+                            <!-- 6. Simülasyonlar -->
+                            <a href="#grade/${grade.id}/egitsel-oyunlar" aria-label="${grade.number}. Sınıf Simülasyonlar" onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
                                 <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-md' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-gamepad"></i>
                                     ${getTabCustomCount('egitsel-oyunlar') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-fuchsia-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>🎮 EĞİTSEL OYUN</span>
+                                    <span>🎮 SİMÜLASYONLAR</span>
                                     ${getTabCustomCount('egitsel-oyunlar') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-100 text-fuchsia-800' : 'bg-white/30 text-white'}">${getTabCustomCount('egitsel-oyunlar')}</span>` : ''}
                                 </span>
                             </a>
@@ -5886,8 +5890,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'denemeler', '${String(item && item.title || '').replace(/'/g, "\\'")}', '${String(item && item.format || 'DENEME SINAVI').replace(/'/g, "\\'")}')`
         },
         "egitsel-oyunlar": {
-            title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
-            description: "Eğlenerek öğrenmeyi sağlayan interaktif Wordwall yarışmaları, eşleştirme oyunları ve fen çarkıfeleği.",
+            title: `${grade.number}. Sınıf Simülasyonlar`,
+            description: "MEB müfredatına uygun 3D sanal laboratuvarlar, etkileşimli deney simülasyonları ve öğrenme etkinlikleri.",
             gradient: "from-fuchsia-600 via-pink-600 to-slate-900",
             icon: "fa-solid fa-gamepad",
             colorText: "text-fuchsia-600",
@@ -5986,7 +5990,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     ${normSubTab === "egitsel-oyunlar" ? `
                     <button type="button" onclick="filterUnitHubSection('${containerId}', 'all', '${grade.number}', '${normSubTab}')" data-unit="all" data-active="${isAllActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isAllActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-indigo-50 text-indigo-900 hover:bg-indigo-100 border border-indigo-200 shadow-sm'} active:scale-95 cursor-pointer">
                         <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isAllActive ? 'text-white' : 'text-indigo-900'}">Tüm Üniteler</span>
-                        <span class="text-[9px] sm:text-[10px] font-semibold ${isAllActive ? 'text-slate-300' : 'text-indigo-700/80'} truncate w-full">${computedUnitsData.reduce((acc, u) => acc + u.totalItems.length, 0)} Oyun & Sim</span>
+                        <span class="text-[9px] sm:text-[10px] font-semibold ${isAllActive ? 'text-slate-300' : 'text-indigo-700/80'} truncate w-full">${computedUnitsData.reduce((acc, u) => acc + u.totalItems.length, 0)} Simülasyon</span>
                     </button>
                     ` : ''}
                     ${computedUnitsData.map(({ uTitle, unitNum: num, totalItems }) => {
@@ -6400,7 +6404,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için materyal eklediğinizde bu alanda görüntülenecektir.</p>
                                         ${isAdmin ? `
                                             <button type="button" onclick="triggerUploadModal('${grade.number}', '${normSubTab}', '${unitNum}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye ${normSubTab === 'egitsel-oyunlar' ? 'Eğitsel Oyun/Simülasyon' : 'İçerik'} Ekle
+                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye ${normSubTab === 'egitsel-oyunlar' ? 'Simülasyon' : 'İçerik'} Ekle
                                             </button>
                                         ` : ''}
                                     </div>
@@ -7051,9 +7055,9 @@ function renderGradeEducationalGames(grade, subData) {
                         <span class="px-3 py-1 rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
                             <i class="fa-solid fa-gamepad"></i> İNTERAKTİF FEN MERKEZİ
                         </span>
-                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Eğitsel Oyun/Simülasyon</span>
+                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Simülasyonlar</span>
                     </div>
-                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Eğlenerek Öğren: Kaçış Odaları, Bulmacalar & Simülasyonlar</h3>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">${grade.number}. Sınıf Simülasyonlar</h3>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="text-xs font-bold text-fuchsia-700 bg-fuchsia-50 px-3.5 py-1.5 rounded-full border border-fuchsia-200 self-start sm:self-auto">
@@ -7061,7 +7065,7 @@ function renderGradeEducationalGames(grade, subData) {
                     </span>
                     ${isAdmin ? `
                         <button type="button" onclick="triggerUploadModal('${grade.number}', 'egitsel-oyunlar')" class="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-fuchsia-600/20 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-plus"></i> + Yeni Eğitsel Oyun/Simülasyon Ekle
+                            <i class="fa-solid fa-plus"></i> + Yeni Simülasyon Ekle
                         </button>
                     ` : ''}
                 </div>
@@ -7422,9 +7426,9 @@ function renderGradeEducationalGames(grade, subData) {
             <!-- 3. DİĞER EĞİTSEL OYUNLAR & SİMÜLASYONLAR LİSTESİ -->
             <div class="mb-4 flex items-center justify-between">
                 <h4 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-dice-d20 text-fuchsia-600"></i> ${grade.number}. Sınıf İnteraktif Oyun & Simülasyon Galerisi
+                    <i class="fa-solid fa-dice-d20 text-fuchsia-600"></i> ${grade.number}. Sınıf Simülasyonlar
                 </h4>
-                <span class="text-xs font-bold text-slate-500">${currentBuiltins.length + customGames.length} Oyun Mevcut</span>
+                <span class="text-xs font-bold text-slate-500">${currentBuiltins.length + customGames.length} Simülasyon</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -10679,7 +10683,7 @@ function getPortalSearchIndex() {
                     index.push({
                         id: `oyun-${gNum}-${idx}`,
                         title: item.title,
-                        category: "Eğitsel Oyun & Simülasyon",
+                        category: "Simülasyonlar",
                         categoryKey: "egitsel-oyunlar",
                         grade: gradeTitle,
                         gradeNumber: gNum,
@@ -10838,7 +10842,7 @@ function getPortalSearchIndex() {
                 index.push({
                     id: `custom-${m.id}`,
                     title: m.title || "Özel Materyal",
-                    category: isGame ? "Eğitsel Oyun & İnteraktif" : (m.format || m.category || "Özel Materyal"),
+                    category: isGame ? "Simülasyonlar" : (m.format || m.category || "Özel Materyal"),
                     categoryKey: m.category || (isGame ? "egitsel-oyunlar" : "ders-notu"),
                     grade: gradeTitle,
                     gradeNumber: gNum,
@@ -10881,7 +10885,7 @@ function renderSearchPage(container) {
                 </div>
                 <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">🔍 Portal Genel Arama</h2>
                 <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto">
-                    Tüm sınıflar (5, 6, 7, 8), ders notları, sunumlar, deneyler, sorular, denemeler, eğitsel oyunlar ve bilim insanları içerisinde anında arama yapın.
+                    Tüm sınıflar (5, 6, 7, 8), ders notları, sunumlar, deneyler, sorular, denemeler, simülasyonlar ve bilim insanları içerisinde anında arama yapın.
                 </p>
             </div>
 
@@ -18546,7 +18550,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="etkinlikler" ${activeEditCategory === 'etkinlikler' ? 'selected' : ''}>🧩 Etkinlikler</option>
                                 <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Test / Deneme</option>
                                 <option value="denemeler" ${activeEditCategory === 'denemeler' ? 'selected' : ''}>🎯 Yazılıya Hazırlık</option>
-                                <option value="egitsel-oyunlar" ${activeEditCategory === 'egitsel-oyunlar' ? 'selected' : ''}>🎮 Eğitsel Oyun/Simülasyon</option>
+                                <option value="egitsel-oyunlar" ${activeEditCategory === 'egitsel-oyunlar' ? 'selected' : ''}>🎮 Simülasyonlar</option>
                                 <option value="lgs" ${activeEditCategory === 'lgs' ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
                                 <option value="bilim-insanlari" ${activeEditCategory === 'bilim-insanlari' ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
                                 <option value="projeler" ${activeEditCategory === 'projeler' ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
@@ -20029,7 +20033,7 @@ function openQuickMoveModal(materialId) {
             { id: "etkinlikler", label: "🧩 Etkinlikler" },
             { id: "soru-bankasi", label: "📝 Test / Deneme" },
             { id: "denemeler", label: "🎯 Yazılıya Hazırlık" },
-            { id: "egitsel-oyunlar", label: "🎮 Eğitsel Oyun" },
+            { id: "egitsel-oyunlar", label: "🎮 Simülasyonlar" },
             { id: "ders-notu", label: "📚 Ders Kitabı & Notlar" }
         ];
 

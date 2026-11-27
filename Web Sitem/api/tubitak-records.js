@@ -200,6 +200,9 @@ module.exports = async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.setHeader("Access-Control-Expose-Headers", "Content-Disposition, X-Export-Paragraph-Count, X-Export-Included-Count, X-Export-Skipped-Count");
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
 
     if (req.method === "OPTIONS") return res.status(200).end();
 
@@ -458,8 +461,8 @@ module.exports = async function handler(req, res) {
                     version: ((existing?.version || 0) + 1),
                     createdAt: now
                 });
-                if (store.revisions.length > 500) {
-                    store.revisions = store.revisions.slice(-500);
+                if (store.revisions.length > 2000) {
+                    store.revisions = store.revisions.slice(-2000);
                 }
 
                 await saveCloudStore(store);
@@ -595,9 +598,12 @@ module.exports = async function handler(req, res) {
 
                     const prevContent = existing.content || "";
 
-                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydın üzerine yazamaz (kullanıcı açıkça silmediği sürece)
+                    // 🛡️ KALICI KORUMA: Toplu kayıtta boş gelen veri mevcut dolu kaydın üzerine yazamaz (açık silme bayrağı yoksa) ve var olmayan boş kayıtları veritabanına şişirmez
+                    if (!newContent.trim() && !prevContent.trim() && existing.version === 0) {
+                        continue;
+                    }
                     if (!newContent.trim() && prevContent.trim()) {
-                        if (!req.body?.allowEmpty && !itemRec?.allowEmpty && !req.body?.isExplicitEdit && !itemRec?.isExplicitEdit) {
+                        if (!itemRec?.explicitDelete) {
                             savedRecords[recKey] = existing;
                             continue;
                         }
@@ -649,8 +655,8 @@ module.exports = async function handler(req, res) {
                     }
                 }
 
-                if (store.revisions.length > 500) {
-                    store.revisions = store.revisions.slice(-500);
+                if (store.revisions.length > 2000) {
+                    store.revisions = store.revisions.slice(-2000);
                 }
 
                 if (!store.studentState) store.studentState = {};
@@ -706,9 +712,12 @@ module.exports = async function handler(req, res) {
                     };
                     const prevContent = existing.content || "";
                     let safeFinalContent = newContent;
-                    // 🛡️ KALICI KORUMA: Boş gelen veri mevcut dolu kaydı ezemez (açık silme hariç)
+                    // 🛡️ KALICI KORUMA: Kesinleştirme sırasında boş gelen veri mevcut dolu kaydı asla ezemez ve boş alanlar gereksiz kayıt oluşturmaz
+                    if (!safeFinalContent.trim() && !prevContent.trim() && existing.version === 0) {
+                        continue;
+                    }
                     if (!safeFinalContent.trim() && prevContent.trim()) {
-                        if (!req.body?.allowEmpty && !itemRec?.allowEmpty && !req.body?.isExplicitEdit && !itemRec?.isExplicitEdit) {
+                        if (!itemRec?.explicitDelete) {
                             safeFinalContent = prevContent;
                         }
                     }
@@ -979,7 +988,8 @@ module.exports = async function handler(req, res) {
                 studentName: finalAuthorName,
                 version: newVersion,
                 status: existing.status === "approved" ? "in_review" : existing.status,
-                updatedAt: now
+                updatedAt: now,
+                ...(!newContent.trim() && prevContent.trim() ? { explicitDelete: true } : {})
             };
 
             store.records[recordKey] = updatedRecord;
@@ -1000,8 +1010,8 @@ module.exports = async function handler(req, res) {
                 createdAt: now
             });
 
-            if (store.revisions.length > 500) {
-                store.revisions = store.revisions.slice(-500);
+            if (store.revisions.length > 2000) {
+                store.revisions = store.revisions.slice(-2000);
             }
 
             // KALICI BULUT VERİTABANINA YAZ (GitHub Gist)
@@ -1482,8 +1492,8 @@ module.exports = async function handler(req, res) {
                     version: ((existing?.version || 0) + 1),
                     createdAt: now
                 });
-                if (store.revisions.length > 500) {
-                    store.revisions = store.revisions.slice(-500);
+                if (store.revisions.length > 2000) {
+                    store.revisions = store.revisions.slice(-2000);
                 }
 
                 await saveCloudStore(store);
